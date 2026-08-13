@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plasebo — Gizlilik Politikası</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    max-width: 46rem; margin: 0 auto; padding: 2.5rem 1.25rem 6rem;
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #F7F6F2; color: #0E0E12;
+  }
+  @media (prefers-color-scheme: dark) { body { background: #0E0E12; color: #F7F6F2; } }
+  h1 { font-size: 1.9rem; margin-bottom: .25rem; }
+  h2 { font-size: 1.15rem; margin-top: 2.25rem; }
+  .meta { opacity: .6; font-size: .85rem; }
+  table { border-collapse: collapse; width: 100%; margin-top: .75rem; }
+  th, td { text-align: left; padding: .5rem .6rem; border-bottom: 1px solid rgba(128,128,128,.35); vertical-align: top; }
+  code { background: rgba(128,128,128,.18); padding: .1rem .35rem; border-radius: 4px; }
+  .box { border: 1px solid rgba(128,128,128,.4); border-radius: 10px; padding: 1rem 1.15rem; margin-top: 1.25rem; }
+  footer { margin-top: 3rem; font-size: .85rem; opacity: .65; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+
+<h1>Gizlilik Politikası</h1>
+<p class="meta">Plasebo · Son güncelleme: 13 Ağustos 2026 · Paket adı: <code>com.plasebo.app</code></p>
+
+<p>Plasebo, günlük bir plasebo ritüeli sunan bir uygulamadır. Bu politika,
+uygulamanın hangi verileri işlediğini açıklar. Kısa cevap: <strong>Plasebo'nun
+sunucusu yoktur ve ritüel verilerin cihazından hiçbir yere gönderilmez.</strong></p>
+
+<h2>1. Veri sorumlusu</h2>
+<p>Plasebo bağımsız bir geliştirici tarafından yayımlanmaktadır. İletişim:
+<a href="mailto:niinova22@gmail.com">niinova22@gmail.com</a></p>
+
+<h2>2. İşlenen veriler</h2>
+<table>
+  <tr><th>Veri</th><th>Nereden</th><th>Nerede tutulur</th><th>Neden</th></tr>
+  <tr>
+    <td>Ad, e-posta adresi, profil fotoğrafı bağlantısı</td>
+    <td>Google hesabınla oturum açtığında Google'dan</td>
+    <td>Yalnızca cihazının yerel deposunda</td>
+    <td>Uygulamada hesabını tanımak ve seni adınla selamlamak</td>
+  </tr>
+  <tr>
+    <td>Adın, seçtiğin hedefler, ritüel kayıtların, puanların, notların, serin, ayarların</td>
+    <td>Uygulama içinde senin girdiğin bilgiler</td>
+    <td>Yalnızca cihazının yerel deposunda</td>
+    <td>Uygulamanın çalışması (geçmiş, istatistik, hatırlatıcı)</td>
+  </tr>
+</table>
+
+<div class="box">
+  <strong>Sunucuya gönderilen hiçbir veri yoktur.</strong> Plasebo'nun arka uç
+  sunucusu, veritabanı veya hesap altyapısı bulunmaz. Ritüel kayıtların,
+  puanların ve notların cihazından çıkmaz. Uygulama silindiğinde bu verilerin
+  tamamı cihazdan silinir.
+</div>
+
+<h2>3. Ağ bağlantıları</h2>
+<p>Plasebo yalnızca iki durumda internete bağlanır:</p>
+<ul>
+  <li><strong>Google ile oturum açma.</strong> Tarayıcı üzerinden Google'ın kendi
+  oturum açma sayfasına yönlendirilirsin. Bu, Google'ın gizlilik politikasına
+  tabidir. Uygulama Google'dan yalnızca <code>profile</code> ve <code>email</code>
+  kapsamlarını ister.</li>
+  <li><strong>Profil bilgisinin okunması.</strong> Oturum açtıktan hemen sonra
+  <code>googleapis.com</code> adresinden adın, e-postan ve profil fotoğrafı
+  bağlantın bir kez okunur ve cihazına yazılır. Erişim anahtarı saklanmaz.</li>
+</ul>
+<p>Bunun dışında uygulama hiçbir sunucuya istek göndermez.</p>
+
+<h2>4. Analitik, reklam ve izleme yoktur</h2>
+<p>Plasebo'da analiz aracı (analytics), reklam ağı, çökme raporlama servisi veya
+üçüncü taraf izleme kiti (SDK) bulunmaz. Reklam kimliği okunmaz. Verilerin
+kimseye satılmaz veya paylaşılmaz.</p>
+
+<h2>5. İzinler</h2>
+<ul>
+  <li><strong>Bildirimler (<code>POST_NOTIFICATIONS</code>)</strong> — yalnızca sen
+  Ayarlar'dan günlük hatırlatıcıyı açarsan istenir. Bildirimler cihazda
+  zamanlanır; push sunucusu kullanılmaz.</li>
+  <li><strong>İnternet (<code>INTERNET</code>)</strong> — yalnızca Google ile oturum
+  açma için.</li>
+  <li><strong>Titreşim (<code>VIBRATE</code>)</strong> — dokunsal geri bildirim için,
+  Ayarlar'dan kapatılabilir.</li>
+</ul>
+<p>Uygulama mikrofona, kameraya, konuma, kişilere veya dosyalarına erişmez.</p>
+
+<h2>6. Verilerini silmek</h2>
+<p>Uygulama içinde <em>Ayarlar → Veri → Tüm verileri sil</em> adımı; adını,
+hedeflerini, tüm ritüel kayıtlarını, ayarlarını ve kayıtlı Google hesap
+bilgilerini cihazından kalıcı olarak siler. Oturumunu kapatmak için
+<em>Ayarlar → Hesap → Oturumu kapat</em> yeterlidir.</p>
+<p>Ayrıntılı yönergeler ve talep formu:
+<a href="./data-deletion.html">Hesap ve veri silme</a>.</p>
+<p>Google hesabının Plasebo'ya verdiği erişimi dilediğin zaman
+<a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>
+adresinden kaldırabilirsin.</p>
+
+<h2>7. Çocuklar</h2>
+<p>Plasebo çocuklara yönelik değildir ve 13 yaşın altındaki kullanıcılardan
+bilerek veri toplamaz.</p>
+
+<h2>8. Sağlıkla ilgili uyarı</h2>
+<p>Plasebo bir tıbbi cihaz değildir, tanı koymaz, tedavi etmez ve hiçbir tıbbi
+desteğin yerine geçmez. Uygulamanın sunduğu "formüller" bilinçli olarak
+plasebodur ve uygulamanın kendisi bunu her ekranda açıkça belirtir. Sağlığınla
+ilgili bir endişen varsa bir sağlık profesyoneline başvur.</p>
+
+<h2>9. Değişiklikler</h2>
+<p>Bu politika değişirse bu sayfadaki tarih güncellenir. Toplanan veri
+türlerini genişleten bir değişiklik olursa uygulama içinde bildirilir.</p>
+
+<footer>
+  Plasebo — bilerek inan. Sorular için:
+  <a href="mailto:niinova22@gmail.com">niinova22@gmail.com</a>
+</footer>
+
+</body>
+</html>
