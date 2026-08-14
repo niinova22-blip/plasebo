@@ -93,6 +93,21 @@ Dil, Ayarlar → Görünüm → Dil altından seçilir (`Sistem` / `Türkçe` /
 
 Değişkenler `{ad}` biçiminde taşınır: `t('Merhaba {ad}', { ad: user.name })`.
 
+## Sesler
+
+Ritüel sesleri `scripts/generate-tones.js` ile üretiliyor (`npm run tones`):
+44.1 kHz, 16 bit, dikişsiz döngü. Hepsi **stereo**:
+
+- Gürültüler (beyaz, pembe, kahverengi, yağmur) iki kanalda **bağımsız**
+  üretiliyor. Tam genişlik verir ve mono'ya indiğinde tarak filtresi
+  oluşturmaz — Haas gecikmesi gibi yöntemlerin aksine.
+- Tonlar ve dron, iki kanalda **karşıt fazlı çok yavaş bir kıpırtı** alıyor;
+  frekanslar aynı kaldığı için mono toplamda hiçbir şey kaybolmuyor.
+- Çan ve kâse, iki kanalda **ayrı reverb kuyruğu** ile yazılıyor.
+
+Oynatma tarafında (`src/utils/audio.ts`) açılış ve kapanışta ses rampası
+var; ton bıçak gibi kesilirse hoparlörde tık duyuluyor.
+
 ## Ana ekran widget'ı
 
 Android ana ekranına eklenebilen küçük bir widget var: günün formülünün

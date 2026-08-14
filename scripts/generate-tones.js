@@ -283,6 +283,62 @@ function struck(seconds, partials) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Stereo                                                              */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Neden stereo?
+ *
+ * İlk sürümde binaural dışındaki her şey tek kanaldı. Tek kanallı bir
+ * ped ya da gürültü kulaklıkta "kafanın ortasında" duruyor: kaynak
+ * noktasal, alan yok. Bu, sesin kalitesizliğinden değil genişliğinin
+ * olmamasından gelen bir his — ve kapatması en kolay fark bu.
+ *
+ * İki yöntem kullanılıyor:
+ *
+ *   • Gürültüler için **bağımsız iki kanal**: sol ve sağ ayrı üretiliyor.
+ *     Tam genişlik verir ve mono'ya indiğinde (telefon hoparlörü) yine
+ *     gürültü olarak toplanır — Haas gecikmesi ya da faz kaydırma gibi
+ *     yöntemlerin aksine tarak (comb) filtresi oluşturmaz.
+ *   • Tonlar için **karşıt fazlı yavaş kıpırtı**: iki kanalın parlaklığı
+ *     ters yönlerde çok yavaş salınır. Frekanslar aynı kaldığı için mono
+ *     toplamda hiçbir şey kaybolmaz, kulaklıkta ise ses "nefes alır".
+ */
+
+/** Aynı üreticiyi iki kez çalıştırıp bağımsız iki kanal üretir. */
+function stereoIndependent(make) {
+  return [make(), make()];
+}
+
+/**
+ * Tek kanaldan, karşıt fazlı yavaş kıpırtıyla stereo.
+ *
+ * `rateHz` döngü uzunluğunda tam tur kapatmalı (8 sn için 0.125'in
+ * katları), yoksa döngü başı ile sonu arasında seviye sıçraması olur.
+ */
+function stereoShimmer(buf, { rateHz = 0.125, depth = 0.16 } = {}) {
+  const left = new Float32Array(buf.length);
+  const right = new Float32Array(buf.length);
+  for (let i = 0; i < buf.length; i++) {
+    const lfo = Math.sin(TAU * rateHz * (i / SAMPLE_RATE));
+    left[i] = buf[i] * (1 + depth * lfo);
+    right[i] = buf[i] * (1 - depth * lfo);
+  }
+  return [normalize(left, 0.72), normalize(right, 0.72)];
+}
+
+/**
+ * Vurmalı seslerde stereo: kuru sinyal ortada, reverb kuyruğu iki kanalda
+ * ayrı hesaplanır. Kuyruklar birbirinden bağımsız olduğu için çan,
+ * noktasal bir kaynak yerine küçük bir odada duruyormuş gibi çınlar.
+ */
+function stereoReverb(raw, opts) {
+  const left = reverb(raw, opts);
+  const right = reverb(raw, { ...opts, decay: (opts.decay ?? 0.8) * 0.94 });
+  return [normalize(left, 0.78), normalize(right, 0.78)];
+}
+
+/* ------------------------------------------------------------------ */
 /* Sesler                                                              */
 /* ------------------------------------------------------------------ */
 
@@ -328,7 +384,8 @@ function gamma40() {
 
 /** Kahverengi gürültü: sızıntılı integral + DC'yi alan yüksek geçiren. */
 function brownNoise() {
-  const buf = seamless(NOISE_SECONDS, (n) => {
+  const make = () => {
+    const buf = seamless(NOISE_SECONDS, (n) => {
     const w = white(n);
     const out = new Float32Array(n);
     let last = 0;
@@ -338,20 +395,27 @@ function brownNoise() {
     }
     // 55Hz altı telefon hoparlöründe patlama/çıtırtıya dönüşüyor (bkz.
     // deepDrone'daki not), o bandı tamamen kesiyoruz.
-    return filter(out, biquad('highpass', 55, 0.7));
-  });
-  return normalize(buf, 0.62);
+      return filter(out, biquad('highpass', 55, 0.7));
+    });
+    return normalize(buf, 0.62);
+  };
+  return stereoIndependent(make);
 }
 
 /** Beyaz gürültü: 14 kHz üstü hafifçe yumuşatılmış — tiz ama kulak yakmıyor. */
 function whiteNoise() {
-  const buf = seamless(NOISE_SECONDS, (n) => filter(white(n), biquad('lowpass', 14000, 0.6)));
-  return normalize(buf, 0.62);
+  const make = () =>
+    normalize(
+      seamless(NOISE_SECONDS, (n) => filter(white(n), biquad('lowpass', 14000, 0.6))),
+      0.62
+    );
+  return stereoIndependent(make);
 }
 
 /** Pembe gürültü: Paul Kellett filtresi (3 kutuplu yaklaşım). */
 function pinkNoise() {
-  const buf = seamless(NOISE_SECONDS, (n) => {
+  const make = () => {
+    const buf = seamless(NOISE_SECONDS, (n) => {
     const w = white(n);
     const out = new Float32Array(n);
     let b0 = 0, b1 = 0, b2 = 0;
@@ -361,9 +425,11 @@ function pinkNoise() {
       b2 = 0.57000 * b2 + w[i] * 1.0526913;
       out[i] = b0 + b1 + b2 + w[i] * 0.1848;
     }
-    return filter(out, biquad('highpass', 50, 0.7));
-  });
-  return normalize(buf, 0.66);
+      return filter(out, biquad('highpass', 50, 0.7));
+    });
+    return normalize(buf, 0.66);
+  };
+  return stereoIndependent(make);
 }
 
 /**
@@ -372,7 +438,8 @@ function pinkNoise() {
  * döngü sırasında yarım kesilmesinler.
  */
 function rainLayer() {
-  const buf = seamless(
+  const make = () => {
+    const buf = seamless(
     NOISE_SECONDS,
     (n) => {
       const w = white(n);
@@ -401,9 +468,13 @@ function rainLayer() {
       }
       return out;
     },
-    2.5
-  );
-  return normalize(buf, 0.72);
+      2.5
+    );
+    return normalize(buf, 0.72);
+  };
+  // Yağmurun iki kanalı bağımsız: damlalar solda ve sağda ayrı yerlere
+  // düşüyor, bu da tek katmanlı hışırtıyı gerçek bir yağmura yaklaştırıyor.
+  return stereoIndependent(make);
 }
 
 /**
@@ -467,7 +538,7 @@ function tibetanBowl() {
     { freq: 985.6, gain: 0.16, decay: 1.5, phase: 1.4 },
     { freq: 1523.4, gain: 0.07, decay: 2.2, phase: 2.1 },
   ]);
-  return normalize(reverb(raw, { mix: 0.34, decay: 0.8 }), 0.78);
+  return stereoReverb(raw, { mix: 0.34, decay: 0.8 });
 }
 
 /** Kristal çan: daha parlak, daha seyrek kısmi frekanslar, hızlı sönüm. */
@@ -479,7 +550,7 @@ function crystalChime() {
     { freq: 2637.0, gain: 0.06, decay: 3.4, phase: 1.8 },
     { freq: 3956.0, gain: 0.02, decay: 4.6, phase: 2.6 },
   ]);
-  return normalize(reverb(raw, { mix: 0.4, decay: 0.82 }), 0.74);
+  return stereoReverb(raw, { mix: 0.4, decay: 0.82 });
 }
 
 /**
@@ -514,14 +585,16 @@ function uiTap() {
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
-writeWav('40hz_gamma.wav', gamma40());
-writeWav('528hz_solfeggio.wav', pureTone(528));
-writeWav('432hz_verdi.wav', pureTone(432));
+// Tonlar karşıt fazlı kıpırtıyla, gürültüler bağımsız iki kanalla,
+// çanlar ayrı reverb kuyruklarıyla stereo yazılıyor.
+writeWav('40hz_gamma.wav', stereoShimmer(gamma40(), { rateHz: 0.125, depth: 0.1 }));
+writeWav('528hz_solfeggio.wav', stereoShimmer(pureTone(528)));
+writeWav('432hz_verdi.wav', stereoShimmer(pureTone(432)));
 writeWav('brown_noise.wav', brownNoise());
 writeWav('white_noise.wav', whiteNoise());
 writeWav('pink_noise.wav', pinkNoise());
 writeWav('rain_layer.wav', rainLayer());
-writeWav('deep_drone.wav', deepDrone());
+writeWav('deep_drone.wav', stereoShimmer(deepDrone(), { rateHz: 0.125, depth: 0.2 }));
 writeWav('tibetan_bowl.wav', tibetanBowl());
 writeWav('crystal_chime.wav', crystalChime());
 writeWav('binaural_alpha.wav', binaural(200, 210));

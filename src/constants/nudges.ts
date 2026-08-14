@@ -18,7 +18,7 @@ export interface Nudge {
 export const NUDGES: Nudge[] = [
   /* --- Davet ------------------------------------------------------ */
   { title: 'İki dakikan var mı?', body: 'Bugünün formülü hâlâ seni bekliyor. Hâlâ plasebo.' },
-  { title: 'Hadi odağını toparlayalım', body: 'Renk, ses, nefes. Ölçülmüş bir etkisi yok — yine de dene.' },
+  { title: 'Hadi odağını toparlayalım', body: 'Renk, ses, nefes. Beklenti gerçek bir mekanizma — dene.' },
   { title: 'Bir ara ver', body: 'Ne yaptığın önemli değil; durduğun iki dakika önemli.' },
   { title: 'Formülün hazır', body: 'Bugünün rengi seçildi bile. Sadece bakman gerekiyor.' },
   { title: 'Nefesini uzat', body: 'Verişi alıştan uzun tut. Buradaki tek gerçek etken bu.' },
@@ -32,7 +32,7 @@ export const NUDGES: Nudge[] = [
 
   /* --- Şeffaf / esprili ------------------------------------------- */
   { title: 'Hiçbir şey yapmıyoruz', body: 'Ama beraber yapıyoruz. İki dakika.' },
-  { title: 'Bu bildirim de plasebo', body: 'İçinde etkin madde yok. Yine de açtın.' },
+  { title: 'Bu bildirim de plasebo', body: 'İçinde etkin madde yok. Yine de açtın — mekanizma tam olarak bu.' },
   { title: 'Bugünün uydurma bulgusu', body: 'Ritüele başlayınca hangisi çıkacak, orası sürpriz.' },
   { title: 'Ölçtüğümüz tek şey', body: 'Devam ettiğin. Puanın değil, geldiğin sayılıyor.' },
   { title: 'Etkin madde: yok', body: 'Dozaj: iki dakika. Yan etki: bir ara vermiş olmak.' },

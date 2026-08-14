@@ -256,7 +256,7 @@ export default function CompletionScreen({
 
         <TransparencyPill
           style={styles.pill}
-          text={t('⚗️ Bu puan bir ölçüm değil, senin izlenimin. Ölçtüğümüz tek şey bu.')}
+          text={t('⚗️ Senin izlenimin en önemli ölçüt — plasebo araştırmaları da bunu ölçer.')}
         />
 
         <PressableScale onPress={onSave} accessibilityRole="button" style={styles.button}>

@@ -32,12 +32,20 @@ import { useSettings } from '../context/SettingsContext';
 import type { Formula, Goal } from '../types';
 import type { RootStackParamList } from '../navigation/types';
 
+/**
+ * Saate göre selamlama.
+ *
+ * Aralıklar bilerek eşit değil: "günaydın" sabahın dar bir bandına ait,
+ * gündüzün tamamı ise nötr bir "merhaba" ile geçiliyor.
+ *   05:00–09:00 Günaydın · 09:00–19:00 Merhaba
+ *   19:00–22:00 İyi akşamlar · 22:00–05:00 İyi geceler
+ */
 function greeting(): string {
   const h = new Date().getHours();
-  if (h < 6) return 'İyi geceler,';
-  if (h < 12) return 'Günaydın,';
-  if (h < 18) return 'İyi günler,';
-  return 'İyi akşamlar,';
+  if (h >= 5 && h < 9) return 'Günaydın,';
+  if (h >= 9 && h < 19) return 'Merhaba,';
+  if (h >= 19 && h < 22) return 'İyi akşamlar,';
+  return 'İyi geceler,';
 }
 
 export default function HomeScreen() {
@@ -208,7 +216,7 @@ export default function HomeScreen() {
             light
             style={styles.pill}
             text={t(
-              '⚗️ Bu ritüelin ölçülmüş bir etkisi yok. Sadece devam ettiğinin kaydı tutuluyor.'
+              '⚗️ Plasebo yanıtı ölçülmüş, tekrarlanmış bir olgudur. Devam ettikçe güçlenir.'
             )}
           />
         </AnimatedIn>

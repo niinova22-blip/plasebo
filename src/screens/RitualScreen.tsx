@@ -1,8 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, {
+  Easing,
   useAnimatedStyle,
   useDerivedValue,
+  useSharedValue,
   withTiming,
 } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -209,6 +211,32 @@ export default function RitualScreen({ navigation, route }: Props) {
     navigation.goBack();
   };
 
+  /**
+   * Adım değişimi yumuşak geçsin.
+   *
+   * Renk → ses → nefes geçişinde başlık, alt not ve bulgu aynı anda
+   * yerinde değişiyordu; üç metnin birden takla atması, ritüelin
+   * ortasında sert bir kesme gibi duruyordu. Şimdi hepsi birlikte kısa
+   * bir süre sönüp aşağıdan yerine yerleşiyor.
+   */
+  const stepFade = useSharedValue(1);
+  useEffect(() => {
+    if (motion.reduced) {
+      stepFade.value = 1;
+      return;
+    }
+    stepFade.value = 0;
+    stepFade.value = withTiming(1, {
+      duration: 420,
+      easing: Easing.out(Easing.cubic),
+    });
+  }, [index, motion.reduced, stepFade]);
+
+  const stepTextStyle = useAnimatedStyle(() => ({
+    opacity: stepFade.value,
+    transform: [{ translateY: (1 - stepFade.value) * 12 }],
+  }));
+
   // İlerleme çubuğu
   const target = finished
     ? 1
@@ -273,14 +301,16 @@ export default function RitualScreen({ navigation, route }: Props) {
         />
       </View>
 
-      <PhaseLabel
-        text={
-          breath
-            ? t('{faz} · {tur}. tur', { faz: t(breath.label), tur: breath.round })
-            : copy[step].title
-        }
-      />
-      <Text style={styles.subText}>{breath ? copy.breath.sub : copy[step].sub}</Text>
+      <Animated.View style={stepTextStyle}>
+        <PhaseLabel
+          text={
+            breath
+              ? t('{faz} · {tur}. tur', { faz: t(breath.label), tur: breath.round })
+              : copy[step].title
+          }
+        />
+        <Text style={styles.subText}>{breath ? copy.breath.sub : copy[step].sub}</Text>
+      </Animated.View>
 
       <CountdownNumber
         value={breath ? `${breath.left}` : formatTime(remaining)}
@@ -288,7 +318,9 @@ export default function RitualScreen({ navigation, route }: Props) {
       />
 
       <View style={styles.bottom}>
-        <TransparencyPill text={fact} />
+        <Animated.View style={stepTextStyle}>
+          <TransparencyPill text={fact} />
+        </Animated.View>
 
         <PressableScale
           onPress={goNext}

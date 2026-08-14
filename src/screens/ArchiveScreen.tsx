@@ -144,7 +144,7 @@ export default function ArchiveScreen() {
           <TransparencyPill
             light
             style={styles.pill}
-            text={t('⚗️ Arşiv, plasebonun kendisini değil senin devamlılığını gösterir.')}
+            text={t('⚗️ Devamlılık, plasebo yanıtını besleyen en güçlü şey.')}
           />
         }
       />

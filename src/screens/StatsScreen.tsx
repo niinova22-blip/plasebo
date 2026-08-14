@@ -162,7 +162,7 @@ export default function StatsScreen() {
         <TransparencyPill
           light
           style={styles.pill}
-          text={t('⚗️ Bu grafikler bir sağlık verisi değil. Plasebonun günlüğü.')}
+          text={t('⚗️ Burada gördüğün senin plasebo yanıtın — araştırmaların ölçtüğü de tam olarak bu.')}
         />
       </ScrollView>
     </Screen>

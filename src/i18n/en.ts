@@ -111,6 +111,7 @@ export const EN: Record<string, string> = {
   /* Ana ekran                                                         */
   /* ---------------------------------------------------------------- */
   'Günaydın,': 'Good morning,',
+  'Merhaba,': 'Hello,',
   'İyi günler,': 'Good afternoon,',
   'İyi akşamlar,': 'Good evening,',
   'İyi geceler,': 'Good night,',
@@ -140,8 +141,6 @@ export const EN: Record<string, string> = {
   'Bu bugünkü formülün değil. Yarın normal formülüne döneceksin.':
     'This is not today’s formula. Tomorrow you go back to your usual one.',
   'Günün formülüne dön': 'Back to today’s formula',
-  '⚗️ Bu ritüelin ölçülmüş bir etkisi yok. Sadece devam ettiğinin kaydı tutuluyor.':
-    '⚗️ This ritual has no measured effect. All that is recorded is that you kept going.',
 
   /* ---------------------------------------------------------------- */
   /* Ritüel                                                            */
@@ -163,38 +162,14 @@ export const EN: Record<string, string> = {
   'Bekle': 'Pause',
 
   /* Adım altı notları */
-  'Rengin hiçbir etkisi yok — ama beynin şu an inanıyor':
-    'The colour has no effect — but your brain believes right now',
   'Bakışını tek bir yerde tutmak, zihni de orada tutuyor':
     'Holding your gaze in one place holds the mind there too',
-  'Renk bir şey yapmıyor; sen bir şey yapmayı bıraktın':
-    'The colour is doing nothing; you stopped doing things',
   'Göz sabitlendiğinde düşünce de yavaşlar — mekanizma bu kadar':
     'When the eye settles, thought slows down — that is the whole mechanism',
-  'Bu ekranda ölçülen tek şey: kaç saniye kaldığın':
-    'The only thing measured on this screen: how many seconds you stayed',
-  'Frekansın bilinen bir etkisi yok — sadece dikkatini tutuyor':
-    'The frequency has no known effect — it just holds your attention',
   'Ses bir örtü; altındaki sessizliği duyman için var':
     'The sound is a cover; it exists so you can hear the silence beneath it',
-  'Kulaklıkla dinlemek etkiyi değiştirmez, deneyimi değiştirir':
-    'Headphones do not change the effect, they change the experience',
-  'Bu ton bir laboratuvarda değil, bu telefonda üretildi':
-    'This tone was generated on this phone, not in a laboratory',
-  'Duyduğun şey tedavi değil; sadece bir zemin':
-    'What you hear is not treatment; it is just a floor to stand on',
-  'Yavaş nefes gerçekten sakinleştirir — gerisi plasebo':
-    'Slow breathing genuinely calms you — the rest is placebo',
-  'Buradaki tek gerçek etken bu: verişi alıştan uzun tutmak':
-    'This is the only real factor here: keep the exhale longer than the inhale',
-  'Sayılar keyfi, ritim değil. Ritme uy, sayıyı dert etme':
-    'The numbers are arbitrary, the rhythm is not. Follow the rhythm, ignore the count',
-  'Nefes kontrolü ölçülebilir tek adım — o yüzden merkezde':
-    'Breath control is the one measurable step — that is why it sits at the centre',
   'Zorlama yok; kaçırdığın turu bir sonraki kapatır':
     'No forcing; the next round covers the one you missed',
-  'Kelimenin bir gücü yok — ona verdiğin anlam senin':
-    'The word has no power — the meaning you give it is yours',
   'Bugün bu kelime, yarın başkası. Değişen tek şey sen değilsin':
     'This word today, another tomorrow. You are not the only thing that changes',
   'Tekrarlamak zorunda değilsin; bakman yeterli':
@@ -213,8 +188,6 @@ export const EN: Record<string, string> = {
     'Today you were given no colour, sound or breathing — you simply waited. Blind test is on, so we did not tell you in advance. Your score will be compared with the average of real ritual days on the Stats screen.',
   'Nasıl hissediyorsun?': 'How do you feel?',
   'Kısa bir not bırak (isteğe bağlı)': 'Leave a short note (optional)',
-  '⚗️ Bu puan bir ölçüm değil, senin izlenimin. Ölçtüğümüz tek şey bu.':
-    '⚗️ This score is not a measurement, it is your impression. It is the only thing we measure.',
   '🧾 Makbuzu paylaş': '🧾 Share the receipt',
   'hiç': 'none',
   'çok': 'a lot',
@@ -273,8 +246,6 @@ export const EN: Record<string, string> = {
   'Şimdilik hiçbir gün diğerlerinden ayrışmıyor — puanların günlere neredeyse eşit dağılmış. Bir gün öne çıkarsa burada yazacak.':
     'No day stands out yet — your scores are spread almost evenly. If one pulls ahead it will show up here.',
   'KİLOMETRE TAŞLARI': 'MILESTONES',
-  '⚗️ Bu grafikler bir sağlık verisi değil. Plasebonun günlüğü.':
-    '⚗️ These charts are not health data. They are the placebo’s diary.',
 
   /* Rozetler */
   'İlk doz': 'First dose',
@@ -327,8 +298,6 @@ export const EN: Record<string, string> = {
     '🔒 {gizli} older records are hidden. The free tier shows the last {gun} days — nothing was deleted, they will all come back later.',
   'Henüz kayıt yok. İlk ritüelini tamamladığında burada birikmeye başlayacak.':
     'No records yet. They start piling up here once you finish your first ritual.',
-  '⚗️ Arşiv, plasebonun kendisini değil senin devamlılığını gösterir.':
-    '⚗️ The archive shows your consistency, not the placebo itself.',
 
   /* ---------------------------------------------------------------- */
   /* Ayarlar                                                           */
@@ -917,8 +886,6 @@ export const EN: Record<string, string> = {
     'IN PRACTICE',
   'SÜREKLİLİK':
     'KEEPING IT UP',
-  'ŞEFFAFLIK':
-    'TRANSPARENCY',
   'FORMÜL':
     'THE FORMULA',
   'Plasebo nedir?':
@@ -985,26 +952,6 @@ export const EN: Record<string, string> = {
     'Switching goals is free',
   'Dört hedefin de her gün ayrı bir formülü var ve hepsi açık. Sabah odak, gece uyku seçebilirsin; formül anında değişir, seri bozulmaz.':
     'All four goals get their own formula each day and all of them are open. Focus in the morning, sleep at night; the formula changes instantly and your streak is untouched.',
-  'Ekrandaki "bulgular" uydurma':
-    'The “findings” on screen are invented',
-  'Ritüel sırasında gördüğün yüzdeler ve oranlar tamamen uydurma; hiçbir ölçüme dayanmıyor. Gerçek çalışmalar kaynaklarıyla birlikte "Nasıl çalışır" ekranında ayrı duruyor.':
-    'The percentages and ratios you see during the ritual are entirely made up; none rest on a measurement. The real studies sit separately, with sources, on the “How does it work?” screen.',
-  'Kendi üstünde dene: kör test':
-    'Test it on yourself: the blind test',
-  'Ayarlardan kör testi açarsan bazı günler ritüel yerine eşit süreli bir bekleme gelir ve bunu ancak sonunda öğrenirsin. İstatistik ekranı iki grubun ortalamasını karşılaştırır.':
-    'Turn the blind test on in settings and some days you get an equally long wait instead of the ritual — and you only find out at the end. The Stats screen compares the averages of the two groups.',
-  'Fark çıkmazsa da bir sonuç':
-    'No difference is also a result',
-  'Gerçek ve sahte günlerin puanları birbirine yakın çıkabilir. Bu bir hata değil, bulgunun kendisi — uygulamanın söylediği zaten buydu.':
-    'The scores of real and sham days may come out close. That is not a fault, it is the finding — it is what the app has been saying all along.',
-  'Nocebo: ters yön':
-    'Nocebo: the other direction',
-  'Beklenti iki yönlü çalışır; kötü bir şey olacağını düşünmek de gerçek şikâyet üretebilir. Bu yüzden burada hiçbir gün "kötü gün" diye etiketlenmiyor.':
-    'Expectation runs both ways; believing something bad will happen can produce real complaints. That is why no day here is labelled a “bad day”.',
-  'Bu bir tedavi değil':
-    'This is not a treatment',
-  'Plasebo hiçbir şeyi iyileştirmez ve hiçbir tıbbi desteğin yerine geçmez. Süregelen bir şikâyetin varsa hekimine danış; uygulama onun yerini almak için değil, yanında durmak için var.':
-    'Placebo cures nothing and replaces no medical support. If you have a lasting complaint, talk to your doctor; this app is not here to take that place, only to sit beside it.',
   'Veriler telefonda kalıyor':
     'Your data stays on the phone',
   'Ritüel kayıtların, puanların ve notların cihazından çıkmıyor; sunucu yok. Ayarlardan tek dokunuşla hepsini kalıcı olarak silebilirsin.':
@@ -1037,8 +984,6 @@ export const EN: Record<string, string> = {
     'Today’s formula is still waiting. Still a placebo.',
   'Hadi odağını toparlayalım':
     'Let’s gather your focus',
-  'Renk, ses, nefes. Ölçülmüş bir etkisi yok — yine de dene.':
-    'Colour, sound, breath. No measured effect — try it anyway.',
   'Bir ara ver':
     'Take a break',
   'Ne yaptığın önemli değil; durduğun iki dakika önemli.':
@@ -1077,8 +1022,6 @@ export const EN: Record<string, string> = {
     'But we are doing it together. Two minutes.',
   'Bu bildirim de plasebo':
     'This notification is a placebo too',
-  'İçinde etkin madde yok. Yine de açtın.':
-    'No active ingredient in it. You opened it anyway.',
   'Bugünün uydurma bulgusu':
     'Today’s made-up finding',
   'Ritüele başlayınca hangisi çıkacak, orası sürpriz.':
@@ -1109,4 +1052,74 @@ export const EN: Record<string, string> = {
     'Today’s colour is waiting',
   'Bir yıl boyunca aynı formül iki kez gelmiyor. Bunu kaçırma.':
     'The same formula never comes twice in a year. Do not miss this one.',
+  '⚗️ Plasebo yanıtı ölçülmüş, tekrarlanmış bir olgudur. Devam ettikçe güçlenir.':
+    '⚗️ The placebo response is a measured, replicated phenomenon. It grows as you keep going.',
+  '⚗️ Burada gördüğün senin plasebo yanıtın — araştırmaların ölçtüğü de tam olarak bu.':
+    '⚗️ What you see here is your own placebo response — exactly what the research measures.',
+  '⚗️ Devamlılık, plasebo yanıtını besleyen en güçlü şey.':
+    '⚗️ Consistency is the strongest thing feeding a placebo response.',
+  '⚗️ Senin izlenimin en önemli ölçüt — plasebo araştırmaları da bunu ölçer.':
+    '⚗️ Your impression is the measure that matters — placebo research measures it too.',
+  'Bakmak beklentiyi kuruyor; beklenti bedende karşılık buluyor':
+    'Looking builds expectation; expectation finds an answer in the body',
+  'Bir şey yapmayı bırakmak da bir eylem — beden bunu fark ediyor':
+    'Stopping is an action too — the body notices it',
+  'Burada kaldığın her saniye, ritüeli biraz daha senin yapıyor':
+    'Every second you stay makes the ritual a little more yours',
+  'Ses dikkati tutuyor; tutulan dikkat beklentiyi güçlendiriyor':
+    'Sound holds attention; held attention strengthens expectation',
+  'Kulaklıkla dinlemek etkiyi değil deneyimi değiştirir':
+    'Headphones change the experience, not the effect',
+  'Bu ton senin bu iki dakikan için üretildi':
+    'This tone was generated for these two minutes of yours',
+  'Duyduğun şey bir zemin — üstünde durabileceğin bir yer':
+    'What you hear is a floor — somewhere to stand',
+  'Yavaş nefes gerçekten sakinleştirir; beklenti bunu büyütüyor':
+    'Slow breathing genuinely calms you; expectation amplifies it',
+  'Verişi alıştan uzun tutmak, bedenin kendi frenine dokunuyor':
+    'Keeping the exhale longer than the inhale touches the body’s own brake',
+  'Sayılar bir öneri, ritim ise gerçek. Ritme uy, sayıyı dert etme':
+    'The numbers are a suggestion, the rhythm is real. Follow the rhythm, ignore the count',
+  'Nefes, ölçülebilir olanla inanılan şeyin buluştuğu yer':
+    'Breath is where the measurable meets the believed',
+  'Kelimenin gücü ona verdiğin anlamdan gelir — o anlam gerçek':
+    'The word’s power comes from the meaning you give it — and that meaning is real',
+  'PLASEBONUN GÜCÜ':
+    'THE POWER OF PLACEBO',
+  'Plasebo etkisi gerçektir':
+    'The placebo effect is real',
+  'Klinik çalışmalarda plasebo alan grup düzenli olarak iyileşme bildirir; bu, tekrar tekrar ölçülmüş bir olgu. "Hayal görmek" değil — beklentinin, bedenin sinyalleri nasıl işlediğini değiştirmesi.':
+    'In clinical trials the placebo group regularly reports improvement; this has been measured again and again. It is not “imagining things” — it is expectation changing how the body processes its own signals.',
+  'Beklenti bedende karşılık buluyor':
+    'Expectation finds an answer in the body',
+  'Plasebo ile ağrının azaldığı çalışmalarda, bedenin kendi ağrı kesici sistemlerinin devreye girdiği görüldü; etkiyi bu sistemleri bloke eden bir madde zayıflatabiliyor. Yani beklenti, fizyolojiye dokunan bir yol izliyor.':
+    'In studies where placebo reduced pain, the body’s own painkilling systems were seen to engage — and a drug that blocks those systems can weaken the effect. Expectation travels a route that touches physiology.',
+  'Ritüel etkiyi büyütüyor':
+    'The ritual amplifies the effect',
+  'Araştırmalarda plasebo yanıtı, işlem ne kadar özenli ve düzenliyse o kadar güçlü çıkıyor: ayrılan zaman, tekrar ve ilgi tek başına fark yaratıyor. Bu uygulamanın yaptığı da tam olarak bu — sana her gün özenli bir iki dakika kurmak.':
+    'Research finds the placebo response is stronger the more careful and regular the procedure is: time given, repetition and attention make a difference on their own. That is exactly what this app does — it builds you a careful two minutes every day.',
+  'Bildiğin hâlde çalışıyor':
+    'It works even when you know',
+  'Açık etiketli plasebo çalışmaları, insanlara "bu bir plasebo" denildiği hâlde belirtilerde iyileşme bildirildiğini gösteriyor. Bu yüzden burada hiçbir şeyi saklamamıza gerek yok: bilmek etkiyi bozmuyor.':
+    'Open-label placebo studies show improvements in symptoms are reported even when people are told outright “this is a placebo”. That is why we need to hide nothing here: knowing does not spoil the effect.',
+  'Etki bırakınca da sürebiliyor':
+    'The effect can outlast the pill',
+  'Kanser sonrası yorgunlukta yapılan bir çalışmada, açık etiketli plasebo bırakıldıktan sonra da iyileşmenin bir süre korunduğu bildirildi. Kurulan beklenti, kaynağı ortadan kalksa bile bir süre ayakta kalıyor.':
+    'In a study on fatigue after cancer treatment, improvement was reported to hold for a while even after the open-label placebo was stopped. The expectation you build stays standing for a time, even once its source is gone.',
+  'Kendi üstünde ölçebilirsin':
+    'You can measure it on yourself',
+  'Ayarlardaki kör testi açarsan bazı günler ritüel yerine eşit süreli bir bekleme gelir; hangisi olduğunu ancak sonunda öğrenirsin. İstatistik ekranı iki grubun ortalamasını karşılaştırır — kendi plasebo yanıtını kendin görürsün.':
+    'Turn on the blind test in settings and some days you get an equally long wait instead of the ritual — you only learn which at the end. The Stats screen compares the two averages, so you see your own placebo response for yourself.',
+  'Beklentiyi korumak':
+    'Protecting the expectation',
+  'Kötü bir şey olacağını düşünmek de gerçek şikâyet üretebiliyor (nocebo). Bu yüzden burada hiçbir gün "kötü gün" diye etiketlenmiyor ve düşük puan bir başarısızlık olarak sunulmuyor — beklentin senin lehine kalsın diye.':
+    'Believing something bad will happen can produce real complaints too (nocebo). That is why no day here is labelled a “bad day” and a low score is never framed as failure — so the expectation stays on your side.',
+  'Yanında durur, yerine geçmez':
+    'It stands beside, never instead',
+  'Plasebo yanıtı gerçek olsa da bir tedavinin yerini almaz. Süregelen bir şikâyetin varsa hekimine danış; bu ritüel onun yanında, günlük bir alışkanlık olarak durmak için var.':
+    'Real as the placebo response is, it does not replace a treatment. If you have a lasting complaint, talk to your doctor; this ritual is here to sit beside that, as a daily habit.',
+  'Renk, ses, nefes. Beklenti gerçek bir mekanizma — dene.':
+    'Colour, sound, breath. Expectation is a real mechanism — try it.',
+  'İçinde etkin madde yok. Yine de açtın — mekanizma tam olarak bu.':
+    'No active ingredient in it. You opened it anyway — that is exactly the mechanism.',
 };

@@ -107,34 +107,49 @@ export const COACH_TIPS: CoachTip[] = [
     body: 'Dört hedefin de her gün ayrı bir formülü var ve hepsi açık. Sabah odak, gece uyku seçebilirsin; formül anında değişir, seri bozulmaz.',
   },
 
-  /* --- Şeffaflık ------------------------------------------------- */
+  /* --- Plasebonun gücü ------------------------------------------- */
   {
-    tag: 'ŞEFFAFLIK',
-    title: 'Ekrandaki "bulgular" uydurma',
-    body: 'Ritüel sırasında gördüğün yüzdeler ve oranlar tamamen uydurma; hiçbir ölçüme dayanmıyor. Gerçek çalışmalar kaynaklarıyla birlikte "Nasıl çalışır" ekranında ayrı duruyor.',
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Plasebo etkisi gerçektir',
+    body: 'Klinik çalışmalarda plasebo alan grup düzenli olarak iyileşme bildirir; bu, tekrar tekrar ölçülmüş bir olgu. "Hayal görmek" değil — beklentinin, bedenin sinyalleri nasıl işlediğini değiştirmesi.',
   },
   {
-    tag: 'ŞEFFAFLIK',
-    title: 'Kendi üstünde dene: kör test',
-    body: 'Ayarlardan kör testi açarsan bazı günler ritüel yerine eşit süreli bir bekleme gelir ve bunu ancak sonunda öğrenirsin. İstatistik ekranı iki grubun ortalamasını karşılaştırır.',
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Beklenti bedende karşılık buluyor',
+    body: 'Plasebo ile ağrının azaldığı çalışmalarda, bedenin kendi ağrı kesici sistemlerinin devreye girdiği görüldü; etkiyi bu sistemleri bloke eden bir madde zayıflatabiliyor. Yani beklenti, fizyolojiye dokunan bir yol izliyor.',
   },
   {
-    tag: 'ŞEFFAFLIK',
-    title: 'Fark çıkmazsa da bir sonuç',
-    body: 'Gerçek ve sahte günlerin puanları birbirine yakın çıkabilir. Bu bir hata değil, bulgunun kendisi — uygulamanın söylediği zaten buydu.',
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Ritüel etkiyi büyütüyor',
+    body: 'Araştırmalarda plasebo yanıtı, işlem ne kadar özenli ve düzenliyse o kadar güçlü çıkıyor: ayrılan zaman, tekrar ve ilgi tek başına fark yaratıyor. Bu uygulamanın yaptığı da tam olarak bu — sana her gün özenli bir iki dakika kurmak.',
   },
   {
-    tag: 'ŞEFFAFLIK',
-    title: 'Nocebo: ters yön',
-    body: 'Beklenti iki yönlü çalışır; kötü bir şey olacağını düşünmek de gerçek şikâyet üretebilir. Bu yüzden burada hiçbir gün "kötü gün" diye etiketlenmiyor.',
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Bildiğin hâlde çalışıyor',
+    body: 'Açık etiketli plasebo çalışmaları, insanlara "bu bir plasebo" denildiği hâlde belirtilerde iyileşme bildirildiğini gösteriyor. Bu yüzden burada hiçbir şeyi saklamamıza gerek yok: bilmek etkiyi bozmuyor.',
   },
   {
-    tag: 'ŞEFFAFLIK',
-    title: 'Bu bir tedavi değil',
-    body: 'Plasebo hiçbir şeyi iyileştirmez ve hiçbir tıbbi desteğin yerine geçmez. Süregelen bir şikâyetin varsa hekimine danış; uygulama onun yerini almak için değil, yanında durmak için var.',
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Etki bırakınca da sürebiliyor',
+    body: 'Kanser sonrası yorgunlukta yapılan bir çalışmada, açık etiketli plasebo bırakıldıktan sonra da iyileşmenin bir süre korunduğu bildirildi. Kurulan beklenti, kaynağı ortadan kalksa bile bir süre ayakta kalıyor.',
   },
   {
-    tag: 'ŞEFFAFLIK',
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Kendi üstünde ölçebilirsin',
+    body: 'Ayarlardaki kör testi açarsan bazı günler ritüel yerine eşit süreli bir bekleme gelir; hangisi olduğunu ancak sonunda öğrenirsin. İstatistik ekranı iki grubun ortalamasını karşılaştırır — kendi plasebo yanıtını kendin görürsün.',
+  },
+  {
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Beklentiyi korumak',
+    body: 'Kötü bir şey olacağını düşünmek de gerçek şikâyet üretebiliyor (nocebo). Bu yüzden burada hiçbir gün "kötü gün" diye etiketlenmiyor ve düşük puan bir başarısızlık olarak sunulmuyor — beklentin senin lehine kalsın diye.',
+  },
+  {
+    tag: 'PLASEBONUN GÜCÜ',
+    title: 'Yanında durur, yerine geçmez',
+    body: 'Plasebo yanıtı gerçek olsa da bir tedavinin yerini almaz. Süregelen bir şikâyetin varsa hekimine danış; bu ritüel onun yanında, günlük bir alışkanlık olarak durmak için var.',
+  },
+  {
+    tag: 'PLASEBONUN GÜCÜ',
     title: 'Veriler telefonda kalıyor',
     body: 'Ritüel kayıtların, puanların ve notların cihazından çıkmıyor; sunucu yok. Ayarlardan tek dokunuşla hepsini kalıcı olarak silebilirsin.',
   },
