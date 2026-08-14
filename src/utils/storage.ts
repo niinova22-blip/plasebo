@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Goal, Session, UserData } from '../types';
+import { complaintById } from '../constants/complaints';
 
 const USER_KEY = '@plasebo/user';
 const ONBOARDED_KEY = '@plasebo/onboarded';
@@ -279,6 +280,37 @@ export function blindTestResult(
     realCount: real.length,
     shamCount: sham.length,
   };
+}
+
+/**
+ * Şikayet kategorisine göre ortalama etki.
+ *
+ * Etki = ritüel öncesi puan − sonrası puan (yüksek puan = kötü his).
+ * Yalnızca yeni akıştan geçmiş, iki ölçümü de olan seanslar sayılır;
+ * eski kayıtlar bu alanları taşımadığı için sessizce atlanır.
+ */
+export function improvementByCategory(
+  sessions: Session[]
+): { category: string; average: number; count: number }[] {
+  const buckets = new Map<string, { total: number; count: number }>();
+
+  for (const s of sessions) {
+    if (s.scoreBefore === undefined || s.scoreAfter === undefined) continue;
+    const category = complaintById(s.complaintId)?.category;
+    if (!category) continue;
+    const bucket = buckets.get(category) ?? { total: 0, count: 0 };
+    bucket.total += s.scoreBefore - s.scoreAfter;
+    bucket.count += 1;
+    buckets.set(category, bucket);
+  }
+
+  return Array.from(buckets.entries())
+    .map(([category, b]) => ({
+      category,
+      average: Math.round((b.total / b.count) * 10) / 10,
+      count: b.count,
+    }))
+    .sort((a, b) => b.average - a.average);
 }
 
 /** En etkili günü bulur — içgörü kartı için. */

@@ -20,10 +20,12 @@ import {
   blindTestResult,
   dailyScores,
   heatmapDays,
+  improvementByCategory,
   improvementPercent,
   overallScore,
   toISODate,
 } from '../utils/storage';
+import { CATEGORY_LABELS } from '../constants/complaints';
 import type { RootStackParamList } from '../navigation/types';
 
 /** Isı haritasının premium'da kapsadığı gün sayısı. */
@@ -63,6 +65,9 @@ export default function StatsScreen() {
   const missingForPattern = Math.max(0, PATTERN_MIN_SESSIONS - user.sessions.length);
   const blind = blindTestResult(user.sessions);
   const badges = badgesFor(user);
+  const byCategory = improvementByCategory(user.sessions);
+  // Çubukların ölçeği en yüksek etkiye göre; 1 puanın altında da görünsün.
+  const maxEffect = Math.max(1, ...byCategory.map((c) => c.average));
 
   return (
     <Screen background={theme.bg}>
@@ -154,6 +159,45 @@ export default function StatsScreen() {
           />
         </View>
 
+        {byCategory.length ? (
+          <View style={styles.block}>
+            <Text style={[styles.sectionLabel, { color: theme.sub }]}>
+              {t('ŞİKAYETE GÖRE')}
+            </Text>
+            <View style={[styles.categoryCard, { backgroundColor: theme.surface }]}>
+              {byCategory.map((row) => (
+                <View key={row.category} style={styles.categoryRow}>
+                  <View style={styles.categoryHead}>
+                    <Text style={[styles.categoryName, { color: theme.text }]}>
+                      {t(CATEGORY_LABELS[row.category] ?? row.category)}
+                    </Text>
+                    <Text style={[styles.categoryValue, { color: theme.pulse }]}>
+                      {t('{deger} puan', { deger: row.average.toFixed(1) })}
+                    </Text>
+                  </View>
+                  <View style={[styles.categoryTrack, { backgroundColor: theme.border }]}>
+                    <View
+                      style={[
+                        styles.categoryFill,
+                        {
+                          backgroundColor: theme.pulse,
+                          width: `${Math.max(4, (row.average / maxEffect) * 100)}%`,
+                        },
+                      ]}
+                    />
+                  </View>
+                  <Text style={[styles.categoryCount, { color: theme.faint }]}>
+                    {t('{adet} seans', { adet: row.count })}
+                  </Text>
+                </View>
+              ))}
+              <Text style={[styles.categoryNote, { color: theme.faint }]}>
+                {t('Ortalama düşüş: ritüel öncesi puan eksi sonrası puan.')}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
         <Text style={[styles.sectionLabel, { color: theme.sub }]}>
           {t('KİLOMETRE TAŞLARI')}
         </Text>
@@ -171,6 +215,15 @@ export default function StatsScreen() {
 
 const styles = StyleSheet.create({
   content: { padding: 20, paddingBottom: 130 },
+  categoryCard: { borderRadius: 24, padding: 20 },
+  categoryRow: { marginBottom: 14 },
+  categoryHead: { flexDirection: 'row', justifyContent: 'space-between' },
+  categoryName: { fontFamily: fonts.sansMedium, fontSize: 13 },
+  categoryValue: { fontFamily: fonts.sansBold, fontSize: 13 },
+  categoryTrack: { height: 8, borderRadius: 4, overflow: 'hidden', marginTop: 6 },
+  categoryFill: { height: '100%', borderRadius: 4 },
+  categoryCount: { fontFamily: fonts.sans, fontSize: 10, marginTop: 4 },
+  categoryNote: { fontFamily: fonts.sans, fontSize: 10, lineHeight: 15, marginTop: 4 },
   title: {
     fontFamily: fonts.serif,
     fontSize: 30,

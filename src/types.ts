@@ -35,6 +35,21 @@ export interface Session {
   sham?: boolean;
   /** Doz çarpanı (1 = tek doz, 2 = çift doz). */
   dose?: number;
+
+  /* --- Şikayet → reçete akışı --------------------------------------
+   * Alanlar isteğe bağlı: akıştan geçmeden başlatılan ritüeller (eski
+   * kayıtlar, tekrar oynatmalar) bu bilgileri taşımaz.
+   */
+  /** Seçilen şikayetin kimliği (`src/constants/complaints.ts`). */
+  complaintId?: string;
+  /** Reçetenin adı — şikayetten gelir. */
+  prescriptionName?: string;
+  /** Ritüel ÖNCESİ şikayet şiddeti (1-10; yüksek = kötü). */
+  scoreBefore?: number;
+  /** Ritüel SONRASI şikayet şiddeti (1-10; yüksek = kötü). */
+  scoreAfter?: number;
+  /** Ritüelin gerçekte ne kadar sürdüğü (saniye). */
+  durationSeconds?: number;
 }
 
 export interface FormulaColor {

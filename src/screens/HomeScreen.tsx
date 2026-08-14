@@ -74,6 +74,13 @@ export default function HomeScreen() {
   const formula = crisisFormula ?? dailyFormula;
 
   const doneToday = user.lastRitualDate === today;
+  /**
+   * Bugün akıştan geçilmiş bir seans var mı? Varsa kart, ritüeli yeniden
+   * başlatmak yerine o seansın özetini açar.
+   */
+  const todaySession = user.sessions.find(
+    (s) => s.date === today && s.scoreAfter !== undefined
+  );
 
   /**
    * Hedef seçici her zaman dört hedefi birden gösterir.
@@ -165,7 +172,21 @@ export default function HomeScreen() {
           <FormulCard
             formula={formula}
             doneToday={doneToday}
-            onStart={() => navigation.navigate('Ritual', { formula })}
+            onStart={() => {
+              // Ritüel artık doğrudan başlamıyor: önce şikayet sorulur,
+              // muayene ve reçete ekranları da o seçimden türer.
+              if (doneToday && todaySession) {
+                navigation.navigate('SessionSummary', {
+                  complaintId: todaySession.complaintId ?? '',
+                  formula,
+                  scoreBefore: todaySession.scoreBefore ?? 0,
+                  scoreAfter: todaySession.scoreAfter ?? 0,
+                  durationSeconds: todaySession.durationSeconds ?? 0,
+                });
+                return;
+              }
+              navigation.navigate('Complaint');
+            }}
           />
         </AnimatedIn>
 

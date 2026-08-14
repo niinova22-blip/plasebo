@@ -1122,4 +1122,174 @@ export const EN: Record<string, string> = {
     'Colour, sound, breath. Expectation is a real mechanism — try it.',
   'İçinde etkin madde yok. Yine de açtın — mekanizma tam olarak bu.':
     'No active ingredient in it. You opened it anyway — that is exactly the mechanism.',
+  'Bugün ne hissediyorsun?':
+    'How do you feel today?',
+  'Dürüst ol. Plasebo dürüstlükle daha iyi çalışır.':
+    'Be honest. Placebo works better with honesty.',
+  '⚗️ Şikayetin formülün adını belirler; etkiyi belirleyen sensin.':
+    '⚗️ Your complaint names the formula; you are the one who decides the effect.',
+  'Devam Et':
+    'Continue',
+  'Zihnim dağınık, odaklanamıyorum':
+    'My mind is scattered, I cannot focus',
+  'İçim sıkışık, bunaltıcı hissediyorum':
+    'I feel tight inside, it is suffocating',
+  'Enerjim sıfır, hiçbir şey yapmak istemiyorum':
+    'My energy is zero, I do not want to do anything',
+  'Kafam çok kalabalık, düşünceler durmuyor':
+    'My head is crowded, the thoughts will not stop',
+  'Gerginim, bedenimde gerilim var':
+    'I am tense, my body is holding tension',
+  'Motivasyonum yok, başlayamıyorum':
+    'I have no motivation, I cannot start',
+  'Şikayet analiz ediliyor...':
+    'Analysing the complaint...',
+  'Nöral örüntüler taranıyor...':
+    'Scanning neural patterns...',
+  'Formülün hazırlanıyor...':
+    'Preparing your formula...',
+  '⚗️ Bu analiz plasebodur. Yine de beynin şu an buna inanıyor.':
+    '⚗️ This analysis is a placebo. Your brain believes it anyway.',
+  'BUGÜNÜN REÇETESİ':
+    'TODAY’S PRESCRIPTION',
+  'Plasebo Kliniği':
+    'Placebo Clinic',
+  'Dr. Algoritma, Nörobilim':
+    'Dr. Algorithm, Neuroscience',
+  'Hasta':
+    'Patient',
+  'Tarih':
+    'Date',
+  'Şikayet':
+    'Complaint',
+  'Uygulama':
+    'Dosage',
+  '1 × günlük':
+    '1 × daily',
+  'Süre':
+    'Duration',
+  '{dk} dakika':
+    '{dk} minutes',
+  '⚠️ Bu reçete tamamen plasebodur. Etkisi beklentiden gelir.':
+    '⚠️ This prescription is entirely placebo. Its effect comes from expectation.',
+  'Reçeteni kabul ediyor musun?':
+    'Do you accept your prescription?',
+  'Evet, uygula':
+    'Yes, apply it',
+  'Farklı şikayet':
+    'Different complaint',
+  'Zihin Berraklığı':
+    'Mind Clarity',
+  'Nefes Açıcı':
+    'Breath Opener',
+  'Aktivasyon':
+    'Activation',
+  'Sessizleştirici':
+    'Quieter',
+  'Kas Sıfırlayıcı':
+    'Muscle Reset',
+  'Başlatıcı':
+    'Starter',
+  'Dağınık nöral bağlantıları tek odak noktasında toplar':
+    'Gathers scattered neural connections into a single point of focus',
+  'Göğüs bölgesindeki sempatik sinir aktivasyonunu yatıştırır':
+    'Soothes sympathetic nerve activation in the chest',
+  'Uyuyan dopamin devrelerini düşük frekanslı uyarıyla harekete geçirir':
+    'Wakes dormant dopamine circuits with low-frequency stimulation',
+  'Varsayılan mod ağı aktivitesini frekans entrainment ile filtreler':
+    'Filters default mode network activity through frequency entrainment',
+  'Kronik kas gerilimini tetikleyen kortikal uyarımı baskılar':
+    'Suppresses the cortical drive behind chronic muscle tension',
+  'Harekete geçişi engelleyen prefrontal frenleme döngüsünü keser':
+    'Cuts the prefrontal braking loop that blocks getting started',
+  'RİTÜEL ÖNCESİ ÖLÇÜM':
+    'MEASUREMENT BEFORE THE RITUAL',
+  'RİTÜEL SONRASI ÖLÇÜM':
+    'MEASUREMENT AFTER THE RITUAL',
+  'Şu an nasılsın?':
+    'How are you right now?',
+  'Şimdi nasılsın?':
+    'And now?',
+  '1 = hiç yok  ·  10 = dayanılmaz':
+    '1 = none at all  ·  10 = unbearable',
+  'Zihnindeki dağınıklığı şu an puanla':
+    'Rate the scatter in your mind right now',
+  'İçindeki sıkışıklığı şu an puanla':
+    'Rate the tightness inside you right now',
+  'Enerji eksikliğini şu an puanla':
+    'Rate your lack of energy right now',
+  'Kafandaki kalabalığı şu an puanla':
+    'Rate the crowd in your head right now',
+  'Bedenindeki gerilimi şu an puanla':
+    'Rate the tension in your body right now',
+  'Hareketsizlik hissini şu an puanla':
+    'Rate the stuckness right now',
+  '⚗️ Bu ölçüm senin izlenimin — plasebo araştırmalarının ölçtüğü de bu.':
+    '⚗️ This measurement is your impression — which is what placebo research measures too.',
+  'Ölçüm Tamam':
+    'Measurement done',
+  'Kaydırarak şu anki hâlini işaretle':
+    'Slide to mark how you are now',
+  '↓ {fark} puan azaldı':
+    '↓ down {fark} points',
+  '%{yuzde} fark':
+    '{yuzde}% difference',
+  'Değişim yok — bu da veri':
+    'No change — that is data too',
+  'Bugün zordu. Yarın tekrar dene.':
+    'Today was hard. Try again tomorrow.',
+  'Sonucu Gör':
+    'See the result',
+  'Etki Gözlemlendi ⚗️':
+    'Effect Observed ⚗️',
+  'Veri Toplandı 📊':
+    'Data Collected 📊',
+  'Yarın Tekrar 🔄':
+    'Again Tomorrow 🔄',
+  '📋 SEANS ÖZETİ':
+    '📋 SESSION SUMMARY',
+  'Reçete':
+    'Prescription',
+  'Önce':
+    'Before',
+  'Sonra':
+    'After',
+  '{dk} dakika {sn} saniye':
+    '{dk} min {sn} sec',
+  '%{yuzde} etki gözlemlendi':
+    '{yuzde}% effect observed',
+  'Bugün zordu. Yarın tekrar.':
+    'Today was hard. Again tomorrow.',
+  '“Beklenti etkisi aktive edildi. Plasebo olduğunu bilmen etkiyi azaltmadı.”':
+    '“The expectancy effect was activated. Knowing it was a placebo did not reduce it.”',
+  '⚗️ Ölçtüğün şey senin izlenimin — plasebo araştırmaları da bunu ölçer.':
+    '⚗️ What you measured is your impression — placebo research measures it too.',
+  'Ana Sayfaya Dön':
+    'Back to home',
+  'Paylaş':
+    'Share',
+  'Bugün "{sikayet}" için plasebo ritüeli yaptım.':
+    'Today I ran a placebo ritual for “{sikayet}”.',
+  'Etki: %{yuzde} azalma 🧪':
+    'Effect: {yuzde}% drop 🧪',
+  'Etki: değişim yok — o da veri 🧪':
+    'Effect: no change — that is data too 🧪',
+  '✓ Bugünkü reçeten tamamlandı':
+    '✓ Today’s prescription is done',
+  '▶ Reçeteni al':
+    '▶ Get your prescription',
+  'ŞİKAYETE GÖRE':
+    'BY COMPLAINT',
+  '{deger} puan':
+    '{deger} points',
+  '{adet} seans':
+    '{adet} sessions',
+  'Ortalama düşüş: ritüel öncesi puan eksi sonrası puan.':
+    'Average drop: score before the ritual minus the score after.',
+  'Düşünce yoğunluğu':
+    'Rumination',
+  'Gerginlik':
+    'Tension',
+  'Motivasyon':
+    'Motivation',
 };

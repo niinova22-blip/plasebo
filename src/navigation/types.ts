@@ -1,5 +1,5 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
-import type { Formula } from '../types';
+import type { Formula, StepKind } from '../types';
 import type { LegalDocId } from '../constants/legal';
 
 export type TabParamList = {
@@ -24,8 +24,41 @@ export type RootStackParamList = {
   /** Abonelik kademeleri ve içerik paketleri. */
   Plans: undefined;
   Main: NavigatorScreenParams<TabParamList> | undefined;
-  /** Ritüel, çalıştırılacak formülü hazır alır (günün formülü ya da kriz formülü). */
-  Ritual: { formula: Formula };
+  /* --- Şikayet → muayene → reçete → ölçüm akışı ------------------- */
+  /** Akışın başı: bugün ne şikayet var? */
+  Complaint: undefined;
+  /** Üç saniyelik sahte muayene; kendiliğinden reçeteye geçer. */
+  Examination: { complaintId: string };
+  /** Reçete kartı — kabul edilirse ölçüme geçilir. */
+  Prescription: { complaintId: string };
+  /** Ritüel öncesi ölçüm. */
+  ScoreBefore: { complaintId: string; formula: Formula };
+  /** Ritüel sonrası ölçüm; kaydı da bu ekran yazar. */
+  ScoreAfter: {
+    complaintId: string;
+    formula: Formula;
+    scoreBefore: number;
+    durationSeconds: number;
+    steps: StepKind[];
+  };
+  /** Seans özeti — akışın sonu. */
+  SessionSummary: {
+    complaintId: string;
+    formula: Formula;
+    scoreBefore: number;
+    scoreAfter: number;
+    durationSeconds: number;
+  };
+
+  /**
+   * Ritüel, çalıştırılacak formülü hazır alır. Akıştan gelindiyse şikayet
+   * ve ölçüm de taşınır; doğrudan başlatıldığında bunlar boş kalır.
+   */
+  Ritual: {
+    formula: Formula;
+    complaintId?: string;
+    scoreBefore?: number;
+  };
 };
 
 declare global {

@@ -51,8 +51,10 @@ function formatTime(total: number): string {
 }
 
 export default function RitualScreen({ navigation, route }: Props) {
-  const { formula } = route.params;
+  const { formula, complaintId, scoreBefore } = route.params;
   const { recordSession } = useUser();
+  /** Ritüelin gerçekte ne kadar sürdüğü — seans özetinde gösteriliyor. */
+  const startedAt = useRef(Date.now());
   const { settings } = useSettings();
   const t = useT();
   const { isPremium, packs } = usePremium();
@@ -178,11 +180,26 @@ export default function RitualScreen({ navigation, route }: Props) {
       haptics.step();
       setIndex(next);
       setRemaining(stepSeconds(formula, steps[next]));
-    } else {
-      haptics.success();
-      setFinished(true);
+      return;
     }
-  }, [index, steps, formula]);
+
+    haptics.success();
+
+    // Şikayet akışından gelindiyse kayıt burada değil, ölçüm ekranında
+    // yazılıyor: "sonra" puanı olmadan seansın yarısı eksik kalır.
+    if (complaintId && scoreBefore !== undefined) {
+      navigation.replace('ScoreAfter', {
+        complaintId,
+        formula,
+        scoreBefore,
+        durationSeconds: Math.max(1, Math.round((Date.now() - startedAt.current) / 1000)),
+        steps: [...steps],
+      });
+      return;
+    }
+
+    setFinished(true);
+  }, [index, steps, formula, complaintId, scoreBefore, navigation]);
 
   useEffect(() => {
     if (remaining === 0 && !finished) goNext();

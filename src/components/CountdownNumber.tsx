@@ -16,30 +16,32 @@ export interface CountdownNumberProps {
   style?: TextStyle;
 }
 
-const DURATION = 520;
+const FONT_SIZE = 48;
+const LINE = 62;
+/** Geçiş, sayacın kendi ritmine yakın: hareket bitmeden yenisi başlamıyor. */
+const DURATION = 780;
 
 /**
- * Ritüeldeki geri sayım.
+ * Ritüeldeki geri sayım — aşağı doğru akan sayı.
  *
- * Tasarım tarihçesi, çünkü burası iki kez değişti:
+ * Tasarım tarihçesi, çünkü burası üç kez değişti:
  *
  *   1. İlk sürüm her saniye 1.2 kata büyüyüp yerine oturuyordu. Sayının
- *      saniyede bir zıplaması, tam da sabit kalması istenen bir ekranda
- *      gözü kendine çekiyordu.
- *   2. İkinci sürüm ölçeği kaldırıp yerine kısa bir sönümlenme koydu; bu
- *      da hâlâ "yanıp sönme" gibi okunuyordu, çünkü tek bir katman aynı
- *      yerde karararak açılıyordu.
+ *      zıplaması, tam da sabit kalması istenen bir ekranda gözü çekiyordu.
+ *   2. İkincisi ölçek yerine sönümlenme kullandı; bu da "yanıp sönme"
+ *      gibi okundu.
+ *   3. Üçüncüsü çapraz geçişti ama iki metin de kısa mesafede hareket
+ *      ettiği için kesik kesik görünüyordu.
  *
- * Şimdiki hâl bir **çapraz geçiş**: eski sayı yukarı doğru birkaç piksel
- * süzülerek silinirken yeni sayı aşağıdan aynı yere yerleşiyor. Göz
- * hareketi bir yön olarak algılıyor, kesik bir olay olarak değil; sayının
- * konumu ve boyutu hiç değişmiyor. "Hareketi azalt" açıksa geçiş yok,
- * sayı doğrudan değişiyor.
+ * Şimdiki hâl bir **sayaç şeridi**: sayılar tek bir pencerenin içinde,
+ * tam satır yüksekliği kadar aşağı kayıyor. Giden sayı pencereden aşağı
+ * çıkarken yeni sayı yukarıdan aynı hizaya iniyor; ikisi de aynı anda,
+ * aynı hızda. Pencere `overflow: hidden` olduğu için sayılar kenarda
+ * belirip kaybolmuyor, şerit gerçekten akıyormuş gibi duruyor.
  */
 export default function CountdownNumber({ value, style }: CountdownNumberProps) {
   const motion = useMotion();
 
-  // Ekranda aynı anda iki metin var: giden ve gelen.
   const [current, setCurrent] = useState(value);
   const [previous, setPrevious] = useState<string | null>(null);
   const progress = useSharedValue(1);
@@ -63,23 +65,26 @@ export default function CountdownNumber({ value, style }: CountdownNumberProps) 
     progress.value = 0;
     progress.value = withTiming(1, {
       duration: DURATION,
-      // Yumuşak giriş-çıkış: geçişin başı ve sonu hissedilmiyor.
-      easing: Easing.inOut(Easing.cubic),
+      // Yavaşlayarak duran bir kayma: şerit "yerine oturuyor" hissi verir,
+      // sabit hızda kaysa mekanik görünürdü.
+      easing: Easing.out(Easing.cubic),
     });
   }, [value, motion.reduced, progress]);
 
+  // Gelen sayı: bir satır yukarıdan sıfır konumuna iner.
   const incoming = useAnimatedStyle(() => ({
     opacity: progress.value,
-    transform: [{ translateY: (1 - progress.value) * 10 }],
+    transform: [{ translateY: (progress.value - 1) * LINE }],
   }));
 
+  // Giden sayı: sıfır konumundan bir satır aşağı süzülüp pencereden çıkar.
   const outgoing = useAnimatedStyle(() => ({
     opacity: 1 - progress.value,
-    transform: [{ translateY: progress.value * -10 }],
+    transform: [{ translateY: progress.value * LINE }],
   }));
 
   return (
-    <View style={styles.wrap}>
+    <View style={styles.window}>
       {previous !== null ? (
         <Animated.Text
           style={[styles.text, styles.layer, style, outgoing]}
@@ -88,7 +93,10 @@ export default function CountdownNumber({ value, style }: CountdownNumberProps) 
           {previous}
         </Animated.Text>
       ) : null}
-      <Animated.Text style={[styles.text, style, incoming]} numberOfLines={1}>
+      <Animated.Text
+        style={[styles.text, styles.layer, style, incoming]}
+        numberOfLines={1}
+      >
         {current}
       </Animated.Text>
     </View>
@@ -96,11 +104,14 @@ export default function CountdownNumber({ value, style }: CountdownNumberProps) 
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    alignItems: 'center',
+  // Sayıların içinde aktığı pencere. Yüksekliği tam bir satır: dışına
+  // taşan her şey kırpılır, böylece kayma bir şerit hareketi gibi okunur.
+  window: {
+    height: LINE,
+    alignSelf: 'stretch',
+    overflow: 'hidden',
     justifyContent: 'center',
   },
-  // Giden sayı, gelenin tam üstünde durur: yer değiştirme olmaz.
   layer: {
     position: 'absolute',
     left: 0,
@@ -108,11 +119,10 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: fonts.mono,
-    fontSize: 48,
+    fontSize: FONT_SIZE,
+    lineHeight: LINE,
     color: colors.pulse,
     textAlign: 'center',
-    // Sayı basamak değiştirdiğinde satır yüksekliği oynamasın.
-    lineHeight: 58,
     includeFontPadding: false,
   },
 });

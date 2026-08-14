@@ -16,6 +16,12 @@ import StatsScreen from '../screens/StatsScreen';
 import ArchiveScreen from '../screens/ArchiveScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import RitualScreen from '../screens/RitualScreen';
+import ComplaintScreen from '../screens/ComplaintScreen';
+import ExaminationScreen from '../screens/ExaminationScreen';
+import PrescriptionScreen from '../screens/PrescriptionScreen';
+import ScoreBeforeScreen from '../screens/ScoreBeforeScreen';
+import ScoreAfterScreen from '../screens/ScoreAfterScreen';
+import SessionSummaryScreen from '../screens/SessionSummaryScreen';
 import { useSettings } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { isOnboarded } from '../utils/storage';
@@ -97,10 +103,42 @@ export default function AppNavigator() {
           options={{ animation: 'slide_from_bottom' }}
         />
         <Stack.Screen name="Main" component={MainTabs} />
+        {/* Şikayet → muayene → reçete → ölçüm → ritüel → ölçüm → özet */}
+        <Stack.Screen
+          name="Complaint"
+          component={ComplaintScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
+        <Stack.Screen
+          name="Examination"
+          component={ExaminationScreen}
+          // Muayene kendiliğinden ilerler; geri dönülecek bir şey yok.
+          options={{ animation: 'fade', gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="Prescription"
+          component={PrescriptionScreen}
+          options={{ animation: 'fade' }}
+        />
+        <Stack.Screen
+          name="ScoreBefore"
+          component={ScoreBeforeScreen}
+          options={{ animation: 'slide_from_right' }}
+        />
         <Stack.Screen
           name="Ritual"
           component={RitualScreen}
           options={{ animation: 'fade_from_bottom' }}
+        />
+        <Stack.Screen
+          name="ScoreAfter"
+          component={ScoreAfterScreen}
+          options={{ animation: 'fade_from_bottom', gestureEnabled: false }}
+        />
+        <Stack.Screen
+          name="SessionSummary"
+          component={SessionSummaryScreen}
+          options={{ animation: 'fade', gestureEnabled: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
