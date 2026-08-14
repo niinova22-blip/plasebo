@@ -81,6 +81,7 @@
         }
       ],
       "@react-native-google-signin/google-signin",
+      "./plugins/withUploadKeystore",
       "expo-localization",
       "@react-native-community/datetimepicker"
     ]

@@ -16,6 +16,9 @@ Sırayı bozmadan ilerle; her adım bir sonrakinin girdisini üretiyor.
 | Aynı metinlerin uygulama içi sürümü | `src/constants/legal.ts`, `src/screens/LegalScreen.tsx` |
 | Uygulama içi yasal bağlantılar ve hesap silme | `src/screens/SettingsScreen.tsx`, `src/screens/SignInScreen.tsx` |
 | Uygulama simgesi / açılış işareti üretici | `npm run icons` (`scripts/generate-icons.js`) |
+| Türkçe/İngilizce dil desteği | `src/i18n/` |
+| Yayın imzalama (prebuild'e dayanıklı) | `plugins/withUploadKeystore.js` + `keys/` |
+| Mağaza ekran görüntüleri (6 adet) | `store/graphics/screenshots/` |
 | Mağaza metinleri, form cevapları, ekran görüntüsü planı | `store/LISTING.md` |
 | 512×512 simge ve 1024×500 öne çıkan grafik | `npm run store:assets` |
 | OAuth kimlikleri için şablon | `.env.example` |
@@ -95,7 +98,35 @@ değilken uygulama giriş ekranında duruyor.
      - SHA-1: 3. adımdaki EAS keystore parmak izi
      → `EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID`
 
-## 3. EAS kurulumu ve imzalama anahtarı
+## 3. İmzalama anahtarı ve derleme
+
+**Yükleme anahtarı üretildi.** `keys/plasebo-upload.jks` (RSA 4096, 10.000
+gün) ve şifreleri `keys/keystore.properties` içinde; ikisi de git'e girmez.
+Yedeği masaüstündeki `Plasebo-Yayin/` klasöründe.
+
+```
+Yükleme anahtarı SHA-1:
+35:7C:A7:F3:A8:3C:60:F3:0B:4D:D8:CE:DE:6F:ED:FC:39:AB:78:A2
+```
+
+Bu parmak izi Google Cloud Console'da `com.plasebo.app` için bir **Android
+OAuth istemcisi** olarak eklenmeden, bu anahtarla imzalanmış derlemede
+Google girişi `DEVELOPER_ERROR (10)` verir — BlueStacks'te doğrulandı.
+Play'e yüklendikten sonra **Play'in kendi imzalama anahtarının** SHA-1'i de
+(Play Console → Test ve yayınlama → Uygulama bütünlüğü) aynı şekilde
+eklenmelidir; ikisi bir arada durabilir.
+
+Paketleme:
+
+```bash
+cd android && ./gradlew bundleRelease   # Play'e yüklenecek .aab
+cd android && ./gradlew assembleRelease # cihazda denemek için .apk
+```
+
+> İmza değiştiği için yeni APK, eski APK'nın üzerine kurulamaz; cihazdaki
+> eski sürümün önce kaldırılması gerekir.
+
+## 3b. Alternatif: EAS ile derleme
 
 ```bash
 npm install -g eas-cli
@@ -170,7 +201,18 @@ Yani takvimini buna göre kur: teknik hazırlık bitmiş olsa da yayına
 çıkış en az iki hafta sürecek. Kapalı testi bir an önce başlatmak,
 bekleme süresini paralelde harcamanın tek yolu.
 
-## 7. Abonelik — gerçek faturalandırmayı bağlama
+## 7. Abonelik — gerçek faturalandırmayı bağlama (ilk sürümde yok)
+
+> **v1.0.0'da premium satılmıyor.** Plan ekranı bir tanıtım ekranıdır:
+> satın alma düğmesi yoktur, fiyat yerine "yakında" yazar ve kilitli
+> özellikler (kriz modu, çift doz, tüm geçmiş, içerik paketleri) kilitli
+> kalır. Play Console'daki "Uygulama içi satın alma" beyanı bu sürüm için
+> **hayır** olmalıdır. Aşağıdakiler, faturalandırma bir sonraki sürümde
+> bağlanırken yapılacak işlerdir.
+>
+> "Satın alımları geri yükle" düğmesi de bu yüzden arayüzden kaldırıldı;
+> faturalandırmayla birlikte geri gelmelidir (Play şartı).
+
 
 Uygulamada kademeler, kilitler ve plan ekranı hazır; **gerçek satın alma
 yok**. Bu bilinçli: Google Play'de dijital ürün satmanın tek yolu Play

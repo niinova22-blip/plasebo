@@ -86,6 +86,21 @@ Sağlığınla ilgili bir endişen varsa bir sağlık profesyoneline başvur.
 
 ---
 
+## Uygulama içi satın alma
+
+v1.0.0'da **yok**. Premium ve içerik paketleri arayüzde "yakında" olarak
+görünür, satın alınamaz. Play Console'daki "Uygulama içi satın alma" ve
+"Reklam" beyanlarının ikisi de **hayır** olmalıdır. Faturalandırma bir
+sonraki sürümde bağlanacak (bkz. `store/RELEASE.md` §7).
+
+## Diller
+
+Uygulama Türkçe ve İngilizce çalışır; cihaz dili Türkçe değilse İngilizce
+açılır. Mağaza listelemesi şu an yalnızca Türkçe. İngilizce bir listeleme
+eklemek (Play Console → Ana mağaza girişi → dil ekle) görünürlüğü artırır;
+metinlerin İngilizce karşılıkları uygulamanın içinde `src/i18n/en.ts`
+dosyasında zaten var.
+
 ## Kategori ve etiketler
 
 | Alan | Değer | Gerekçe |
@@ -173,21 +188,20 @@ sorunsuz giriş yaptığını kendin dene.
 | `store/graphics/icon-512.png` | 512×512 | Uygulama simgesi |
 | `store/graphics/feature-graphic.png` | 1024×500 | Öne çıkan grafik |
 
-**Ekran görüntüleri cihazdan alınmalıdır** — betikle üretilemez. Play en az
-2, en çok 8 telefon ekran görüntüsü ister (dikey, en az 320 px kenar).
-Önerilen 6'lı set ve her birinin ne anlattığı:
+**Ekran görüntüleri hazır** — `store/graphics/screenshots/`, 1080×1920,
+gerçek cihazdan (Android 11) alındı:
 
-1. **Ana ekran** — seri çubuğu ve günün formül kartı birlikte görünsün.
-2. **Ritüel / nefes adımı** — nefes dairesi büyümüş hâldeyken.
-3. **Şeffaflık** — uydurma bulgunun ve altındaki "Bu bulgu uydurmadır"
-   satırının okunduğu kare. Listelemenin en önemli görseli budur.
-4. **İstatistik** — 7 günlük grafik ve etki skoru.
-5. **Kör test sonucu** — gerçek/sahte gün karşılaştırması.
-6. **Nasıl çalışır?** — kaynaklı çalışma listesi.
+| Dosya | Ne anlatıyor |
+| --- | --- |
+| `01-ana-ekran.png` | Seri çubuğu, hedef şeridi ve günün formül kartı |
+| `02-ritual-renk.png` | Ritüelin renk adımı ve altındaki uydurma bulgu — listelemenin en önemli karesi |
+| `03-ritual-nefes.png` | Nefes adımı, faz etiketi ve geri sayım |
+| `04-istatistik.png` | Etki skoru, günlük grafik, ısı haritası, kilometre taşları |
+| `05-arsiv.png` | Ritüel kayıtları |
+| `06-nasil-calisir.png` | Şeffaflık metni ve kaynaklı gerçek çalışmalar |
 
-Ekran görüntülerini `store/graphics/screenshots/` altına `01-home.png`
-biçiminde koy. Cihazdan almak için:
+Yenilerini almak için:
 
 ```bash
-adb exec-out screencap -p > store/graphics/screenshots/01-home.png
+adb exec-out screencap -p > store/graphics/screenshots/01-ana-ekran.png
 ```

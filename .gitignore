@@ -45,3 +45,6 @@ yarn-error.*
 # yerel derleme çıktıları
 *.apk
 *.aab
+
+# yayın imzalama anahtarı — asla depoya girmez
+/keys/

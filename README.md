@@ -21,8 +21,9 @@ cd android && ./gradlew assembleRelease
 adb install -r app/build/outputs/apk/release/app-release.apk
 ```
 
-Release varyantı debug keystore ile imzalanır, yani ayrıca anahtar üretmeye
-gerek yok. Hızlı geliştirme için Metro de çalışır:
+Release varyantı, proje kökündeki `keys/` klasöründe bir yükleme anahtarı
+varsa onunla, yoksa debug anahtarıyla imzalanır (bkz. "İmzalama"). Hızlı
+geliştirme için Metro de çalışır:
 
 ```bash
 npm start          # Expo Go ile QR koddan aç
@@ -38,6 +39,36 @@ npm run store:assets  # Play mağaza simgesi + öne çıkan grafik
 npm run build:preview # EAS ile test APK'sı
 npm run build:play    # EAS ile Play'e yüklenecek AAB
 ```
+
+## İmzalama
+
+Play'e yüklenecek çıktı, kendi **yükleme (upload) anahtarımızla** imzalanır.
+Anahtar ve şifreleri depoya girmez; proje kökündeki `keys/` klasöründe durur:
+
+```
+keys/plasebo-upload.jks       imzalama anahtarı
+keys/keystore.properties      dosya adı, alias ve şifreler
+```
+
+Bu iki dosya `.gitignore` ile dışarıda tutulur ve **yedeklenmelidir**.
+`android/` klasörü `expo prebuild` ile yeniden üretildiği için imzalama
+ayarı elle değil, `plugins/withUploadKeystore.js` eklentisiyle kurulur:
+eklenti her prebuild'de anahtarı `android/app/` içine kopyalar ve
+`build.gradle`'daki release yapılandırmasını ona bağlar. `keys/` yoksa
+hiçbir şey değişmez ve derleme debug anahtarıyla imzalanır — yani depoyu
+klonlayan biri anahtar olmadan da APK derleyebilir.
+
+Play'e yüklenecek paketi üretmek için:
+
+```bash
+cd android && ./gradlew bundleRelease   # app/build/outputs/bundle/release/app-release.aab
+```
+
+> **Google girişi imzaya bağlıdır.** Kullanılan anahtarın SHA-1 parmak izi
+> Google Cloud Console'da `com.plasebo.app` paketi için bir Android OAuth
+> istemcisi olarak kayıtlı değilse giriş `DEVELOPER_ERROR (10)` ile düşer.
+> Yükleme anahtarının ve (Play'e yüklendikten sonra) Play'in kendi imzalama
+> anahtarının parmak izleri ayrı ayrı eklenmelidir.
 
 ## Yayınlama
 
