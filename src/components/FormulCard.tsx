@@ -140,7 +140,7 @@ export default function FormulCard({ formula, onStart, doneToday }: FormulCardPr
 
       <PressableScale onPress={onStart} accessibilityRole="button" style={styles.button}>
         <Text style={styles.buttonText}>
-          {t(doneToday && !formula.crisis ? '▶ Tekrar Başlat' : '▶ Ritüeli Başlat')}
+          {t('▶ Başlat')}
         </Text>
       </PressableScale>
     </PressableScale>

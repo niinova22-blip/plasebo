@@ -23,13 +23,17 @@ const DEFAULT_ENTITLEMENT: Entitlement = { plan: 'free', packs: [] };
 export interface Limits {
   /** Geçmişin kaç günü görünür? */
   historyDays: number;
-  crisisMode: boolean;
+  /** Günde birden fazla nokta atışı reçete yazdırılabilir mi? */
+  unlimitedPrescriptions: boolean;
+  /** Şikayete göre iyileşme takibi açık mı? */
+  prescriptionTracking: boolean;
   customDose: boolean;
 }
 
 const PREMIUM_LIMITS: Limits = {
   historyDays: Number.POSITIVE_INFINITY,
-  crisisMode: true,
+  unlimitedPrescriptions: true,
+  prescriptionTracking: true,
   customDose: true,
 };
 

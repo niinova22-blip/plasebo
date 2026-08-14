@@ -159,7 +159,27 @@ export default function StatsScreen() {
           />
         </View>
 
-        {byCategory.length ? (
+        {!limits.prescriptionTracking ? (
+          <View style={styles.block}>
+            <Text style={[styles.sectionLabel, { color: theme.sub }]}>
+              {t('ŞİKAYETE GÖRE')}
+            </Text>
+            <PressableScale
+              onPress={() => navigation.navigate('Plans')}
+              accessibilityRole="button"
+              style={[styles.categoryCard, { backgroundColor: theme.surface }]}
+            >
+              <Text style={[styles.categoryName, { color: theme.sub }]}>
+                {t('🔒 Reçete takibi · yakında')}
+              </Text>
+              <Text style={[styles.categoryNote, { color: theme.faint }]}>
+                {t(
+                  'Hangi şikayette ne kadar iyileştiğini gösteren takip, ilerideki bir güncellemede premium ile açılacak.'
+                )}
+              </Text>
+            </PressableScale>
+          </View>
+        ) : byCategory.length ? (
           <View style={styles.block}>
             <Text style={[styles.sectionLabel, { color: theme.sub }]}>
               {t('ŞİKAYETE GÖRE')}

@@ -16,6 +16,7 @@ import { useUser } from '../context/UserContext';
 import { useT, useTheme } from '../context/SettingsContext';
 import { usePremium } from '../context/PremiumContext';
 import GoalTag from '../components/GoalTag';
+import { resolveComplaint } from '../constants/complaints';
 import {
   ALL_GOALS,
   GOAL_LABELS,
@@ -79,10 +80,35 @@ export default function HomeScreen() {
    * ayrı bir sayaçla değil, o güne ait şikayetli bir seans olup olmadığına
    * bakılarak uygulanıyor — yarım kalan akış hakkı yakmıyor.
    */
-  const todaySession = user.sessions.find(
-    (s) => s.date === today && s.complaintId !== undefined
-  );
-  const targetedUsed = Boolean(todaySession) && !limits.crisisMode;
+  // En son yazılan reçete geçerli: kayıtlar eskiden yeniye eklendiği için
+  // sondan başa aranıyor.
+  const todaySession = [...user.sessions]
+    .reverse()
+    .find((s) => s.date === today && s.complaintId !== undefined);
+  /**
+   * Ücretsiz kademede günde **bir reçete yazılır**, ama o reçete
+   * istenildiği kadar tekrar uygulanabilir: sınır üretimde, kullanımda
+   * değil. Yeni bir reçete yazdırmak (günde birden fazla) premium'a
+   * kalacak.
+   */
+  const targetedUsed = Boolean(todaySession) && !limits.unlimitedPrescriptions;
+
+  /** Bugünün reçetesini yeniden uygular — ölçüm baştan alınır. */
+  const repeatTargeted = () => {
+    if (!todaySession?.complaintId) return;
+    const complaint = resolveComplaint(
+      todaySession.complaintId,
+      todaySession.complaintText
+    );
+    if (!complaint) return;
+    const base = generateDailyFormula(complaint.goal, today, pools);
+    const dosed = applyDose(base, limits.customDose ? settings.dose : 1);
+    navigation.navigate('ScoreBefore', {
+      complaintId: todaySession.complaintId,
+      customText: todaySession.complaintText,
+      formula: dosed,
+    });
+  };
 
   /**
    * Hedef seçici her zaman dört hedefi birden gösterir.
@@ -183,16 +209,8 @@ export default function HomeScreen() {
         <AnimatedIn delay={150} style={styles.targetedWrap}>
           <PressableScale
             onPress={() => {
-              if (targetedUsed && todaySession) {
-                // Hak kullanıldıysa buton, o günün özetini açar.
-                navigation.navigate('SessionSummary', {
-                  complaintId: todaySession.complaintId ?? '',
-                  customText: todaySession.complaintText,
-                  formula,
-                  scoreBefore: todaySession.scoreBefore ?? 0,
-                  scoreAfter: todaySession.scoreAfter ?? 0,
-                  durationSeconds: todaySession.durationSeconds ?? 0,
-                });
+              if (targetedUsed) {
+                repeatTargeted();
                 return;
               }
               navigation.navigate('Complaint');
@@ -200,32 +218,47 @@ export default function HomeScreen() {
             accessibilityRole="button"
             style={[
               styles.targeted,
-              {
-                backgroundColor: targetedUsed ? theme.surface : theme.accentSoft,
-                borderColor: targetedUsed ? theme.border : theme.pulse,
-              },
+              { backgroundColor: theme.accentSoft, borderColor: theme.pulse },
             ]}
           >
-            <Text
-              style={[
-                styles.targetedTitle,
-                { color: targetedUsed ? theme.sub : theme.pulse },
-              ]}
-            >
-              {t(
-                targetedUsed
-                  ? '✓ Bugünkü nokta atışı reçeten alındı'
-                  : '🩺 Nokta atışı reçete al'
-              )}
+            <Text style={[styles.targetedTitle, { color: theme.pulse }]}>
+              {targetedUsed && todaySession?.prescriptionName
+                ? t('▶ {recete} · tekrar uygula', {
+                    recete: t(todaySession.prescriptionName),
+                  })
+                : t('🩺 Nokta atışı reçete al')}
             </Text>
             <Text style={[styles.targetedSub, { color: theme.faint }]}>
               {t(
                 targetedUsed
-                  ? 'Sonucu görmek için dokun. Yarın yeni bir reçete hakkın olacak.'
+                  ? 'Bugünkü reçeten hazır; istediğin kadar tekrar uygulayabilirsin. Yeni reçete yarın.'
                   : 'Şikayetini anlat, sana özel bir reçete hazırlansın. Günde bir kez.'
               )}
             </Text>
           </PressableScale>
+
+          {/* Bugünün sonucuna dönüş — tekrar uygulamayı bloklamasın diye
+              ayrı ve küçük bir bağlantı. */}
+          {targetedUsed && todaySession ? (
+            <PressableScale
+              onPress={() =>
+                navigation.navigate('SessionSummary', {
+                  complaintId: todaySession.complaintId ?? '',
+                  customText: todaySession.complaintText,
+                  formula,
+                  scoreBefore: todaySession.scoreBefore ?? 0,
+                  scoreAfter: todaySession.scoreAfter ?? 0,
+                  durationSeconds: todaySession.durationSeconds ?? 0,
+                })
+              }
+              accessibilityRole="button"
+              style={styles.summaryLink}
+            >
+              <Text style={[styles.summaryLinkText, { color: theme.sub }]}>
+                {t('Bugünkü sonucu gör')}
+              </Text>
+            </PressableScale>
+          ) : null}
         </AnimatedIn>
 
         <AnimatedIn delay={180} style={styles.coach}>
@@ -329,6 +362,8 @@ const styles = StyleSheet.create({
     lineHeight: 16,
     marginTop: 4,
   },
+  summaryLink: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 12 },
+  summaryLinkText: { fontFamily: fonts.sansMedium, fontSize: 12 },
   coach: { marginTop: 22 },
   pill: { marginTop: 26 },
 });

@@ -16,8 +16,10 @@ export type RootStackParamList = {
   Name: undefined;
   /** Kurulum 2/3 — zorunlu Google girişi. */
   SignIn: undefined;
-  /** Kurulum 3/3 — hedefler. */
+  /** Kurulum 3/3 — dört formülün tanıtımı. */
   Onboarding: undefined;
+  /** Kurulumun sonundaki "formüllerin hazırlanıyor" töreni. */
+  Preparation: undefined;
   HowItWorks: undefined;
   /** Gizlilik politikası / veri silme metni — uygulama içinde okunur. */
   Legal: { doc: LegalDocId };

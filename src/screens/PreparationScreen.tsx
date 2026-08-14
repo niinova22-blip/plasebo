@@ -12,39 +12,37 @@ import ParticleField from '../components/ParticleField';
 import PotionVessel from '../components/PotionVessel';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import { resolveComplaint } from '../constants/complaints';
 import { useT } from '../context/SettingsContext';
+import { useUser } from '../context/UserContext';
 import { useMotion } from '../hooks/useMotion';
 import { haptics } from '../utils/haptics';
 import type { RootStackParamList } from '../navigation/types';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Examination'>;
+type Props = NativeStackScreenProps<RootStackParamList, 'Preparation'>;
 
-/**
- * Aşamalar ve başlangıç anları (ms). Toplam ~8.5 saniye: iksirin
- * hazırlanması gerçekten bir işlem gibi dursun diye bilerek uzun.
- */
+/** Aşamalar ve başlangıç anları (ms). Toplam 7.5 saniye. */
 const STAGES: { text: string; at: number }[] = [
-  { text: 'Şikayet analiz ediliyor...', at: 0 },
-  { text: 'Arşiv taranıyor, sayfalar karıştırılıyor...', at: 1700 },
-  { text: 'Bileşenler kaba dökülüyor...', at: 3400 },
-  { text: 'Karışım demleniyor...', at: 5300 },
-  { text: 'Formülün mühürleniyor...', at: 7000 },
+  { text: 'Kayıt açılıyor...', at: 0 },
+  { text: 'Dört temel formülün hazırlanıyor', at: 1500 },
+  { text: 'Renkler ve sesler eşleştiriliyor...', at: 3000 },
+  { text: 'Nefes desenleri ayarlanıyor...', at: 4500 },
+  { text: 'Günlük formüllerin mühürleniyor...', at: 6000 },
 ];
-const TOTAL_MS = 8500;
+const TOTAL_MS = 7500;
 
 /**
- * Sahte muayene / iksir hazırlama ekranı.
+ * Kurulumun son töreni: dört günlük formülün "hazırlanması".
  *
- * Hiçbir hesap yapılmıyor; ekranın tamamı bir bekleme töreni. Kap
- * (`PotionVessel`) dolarken metinler değişiyor, sonunda formül
- * mühürlenip reçeteye geçiliyor. Altındaki dipnot bunun plasebo
- * olduğunu söylüyor.
+ * Muayene ekranıyla aynı kabı kullanıyor (`PotionVessel`), yalnızca
+ * metinler farklı. İşlevsel olarak hiçbir şey hesaplanmıyor — formüller
+ * zaten tarihten deterministik olarak üretiliyor. Buradaki bekleme, ilk
+ * açılışta uygulamanın ne vaat ettiğini bir kez de göstererek kuruyor:
+ * dört formül, her gün yenilenen.
  */
-export default function ExaminationScreen({ navigation, route }: Props) {
+export default function PreparationScreen({ navigation }: Props) {
   const t = useT();
   const motion = useMotion();
-  const complaint = resolveComplaint(route.params.complaintId, route.params.customText);
+  const { user } = useUser();
   const [stage, setStage] = useState(0);
 
   const fade = useSharedValue(1);
@@ -61,7 +59,7 @@ export default function ExaminationScreen({ navigation, route }: Props) {
       );
     });
 
-    timers.push(setTimeout(() => haptics.step(), TOTAL_MS - 900));
+    timers.push(setTimeout(() => haptics.success(), TOTAL_MS - 900));
     timers.push(
       setTimeout(() => {
         if (!motion.reduced) {
@@ -71,21 +69,12 @@ export default function ExaminationScreen({ navigation, route }: Props) {
     );
     timers.push(
       setTimeout(() => {
-        navigation.replace('Prescription', {
-          complaintId: route.params.complaintId,
-          customText: route.params.customText,
-        });
+        navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
       }, TOTAL_MS)
     );
 
     return () => timers.forEach(clearTimeout);
-  }, [
-    navigation,
-    route.params.complaintId,
-    route.params.customText,
-    motion.reduced,
-    fade,
-  ]);
+  }, [navigation, motion.reduced, fade]);
 
   const screenStyle = useAnimatedStyle(() => ({
     opacity: fade.value,
@@ -94,17 +83,21 @@ export default function ExaminationScreen({ navigation, route }: Props) {
 
   return (
     <Screen background={colors.ink} style={styles.container}>
-      <ParticleField count={12} />
+      <ParticleField count={14} />
 
       <Animated.View style={[styles.center, screenStyle]}>
-        <PotionVessel totalMs={TOTAL_MS} reduced={motion.reduced} />
+        <PotionVessel totalMs={TOTAL_MS} reduced={motion.reduced} color={colors.glow} />
 
         <Text style={styles.stage}>{t(STAGES[stage].text)}</Text>
-        {complaint ? <Text style={styles.complaint}>{t(complaint.label)}</Text> : null}
+        <Text style={styles.name}>
+          {user.name
+            ? t('{ad} için kişisel olarak hazırlanıyor', { ad: user.name })
+            : t('Senin için kişisel olarak hazırlanıyor')}
+        </Text>
       </Animated.View>
 
       <Text style={styles.footnote}>
-        {t('⚗️ Bu analiz plasebodur. Yine de beynin şu an buna inanıyor.')}
+        {t('⚗️ Hazırlanan şey bir ilaç değil, bir ritüel. Etkiyi kuran beklenti.')}
       </Text>
     </Screen>
   );
@@ -121,7 +114,7 @@ const styles = StyleSheet.create({
     marginTop: 38,
     textAlign: 'center',
   },
-  complaint: {
+  name: {
     fontFamily: fonts.serifItalic,
     fontSize: 13,
     color: colors.mist,

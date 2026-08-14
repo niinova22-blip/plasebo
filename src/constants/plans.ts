@@ -57,6 +57,7 @@ export const PLAN_TIERS: PlanTier[] = [
     tagline: 'Uygulamanın tamamı.',
     features: [
       'Sınırsız nokta atışı reçete (günde bir sınırı kalkar)',
+      'Reçete takibi — hangi şikayette ne kadar iyileştiğini izle',
       'Gelişmiş formül havuzu',
       'Tüm geçmiş',
       'Çift doz — ritüel süresini kendin ayarla',
@@ -104,7 +105,10 @@ export const CONTENT_PACKS: ContentPack[] = [
  */
 export const FREE_LIMITS = {
   historyDays: 7,
-  crisisMode: false,
+  /** Günde birden fazla nokta atışı reçete yazdırmak. */
+  unlimitedPrescriptions: false,
+  /** Şikayete göre iyileşme takibi (İstatistik ekranındaki bölüm). */
+  prescriptionTracking: false,
   customDose: false,
 } as const;
 

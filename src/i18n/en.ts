@@ -86,7 +86,6 @@ export const EN: Record<string, string> = {
   'FORMÜLÜ HANGİSİ BELİRLESİN?': 'WHICH ONE DECIDES THE FORMULA?',
   '⚗️ Seçimin formülün adını ve adım sırasını değiştirir, etkisini değil. Etki zaten sende.':
     '⚗️ Your choice changes the formula’s name and step order, not its effect. The effect was always yours.',
-  'Formülümü oluştur': 'Create my formula',
   'Dikkatini toplamak istiyorsun': 'You want to gather your attention',
   'Daha kolay uyumak istiyorsun': 'You want to fall asleep more easily',
   'Zihnini yavaşlatmak istiyorsun': 'You want to slow your mind down',
@@ -125,22 +124,15 @@ export const EN: Record<string, string> = {
   'KRİZ FORMÜLÜ': 'CRISIS FORMULA',
   '⚗️ Bu tamamen plasebo. Yine de işe yarayacak.':
     '⚗️ This is entirely placebo. It will work anyway.',
-  '▶ Ritüeli Başlat': '▶ Start the ritual',
-  '▶ Tekrar Başlat': '▶ Start again',
   '{formul} ritüelini başlat': 'Start the {formul} ritual',
   '{sure} sn': '{sure} s',
   '{tur} tur': '{tur} rounds',
   '{ad} · ~{sure} sn': '{ad} · ~{sure} s',
-  '🎲 Farklı formül dene': '🎲 Try a different formula',
-  '🔒 Kriz modu · yakında': '🔒 Crisis mode · coming soon',
   '🔒 Yakında': '🔒 Coming soon',
   'yakında': 'coming soon',
   'Premium henüz açık değil': 'Premium is not open yet',
   'Aşağıdakiler ilerideki bir güncellemede açılacak. Şimdilik satın alınacak bir şey yok; ücretsiz kademe bugün tam çalışıyor — dört hedefin günlük formülü ve sınırsız tekrar dahil.':
     'The features below will be unlocked in a future update. There is nothing to buy for now; the free tier is fully working today — including a daily formula for all four goals and unlimited replays.',
-  'Bu bugünkü formülün değil. Yarın normal formülüne döneceksin.':
-    'This is not today’s formula. Tomorrow you go back to your usual one.',
-  'Günün formülüne dön': 'Back to today’s formula',
 
   /* ---------------------------------------------------------------- */
   /* Ritüel                                                            */
@@ -1328,20 +1320,48 @@ export const EN: Record<string, string> = {
     'Sealing your formula...',
   '🩺 Nokta atışı reçete al':
     '🩺 Get a targeted prescription',
-  '✓ Bugünkü nokta atışı reçeten alındı':
-    '✓ Today’s targeted prescription is done',
   'Şikayetini anlat, sana özel bir reçete hazırlansın. Günde bir kez.':
     'Describe your complaint and get a prescription of your own. Once a day.',
-  'Sonucu görmek için dokun. Yarın yeni bir reçete hakkın olacak.':
-    'Tap to see the result. Tomorrow you get a new one.',
   'Dört formülün hazır':
     'Your four formulas are ready',
-  'Odak, uyku, kaygı ve enerji — dördü de sabit olarak kullanımına açık ve her yeni gün için dördüne birden yeni bir formül hazırlanıyor. İstersen Ayarlar’dan değiştirebilirsin. Aşağıdan bugün hangisiyle başlayacağını seç.':
-    'Focus, sleep, anxiety and energy — all four are permanently available, and a fresh formula is prepared for each of them every new day. You can change this in Settings. Pick the one you are starting with today.',
+  'Odak, uyku, kaygı ve enerji — dördü de sabit olarak kullanımına açık ve her yeni gün için dördüne birden yeni bir formül hazırlanıyor. Seçim yapmana gerek yok; hangisiyle başlayacağına ana ekrandan karar verirsin, dilersen Ayarlar’dan da değiştirebilirsin.':
+    'Focus, sleep, anxiety and energy — all four are permanently available, and a fresh formula is prepared for each of them every new day. Nothing to choose here; you decide which one to start with on the home screen, and you can change it in Settings.',
   'Dört sabit formül — her gün yenilenir, sınırsız tekrar':
     'Four fixed formulas — renewed daily, unlimited replays',
   'Günde 1 nokta atışı reçete (şikayete özel)':
     '1 targeted prescription a day (complaint-specific)',
   'Sınırsız nokta atışı reçete (günde bir sınırı kalkar)':
     'Unlimited targeted prescriptions (the daily limit is lifted)',
+  '▶ Başlat':
+    '▶ Start',
+  '▶ {recete} · tekrar uygula':
+    '▶ {recete} · apply again',
+  'Bugünkü reçeten hazır; istediğin kadar tekrar uygulayabilirsin. Yeni reçete yarın.':
+    'Today’s prescription is ready; apply it as often as you like. A new one tomorrow.',
+  'Bugünkü sonucu gör':
+    'See today’s result',
+  'Günlük formüllerimi oluştur':
+    'Prepare my daily formulas',
+  'Kayıt açılıyor...':
+    'Opening your record...',
+  'Dört temel formülün hazırlanıyor':
+    'Preparing your four core formulas',
+  'Renkler ve sesler eşleştiriliyor...':
+    'Matching colours and sounds...',
+  'Nefes desenleri ayarlanıyor...':
+    'Tuning the breathing patterns...',
+  'Günlük formüllerin mühürleniyor...':
+    'Sealing your daily formulas...',
+  '{ad} için kişisel olarak hazırlanıyor':
+    'Being prepared personally for {ad}',
+  'Senin için kişisel olarak hazırlanıyor':
+    'Being prepared personally for you',
+  '⚗️ Hazırlanan şey bir ilaç değil, bir ritüel. Etkiyi kuran beklenti.':
+    '⚗️ What is being prepared is a ritual, not a drug. Expectation is what builds the effect.',
+  '🔒 Reçete takibi · yakında':
+    '🔒 Prescription tracking · coming soon',
+  'Hangi şikayette ne kadar iyileştiğini gösteren takip, ilerideki bir güncellemede premium ile açılacak.':
+    'Tracking that shows how much you improve per complaint will be unlocked with premium in a future update.',
+  'Reçete takibi — hangi şikayette ne kadar iyileştiğini izle':
+    'Prescription tracking — follow how much you improve per complaint',
 };

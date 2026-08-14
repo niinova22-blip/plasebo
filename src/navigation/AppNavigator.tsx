@@ -8,6 +8,7 @@ import IntroScreen from '../screens/IntroScreen';
 import NameScreen from '../screens/NameScreen';
 import SignInScreen from '../screens/SignInScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
+import PreparationScreen from '../screens/PreparationScreen';
 import HowItWorksScreen from '../screens/HowItWorksScreen';
 import LegalScreen from '../screens/LegalScreen';
 import PlansScreen from '../screens/PlansScreen';
@@ -95,6 +96,12 @@ export default function AppNavigator() {
         <Stack.Screen name="Name" component={NameScreen} />
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
+        <Stack.Screen
+          name="Preparation"
+          component={PreparationScreen}
+          // Hazırlık kendiliğinden biter; geri dönülecek bir şey yok.
+          options={{ animation: 'fade', gestureEnabled: false }}
+        />
         <Stack.Screen name="HowItWorks" component={HowItWorksScreen} />
         <Stack.Screen name="Legal" component={LegalScreen} />
         <Stack.Screen

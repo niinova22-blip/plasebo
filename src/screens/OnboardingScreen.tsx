@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
@@ -35,15 +35,19 @@ const GOAL_NOTES: Record<Goal, string> = {
  * bugünün formülünü belirleyecek hedefi söylüyor.
  */
 export default function OnboardingScreen({ navigation }: Props) {
-  const { user, update } = useUser();
+  const { update } = useUser();
   const theme = useTheme();
   const t = useT();
-  const [goal, setGoal] = useState<Goal>(user.activeGoal ?? user.goals[0] ?? 'focus');
 
+  /**
+   * Burada seçim yok: dört formülün dördü de sabit olarak açık. Ekran
+   * yalnızca bunu gösteriyor — etiketler bilgi amaçlı, hepsi işaretli
+   * duruyor ve dokunmaya kapalı.
+   */
   const finish = async () => {
-    update({ goals: [goal], activeGoal: goal });
+    update({ goals: [...ALL_GOALS], activeGoal: 'focus' });
     await setOnboarded();
-    navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+    navigation.replace('Preparation');
   };
 
   return (
@@ -55,18 +59,16 @@ export default function OnboardingScreen({ navigation }: Props) {
         </Text>
         <Text style={[styles.sub, { color: theme.sub }]}>
           {t(
-            'Odak, uyku, kaygı ve enerji — dördü de sabit olarak kullanımına açık ve her yeni gün için dördüne birden yeni bir formül hazırlanıyor. İstersen Ayarlar’dan değiştirebilirsin. Aşağıdan bugün hangisiyle başlayacağını seç.'
+            'Odak, uyku, kaygı ve enerji — dördü de sabit olarak kullanımına açık ve her yeni gün için dördüne birden yeni bir formül hazırlanıyor. Seçim yapmana gerek yok; hangisiyle başlayacağına ana ekrandan karar verirsin, dilersen Ayarlar’dan da değiştirebilirsin.'
           )}
         </Text>
 
         <View style={styles.goals}>
           {ALL_GOALS.map((g) => (
             <View key={g} style={styles.goalRow}>
-              <GoalTag
-                label={t(GOAL_LABELS[g])}
-                active={g === goal}
-                onPress={() => setGoal(g)}
-              />
+              {/* Dördü de etkin görünür ve dokunmaya kapalı: bu bir
+                  seçim değil, neyin verildiğinin listesi. */}
+              <GoalTag label={t(GOAL_LABELS[g])} active />
               <Text style={[styles.goalNote, { color: theme.sub }]}>
                 {t(GOAL_NOTES[g])}
               </Text>
@@ -83,7 +85,7 @@ export default function OnboardingScreen({ navigation }: Props) {
         />
 
         <PressableScale onPress={finish} accessibilityRole="button" style={styles.button}>
-          <Text style={styles.buttonText}>{t('Formülümü oluştur')}</Text>
+          <Text style={styles.buttonText}>{t('Günlük formüllerimi oluştur')}</Text>
         </PressableScale>
       </ScrollView>
     </Screen>
