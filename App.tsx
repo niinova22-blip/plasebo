@@ -19,6 +19,7 @@ import { AuthProvider } from './src/context/AuthContext';
 import { PremiumProvider } from './src/context/PremiumContext';
 import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 import { setHapticsEnabled } from './src/utils/haptics';
+import { scheduleNudges } from './src/utils/reminders';
 import { colors } from './src/constants/colors';
 
 /**
@@ -26,11 +27,22 @@ import { colors } from './src/constants/colors';
  * aktif temaya göre ayarlar.
  */
 function ThemedApp() {
-  const { settings, themeName, theme } = useSettings();
+  const { settings, ready, themeName, theme, t } = useSettings();
 
   useEffect(() => {
     setHapticsEnabled(settings.haptics);
   }, [settings.haptics]);
+
+  /**
+   * Akıllı hatırlatıcılar önden zamanlanıyor (arka planda çalışan bir
+   * servis yok), bu yüzden kuyruk uygulama her açıldığında yeniden
+   * dolduruluyor. Ayar kapalıysa hiçbir şey yapılmaz — kapatma anında
+   * zaten iptal ediliyor.
+   */
+  useEffect(() => {
+    if (!ready || !settings.smartNudges) return;
+    void scheduleNudges(settings.nudgesPerDay, t);
+  }, [ready, settings.smartNudges, settings.nudgesPerDay, t]);
 
   return (
     <View style={[styles.root, { backgroundColor: theme.bg }]}>

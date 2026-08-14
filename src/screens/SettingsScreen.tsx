@@ -25,10 +25,12 @@ import { useAuth } from '../context/AuthContext';
 import { usePremium } from '../context/PremiumContext';
 import { ALL_GOALS, GOAL_LABELS } from '../utils/formulaEngine';
 import {
+  cancelNudges,
   cancelReminder,
   formatTime,
   requestPermission,
   scheduleDailyReminder,
+  scheduleNudges,
 } from '../utils/reminders';
 import { haptics } from '../utils/haptics';
 import type { Goal } from '../types';
@@ -61,6 +63,13 @@ const VOLUME_OPTIONS = [
 const DOSE_OPTIONS = [
   { value: '1', label: 'Tek doz' },
   { value: '2', label: 'Çift doz' },
+];
+
+/** Akıllı hatırlatıcının gün başına kaç kez düşeceği. */
+const NUDGE_OPTIONS = [
+  { value: '1', label: 'Günde 1' },
+  { value: '2', label: 'Günde 2' },
+  { value: '3', label: 'Günde 3' },
 ];
 
 export default function SettingsScreen() {
@@ -135,6 +144,41 @@ export default function SettingsScreen() {
     }
   };
 
+  /**
+   * Akıllı hatırlatıcı: günün rastgele saatlerinde düşen kısa dürtmeler.
+   * Bildirim izni günlük hatırlatıcıyla ortak.
+   */
+  const onNudgeToggle = async (enabled: boolean) => {
+    if (!enabled) {
+      updateSettings({ smartNudges: false });
+      await cancelNudges();
+      return;
+    }
+    const granted = await requestPermission();
+    if (!granted) {
+      Alert.alert(
+        t('Bildirim izni yok'),
+        t('Hatırlatıcı için telefon ayarlarından bildirimlere izin vermen gerekiyor.')
+      );
+      return;
+    }
+    const ok = await scheduleNudges(settings.nudgesPerDay, t);
+    if (!ok) {
+      Alert.alert(
+        t('Hatırlatıcı kurulamadı'),
+        t('Expo Go bazı bildirim özelliklerini kısıtlıyor. Kendi derlemende sorunsuz çalışır.')
+      );
+      return;
+    }
+    updateSettings({ smartNudges: true });
+  };
+
+  const onNudgeCountChange = async (value: string) => {
+    const perDay = Number(value);
+    updateSettings({ nudgesPerDay: perDay });
+    if (settings.smartNudges) await scheduleNudges(perDay, t);
+  };
+
   /** Seçiciye verilecek başlangıç değeri — bugünün tarihi + kayıtlı saat. */
   const reminderDate = () => {
     const d = new Date();
@@ -173,6 +217,7 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             await cancelReminder();
+            await cancelNudges();
             reset();
             resetSettings();
             resetPremium();
@@ -361,6 +406,28 @@ export default function SettingsScreen() {
             onPress={() => setPickingTime(true)}
           />
         ) : null}
+        <SettingRow
+          label={t('Akıllı hatırlatıcı')}
+          hint={t(
+            'Günün rastgele saatlerinde kısa bir dürtme gönderir — her seferinde başka bir cümle. Sabit saatli günlük hatırlatıcıdan ayrıdır.'
+          )}
+          switchValue={settings.smartNudges}
+          onSwitchChange={(v) => void onNudgeToggle(v)}
+        />
+        {settings.smartNudges ? (
+          <>
+            <View style={styles.spacer} />
+            <SegmentedControl
+              options={NUDGE_OPTIONS.map((o) => ({ ...o, label: t(o.label) }))}
+              value={`${settings.nudgesPerDay}`}
+              onChange={(v) => void onNudgeCountChange(v)}
+            />
+            <Text style={[styles.hint, { color: theme.faint }]}>
+              {t('Dürtmeler 10:00 ile 21:00 arasına dağıtılır; saatleri her hafta değişir.')}
+            </Text>
+          </>
+        ) : null}
+
         {pickingTime ? (
           <DateTimePicker
             value={reminderDate()}

@@ -53,9 +53,10 @@
       [
         "expo-notifications",
         {
-          "color": "#0E0E12",
+          "color": "#7B6EF6",
           "defaultChannel": "plasebo-daily",
-          "enableBackgroundRemoteNotifications": false
+          "enableBackgroundRemoteNotifications": false,
+          "icon": "./assets/notification-icon.png"
         }
       ],
       [
@@ -83,7 +84,8 @@
       "@react-native-google-signin/google-signin",
       "./plugins/withUploadKeystore",
       "expo-localization",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      "./plugins/withWidget"
     ]
   }
 }

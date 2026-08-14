@@ -316,19 +316,18 @@ export const STEP_NOTES: Record<'color' | 'sound' | 'breath' | 'word', string[]>
  * bölümü. Premium tam havuzu açar, satın alınan içerik paketleri de
  * üstüne ekler.
  *
- * Kesme sayıları, ücretsiz kullanıcının yine de her gün farklı bir
- * formül görmesine yetecek kadar bırakıldı: 5 renk × 4 ses × 3 nefes
- * tek başına 60 farklı bileşim demek. Havuzlar büyütüldüğünde bu
- * sayılar da bir miktar yukarı çekildi — ücretsiz kademe genişlemeden
- * pay almazsa "zenginleşme" yalnızca ödeyenlere görünür olurdu — ama
- * premium'un açtığı fark korundu (16 renk, 12 ses, 9 nefes).
+ * Kesme sayıları **bir yıl tekrarsız** olacak şekilde belirlendi:
+ * 10 renk × 8 ses × 6 nefes = 480 üçlü. Günlük formül bu havuzu sabit
+ * adımlarla gezdiği için (bkz. `dailyTriple`), 480 > 365 olduğu sürece
+ * aynı renk/ses/nefes bileşimi bir yıl boyunca iki kez gelmiyor.
+ * Önceki değerler (5 × 4 × 3 = 60) bunun çok altındaydı.
  */
 export const BASIC_POOL_SIZES = {
-  colors: 5,
-  sounds: 4,
-  breaths: 3,
-  words: 12,
-  facts: 8,
+  colors: 10,
+  sounds: 8,
+  breaths: 6,
+  words: 20,
+  facts: 14,
 } as const;
 
 export interface FormulaPools {

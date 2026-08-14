@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -7,6 +7,7 @@ import Screen from '../components/Screen';
 import StreakBar from '../components/StreakBar';
 import FormulCard from '../components/FormulCard';
 import AnimatedIn from '../components/AnimatedIn';
+import CoachCard from '../components/CoachCard';
 import PressableScale from '../components/PressableScale';
 import TransparencyPill from '../components/TransparencyPill';
 import { colors } from '../constants/colors';
@@ -25,6 +26,8 @@ import {
   poolsFor,
 } from '../utils/formulaEngine';
 import { canFreeze, freezeYesterday, toISODate } from '../utils/storage';
+import { writeWidgetSnapshot } from '../utils/widget';
+import { translateFormulaName } from '../i18n';
 import { useSettings } from '../context/SettingsContext';
 import type { Formula, Goal } from '../types';
 import type { RootStackParamList } from '../navigation/types';
@@ -76,6 +79,19 @@ export default function HomeScreen() {
     setCrisisFormula(null);
     update({ goals: [goal], activeGoal: goal });
   };
+
+  /**
+   * Ana ekran widget'ının okuduğu özet, ana ekran her çizildiğinde
+   * güncelleniyor: kullanıcı uygulamayı açtıkça widget da tazeleniyor.
+   */
+  useEffect(() => {
+    void writeWidgetSnapshot({
+      formula: translateFormulaName(formula.name, t),
+      state: t(doneToday ? 'Bugün tamamlandı' : 'Bugün formülün hazır'),
+      streak: user.streak,
+      streakLabel: t('{gun} gün serisi', { gun: user.streak }),
+    });
+  }, [formula.name, doneToday, user.streak, t]);
 
   return (
     <Screen background={theme.bg}>
@@ -183,6 +199,10 @@ export default function HomeScreen() {
           ) : null}
         </AnimatedIn>
 
+        <AnimatedIn delay={180} style={styles.coach}>
+          <CoachCard />
+        </AnimatedIn>
+
         <AnimatedIn delay={200}>
           <TransparencyPill
             light
@@ -266,5 +286,6 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sansMedium,
     fontSize: 11,
   },
+  coach: { marginTop: 22 },
   pill: { marginTop: 26 },
 });

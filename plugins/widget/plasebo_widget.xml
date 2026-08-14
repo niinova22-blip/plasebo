@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Widget tanımı. Küçük tutuldu: 2x1 hücre, yeniden boyutlandırılabilir.
+  updatePeriodMillis yarım saat: uygulama, ana ekranını her açtığında
+  özeti diske yazıyor; widget da sistemin bu periyodik uyandırmasında o
+  dosyayı okuyor. Android bu değeri zaten en fazla yarım saatte bir
+  çalıştırdığı için pil maliyeti ihmal edilebilir.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="180dp"
+    android:minHeight="70dp"
+    android:targetCellWidth="3"
+    android:targetCellHeight="1"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:previewImage="@mipmap/ic_launcher"
+    android:initialLayout="@layout/plasebo_widget"
+    android:updatePeriodMillis="1800000" />

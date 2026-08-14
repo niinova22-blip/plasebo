@@ -37,6 +37,10 @@ export interface Settings {
   dose: number;
   /** Arayüz dili. `system` cihazın dilini izler. */
   language: LanguagePref;
+  /** Günün rastgele saatlerinde düşen kısa dürtmeler. */
+  smartNudges: boolean;
+  /** Dürtme sayısı (gün başına). */
+  nudgesPerDay: number;
 }
 
 export const defaultSettings: Settings = {
@@ -49,6 +53,8 @@ export const defaultSettings: Settings = {
   blindTest: false,
   dose: 1,
   language: 'system',
+  smartNudges: false,
+  nudgesPerDay: 2,
 };
 
 interface SettingsContextValue {

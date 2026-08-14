@@ -895,4 +895,218 @@ export const EN: Record<string, string> = {
   'Yukarıdaki adımlarla ilgili bir sorun yaşarsan veya bir silme talebini yazılı olarak iletmek istersen niinova22@gmail.com adresine yazabilirsin. Talepler 30 gün içinde yanıtlanır.':
     'If you run into trouble with the steps above, or want to submit a deletion request in writing, you can write to niinova22@gmail.com. Requests are answered within 30 days.',
   'Plasebo — bilerek inan.': 'Placebo — believe on purpose.',
+  'Sıradaki ipucu':
+    'Next tip',
+  'Dokun → sıradaki ipucu':
+    'Tap → next tip',
+  'Akıllı hatırlatıcı':
+    'Smart nudges',
+  'Günün rastgele saatlerinde kısa bir dürtme gönderir — her seferinde başka bir cümle. Sabit saatli günlük hatırlatıcıdan ayrıdır.':
+    'Sends a short nudge at random times of day — a different line every time. Separate from the fixed-time daily reminder.',
+  'Dürtmeler 10:00 ile 21:00 arasına dağıtılır; saatleri her hafta değişir.':
+    'Nudges are spread between 10:00 and 21:00; the times change every week.',
+  'Günde 1':
+    'Once a day',
+  'Günde 2':
+    'Twice a day',
+  'Günde 3':
+    '3× a day',
+  'TEMEL':
+    'BASICS',
+  'UYGULAMA':
+    'IN PRACTICE',
+  'SÜREKLİLİK':
+    'KEEPING IT UP',
+  'ŞEFFAFLIK':
+    'TRANSPARENCY',
+  'FORMÜL':
+    'THE FORMULA',
+  'Plasebo nedir?':
+    'What is a placebo?',
+  'Etkin maddesi olmayan bir şeyin yine de bir etki yaratmasına plasebo deniyor. Buradaki formülün içinde etkin madde yok: renk, ses ve nefesten ibaret. Etkiyi yaratan şey, senin ona ayırdığın iki dakika.':
+    'A placebo is something with no active ingredient that produces an effect anyway. There is no active ingredient in this formula: it is a colour, a sound and a breath. What produces the effect is the two minutes you give it.',
+  'Bildiğin hâlde işe yarayabilir':
+    'It can work even when you know',
+  'Açık etiketli plasebo çalışmalarında insanlara "bu bir plasebo" dendiği hâlde bazı belirtilerde iyileşme bildirildi. Bu yüzden burada hiçbir şey gizlenmiyor — bilmen deneyi bozmuyor.':
+    'In open-label placebo studies, improvements in some symptoms were reported even though people were told outright “this is a placebo”. That is why nothing is hidden here — knowing does not spoil the experiment.',
+  'Asıl iş ritüelde':
+    'The ritual is the real work',
+  'Formülün üç adımı bir çerçeve kuruyor: durursun, bir şeye bakarsın, nefesini sayarsın. Çerçevenin kendisi, içine koyduğun şeyden bağımsız olarak günü bölüyor.':
+    'The three steps build a frame: you stop, you look at something, you count your breath. The frame itself breaks up the day, regardless of what you put inside it.',
+  'Tek gerçek etken: nefes':
+    'The one real factor: breath',
+  'Yavaş ve verişi uzun tutulan nefesin sakinleştirici etkisi gerçek. Renk, frekans ve kelime ise tamamen senin inancına kalmış. İkisini birbirine karıştırmıyoruz.':
+    'Slow breathing with a long exhale genuinely calms you. The colour, the frequency and the word are entirely up to your belief. We do not blur the two.',
+  'Var olan bir alışkanlığın yanına koy':
+    'Attach it to a habit you already have',
+  'Yeni bir alışkanlık, boşluğa değil var olanın yanına tutunur. Sabah kahveni koyduğun anla ritüeli birleştir: su ısınırken formülü başlat. "Kahve yaparım" hatırlatıcın olur.':
+    'A new habit takes hold next to an old one, not in empty space. Tie the ritual to making your morning coffee: start the formula while the water heats. “I make coffee” becomes your reminder.',
+  'Kapı eşiği kuralı':
+    'The doorway rule',
+  'Eve girdiğin ilk iki dakikayı ritüele ayır. Ayakkabını çıkarmak ile telefona bakmak arasına sıkıştır: dışarıdaki günü içeriye taşımadan bir ara vermiş olursun.':
+    'Give the first two minutes at home to the ritual. Wedge it between taking off your shoes and checking your phone: you get a break before the day outside comes in with you.',
+  'Sınav ve sunum öncesi':
+    'Before an exam or a talk',
+  'Odak hedefini seç, ritüeli başlamadan 5 dakika önce çalıştır. Amaç bilgi yüklemek değil; ellerin işe başlamadan önce zihnin nereye bakacağını bilmesi.':
+    'Pick the focus goal and run the ritual five minutes before you start. The point is not to load information; it is that your mind knows where to look before your hands begin.',
+  'Yatmadan önce':
+    'Before bed',
+  'Uyku hedefinde ses adımı öne geçer ve süreler uzar. Telefonu bırakmadan önceki son iş olsun; ritüel bitince ekranı kapat, çünkü asıl fark ondan sonra geliyor.':
+    'In the sleep goal the sound step comes first and the timings stretch. Make it the last thing before you put the phone down; when the ritual ends, close the screen — that is where the difference is.',
+  'Toplantı arası':
+    'Between meetings',
+  'İki toplantı arasında 90 saniyen varsa kulaklığı tak ve yalnızca ses adımını dinle. Ritüelin tamamını yapmak zorunda değilsin; yarısı da bir aradır.':
+    'If you have 90 seconds between two meetings, put your headphones on and take only the sound step. You do not have to do the whole ritual; half of it is still a break.',
+  'Kaygı yükseldiğinde':
+    'When anxiety rises',
+  'Kaygı hedefinde nefes adımı başa geçer. Panik anında sayıları tutturmaya çalışma; sadece verişi alıştan uzun tut. Sayılar keyfi, ritim değil.':
+    'In the anxiety goal the breath step comes first. In a panicky moment do not chase the numbers; just keep the exhale longer than the inhale. The numbers are arbitrary, the rhythm is not.',
+  'Yolda, otobüste, sırada':
+    'On the way, on the bus, in a queue',
+  'Renk adımı için sessizlik gerekmiyor. Kalabalıkta ekrana bakmak da bir sabitleme; gözün tek bir yerde durması, zihnin de orada durması demek.':
+    'The colour step does not need silence. Looking at the screen in a crowd is a fixation too; your eye staying in one place means your mind stays there.',
+  'Aynı saat, aynı yer':
+    'Same hour, same corner',
+  'Ritüeli her gün aynı saatte ve aynı köşede yapmayı dene. Tekrarlanan bağlam beklentiyi güçlendirir — plasebonun çalıştığı iddia edilen tek yer de burası zaten.':
+    'Try doing the ritual at the same hour in the same corner. A repeated context strengthens expectation — which is the only place a placebo is claimed to work anyway.',
+  'Kaçırdığın gün başarısızlık değil':
+    'A missed day is not a failure',
+  'Seri kopabilir; uygulama seni bunun için azarlamıyor. Haftada bir "dünü dondur" hakkın var. Amaç kusursuz bir tablo değil, geri dönebilmek.':
+    'Streaks break; the app does not scold you for it. You get one “freeze yesterday” a week. The goal is not a perfect grid, it is being able to come back.',
+  'İki dakika kuralı':
+    'The two-minute rule',
+  'İsteksiz olduğun gün ritüeli tamamlamak zorunda değilsin: tek adım yap ve bırak. Küçük tutulan gün, atlanan günden daha kolay tekrarlanır.':
+    'On a day you do not feel like it, you do not have to finish: do one step and stop. A day kept small repeats more easily than a day skipped.',
+  'Puan bir not değil':
+    'The score is not a grade',
+  'Ritüel sonundaki puan senin izlenimin; doğru cevabı yok. Düşük puan da veri — İstatistik ekranında günlerin nasıl dağıldığını görmek için orada duruyor.':
+    'The score at the end is your impression; there is no right answer. A low score is data too — it is there so you can see how your days spread out under Stats.',
+  'Hedefi değiştirmek serbest':
+    'Switching goals is free',
+  'Dört hedefin de her gün ayrı bir formülü var ve hepsi açık. Sabah odak, gece uyku seçebilirsin; formül anında değişir, seri bozulmaz.':
+    'All four goals get their own formula each day and all of them are open. Focus in the morning, sleep at night; the formula changes instantly and your streak is untouched.',
+  'Ekrandaki "bulgular" uydurma':
+    'The “findings” on screen are invented',
+  'Ritüel sırasında gördüğün yüzdeler ve oranlar tamamen uydurma; hiçbir ölçüme dayanmıyor. Gerçek çalışmalar kaynaklarıyla birlikte "Nasıl çalışır" ekranında ayrı duruyor.':
+    'The percentages and ratios you see during the ritual are entirely made up; none rest on a measurement. The real studies sit separately, with sources, on the “How does it work?” screen.',
+  'Kendi üstünde dene: kör test':
+    'Test it on yourself: the blind test',
+  'Ayarlardan kör testi açarsan bazı günler ritüel yerine eşit süreli bir bekleme gelir ve bunu ancak sonunda öğrenirsin. İstatistik ekranı iki grubun ortalamasını karşılaştırır.':
+    'Turn the blind test on in settings and some days you get an equally long wait instead of the ritual — and you only find out at the end. The Stats screen compares the averages of the two groups.',
+  'Fark çıkmazsa da bir sonuç':
+    'No difference is also a result',
+  'Gerçek ve sahte günlerin puanları birbirine yakın çıkabilir. Bu bir hata değil, bulgunun kendisi — uygulamanın söylediği zaten buydu.':
+    'The scores of real and sham days may come out close. That is not a fault, it is the finding — it is what the app has been saying all along.',
+  'Nocebo: ters yön':
+    'Nocebo: the other direction',
+  'Beklenti iki yönlü çalışır; kötü bir şey olacağını düşünmek de gerçek şikâyet üretebilir. Bu yüzden burada hiçbir gün "kötü gün" diye etiketlenmiyor.':
+    'Expectation runs both ways; believing something bad will happen can produce real complaints. That is why no day here is labelled a “bad day”.',
+  'Bu bir tedavi değil':
+    'This is not a treatment',
+  'Plasebo hiçbir şeyi iyileştirmez ve hiçbir tıbbi desteğin yerine geçmez. Süregelen bir şikâyetin varsa hekimine danış; uygulama onun yerini almak için değil, yanında durmak için var.':
+    'Placebo cures nothing and replaces no medical support. If you have a lasting complaint, talk to your doctor; this app is not here to take that place, only to sit beside it.',
+  'Veriler telefonda kalıyor':
+    'Your data stays on the phone',
+  'Ritüel kayıtların, puanların ve notların cihazından çıkmıyor; sunucu yok. Ayarlardan tek dokunuşla hepsini kalıcı olarak silebilirsin.':
+    'Your ritual records, scores and notes never leave the device; there is no server. One tap in settings deletes all of it permanently.',
+  'İki girdi var: günün tarihi ve seçtiğin hedef. Aynı gün, aynı hedef her zaman aynı formülü verir — rastgele değil, tekrarlanabilir.':
+    'There are two inputs: today’s date and the goal you picked. The same day with the same goal always gives the same formula — not random, repeatable.',
+  'Bir yıl boyunca tekrar yok':
+    'No repeats for a whole year',
+  'Renk, ses ve nefes üçlüsü bir yıl boyunca kendini tekrar etmeyecek biçimde seçiliyor. Her hedef de farklı bir noktadan başlıyor; aynı gün iki hedef aynı formülü vermiyor.':
+    'The colour–sound–breath trio is chosen so that it does not repeat within a year. Each goal starts from a different point too, so no two goals share a formula on the same day.',
+  'Adım sırası hedefe göre değişir':
+    'The step order follows the goal',
+  'Kaygıda nefes başa geçer, uykuda ses. Sıra, "önce neyi yavaşlatmak istiyorsun" sorusunun cevabı — ölçülmüş bir gerekçesi yok, ama tutarlı.':
+    'Breath comes first for anxiety, sound for sleep. The order answers “what do you want to slow down first” — it has no measured justification, but it is consistent.',
+  'Kelime bir talimat değil':
+    'The word is not an instruction',
+  'Merkezdeki kelimeyi tekrarlamak zorunda değilsin; bakman yeterli. Anlamı sonradan gelir, bazen hiç gelmez. İkisi de olur.':
+    'You do not have to repeat the word in the centre; looking is enough. The meaning comes later, sometimes never. Both are fine.',
+  'Kulaklık şart değil':
+    'Headphones are optional',
+  'Ses adımı hoparlörden de çalışır; kulaklık etkiyi değil deneyimi değiştirir. Ses seviyesini Ayarlar’dan kısabilir, tamamen kapatabilirsin.':
+    'The sound step works through the speaker too; headphones change the experience, not the effect. You can lower the volume in Settings, or turn it off entirely.',
+  'Aynı formülü tekrar oynat':
+    'Replay the same formula',
+  'Günün formülünü istediğin kadar tekrar başlatabilirsin; sınır yok. Sabah bir, akşam bir yapmak da geçerli bir kullanım.':
+    'You can restart today’s formula as often as you like; there is no limit. Once in the morning and once at night is a perfectly good way to use it.',
+  'İki dakikan var mı?':
+    'Got two minutes?',
+  'Bugünün formülü hâlâ seni bekliyor. Hâlâ plasebo.':
+    'Today’s formula is still waiting. Still a placebo.',
+  'Hadi odağını toparlayalım':
+    'Let’s gather your focus',
+  'Renk, ses, nefes. Ölçülmüş bir etkisi yok — yine de dene.':
+    'Colour, sound, breath. No measured effect — try it anyway.',
+  'Bir ara ver':
+    'Take a break',
+  'Ne yaptığın önemli değil; durduğun iki dakika önemli.':
+    'What you do does not matter; the two minutes you stop do.',
+  'Formülün hazır':
+    'Your formula is ready',
+  'Bugünün rengi seçildi bile. Sadece bakman gerekiyor.':
+    'Today’s colour has already been picked. All you have to do is look.',
+  'Nefesini uzat':
+    'Stretch your breath',
+  'Verişi alıştan uzun tut. Buradaki tek gerçek etken bu.':
+    'Keep the exhale longer than the inhale. It is the one real factor here.',
+  'Şimdi iyi bir an':
+    'Now is a good moment',
+  'Sonraya bırakılan ritüel, yapılmayan ritüeldir.':
+    'A ritual put off is a ritual not done.',
+  'Dikkatin dağıldı mı?':
+    'Attention drifting?',
+  'Odak formülü 90 saniye sürüyor. Telefonu bırakmadan önce.':
+    'The focus formula takes 90 seconds. Before you put the phone down.',
+  'Omuzların gergin':
+    'Shoulders tight',
+  'Sükunet formülünde nefes başa geçiyor. Sayıları dert etme.':
+    'In the calm formula the breath comes first. Never mind the numbers.',
+  'Güne hız lazımsa':
+    'If the day needs speed',
+  'Enerji formülü parlak bir renkle başlıyor. Gözünü aç.':
+    'The energy formula opens with a bright colour. Open your eyes.',
+  'Gece yaklaşıyor':
+    'Night is coming',
+  'Uyku formülünde sesler yavaşlar. Ekranı kapatmadan önce bir tur.':
+    'In the sleep formula the sounds slow down. One round before the screen goes off.',
+  'Hiçbir şey yapmıyoruz':
+    'We are doing nothing',
+  'Ama beraber yapıyoruz. İki dakika.':
+    'But we are doing it together. Two minutes.',
+  'Bu bildirim de plasebo':
+    'This notification is a placebo too',
+  'İçinde etkin madde yok. Yine de açtın.':
+    'No active ingredient in it. You opened it anyway.',
+  'Bugünün uydurma bulgusu':
+    'Today’s made-up finding',
+  'Ritüele başlayınca hangisi çıkacak, orası sürpriz.':
+    'Which one turns up when you start is the surprise.',
+  'Ölçtüğümüz tek şey':
+    'The only thing we measure',
+  'Devam ettiğin. Puanın değil, geldiğin sayılıyor.':
+    'That you kept going. Not your score — your showing up.',
+  'Dozaj: iki dakika. Yan etki: bir ara vermiş olmak.':
+    'Dosage: two minutes. Side effect: having taken a break.',
+  'Serini hatırlıyor musun?':
+    'Remember your streak?',
+  'Bugünü de eklemek için geç değil.':
+    'It is not too late to add today.',
+  'Kaçırdıysan sorun değil':
+    'If you missed it, never mind',
+  'Bugünden devam et. Uygulama not tutmuyor, sadece sayıyor.':
+    'Pick up from today. The app is not keeping score, only counting.',
+  'Tek adım da sayılır':
+    'One step counts too',
+  'Tamamını yapamıyorsan yalnızca nefes adımını çalıştır.':
+    'If you cannot do it all, run just the breath step.',
+  'Aynı saat, aynı köşe':
+    'Same hour, same corner',
+  'Tekrarlanan bağlam beklentiyi güçlendiriyor — iddia bu.':
+    'A repeated context strengthens expectation — so the claim goes.',
+  'Bugünkü renk seni bekliyor':
+    'Today’s colour is waiting',
+  'Bir yıl boyunca aynı formül iki kez gelmiyor. Bunu kaçırma.':
+    'The same formula never comes twice in a year. Do not miss this one.',
 };

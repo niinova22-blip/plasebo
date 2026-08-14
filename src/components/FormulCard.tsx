@@ -66,7 +66,8 @@ export default function FormulCard({ formula, onStart, doneToday }: FormulCardPr
         return {
           key: step,
           swatch: formula.color.hex,
-          detail: `${t(formula.color.name)} · ${formula.color.hex}`,
+          // Hex kodu kullanıcıya bir şey söylemiyordu; rengin adı yeterli.
+          detail: t(formula.color.name),
           duration: t('{sure} sn', { sure: formula.color.duration }),
           tag: tagFor('color', formula.color.name),
         };

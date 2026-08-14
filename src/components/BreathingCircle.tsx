@@ -41,8 +41,18 @@ function wordSize(word: string): { fontSize: number; letterSpacing: number } {
   return { fontSize: 8.5, letterSpacing: 0 };
 }
 
+/**
+ * Nefes alırken daire ne kadar büyüyor?
+ *
+ * Küçülme sınırı (0.7) bilerek olduğu gibi bırakıldı — veriş sonunda daire
+ * yeterince toparlanıyor. Büyüme sınırı 1.0'dan 1.45'e çıkarıldı: alış
+ * fazında halka ve ışıma ekranın ortasını gerçekten dolduruyor, böylece
+ * "nefes al" komutunu okumaya gerek kalmadan hareketin kendisi anlaşılıyor.
+ * Alt katmanlar (halo ve bloom) bu değerin katları olarak büyüdüğü için
+ * artış orada da hissediliyor.
+ */
 const MIN_SCALE = 0.7;
-const MAX_SCALE = 1.0;
+const MAX_SCALE = 1.45;
 
 export interface BreathingCircleProps {
   /** Nefes deseni — geçişlerin sertliğini belirler. */
@@ -104,7 +114,7 @@ export default function BreathingCircle({
       scale.value = 0.88;
       intensity.value = 0.72;
       const pulse = { duration: 3400, easing: Easing.inOut(Easing.sin) };
-      scale.value = withRepeat(withTiming(1, pulse), -1, true);
+      scale.value = withRepeat(withTiming(1.14, pulse), -1, true);
       intensity.value = withRepeat(withTiming(1, pulse), -1, true);
       return () => {
         cancelAnimation(scale);

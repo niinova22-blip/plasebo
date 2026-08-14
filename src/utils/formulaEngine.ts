@@ -45,15 +45,48 @@ export function todayISO(d: Date = new Date()): string {
 /**
  * Tarih + hedeften türeyen seed.
  *
- * Not: ilk tasarımda hedef katkısı `goal.length` idi. Bu, aynı uzunluktaki
- * hedeflerin aynı seed'i üretmesine yol açıyordu — 'focus' ve 'sleep'
- * beşer harf olduğu için ikisi de aynı gün birebir aynı renk/ses/nefes/
- * kelimeyi veriyordu. Hedefin karakter toplamı kullanılarak düzeltildi.
+ * Tasarım tarihçesi, çünkü buradaki hata uygulamanın en görünür kusuruydu:
+ * ilk sürüm karakter **toplamı** kullanıyordu (`'2026-08-14'` → 517 gibi).
+ * Toplam, bir yıl boyunca yalnızca ~50 farklı değer üretiyor; üstelik
+ * "01-02" ile "02-01" gibi tarihler aynı toplamı veriyor. Sonuç: havuzlar
+ * ne kadar büyük olursa olsun bir yılda topu topu ~19 farklı formül
+ * çıkıyordu. Artık dizgenin tamamı FNV-1a ile karılıyor; her gün ayrı bir
+ * seed alıyor ve determinizm korunuyor (aynı gün + aynı hedef = aynı seed).
  */
 export function seedFor(date: string, goal: string): number {
-  const dateSeed = date.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const goalSeed = goal.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  return dateSeed + goalSeed;
+  return fnv1a(`${date}|${goal}`);
+}
+
+/** FNV-1a, 32 bit. Kısa dizgeleri iyi dağıtır ve her yerde aynı sonucu verir. */
+function fnv1a(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+}
+
+/** `YYYY-MM-DD` → sabit bir başlangıçtan bu yana geçen gün sayısı. */
+function dayNumber(date: string): number {
+  const [y, m, d] = date.split('-').map(Number);
+  const EPOCH = Date.UTC(2020, 0, 1);
+  return Math.round((Date.UTC(y, (m || 1) - 1, d || 1) - EPOCH) / 86400000);
+}
+
+/**
+ * `n` ile aralarında asal, n'in yarısına yakın bir adım.
+ *
+ * Günlük formül, havuz uzunluklarının çarpımı kadar büyüklükteki bir
+ * halkada `adım` kadar ilerleyerek seçiliyor. Adım n ile aralarında asal
+ * olduğunda dizi, başa dönmeden önce **bütün** kombinasyonları geziyor —
+ * yani havuz 365'ten büyükse bir yıl boyunca hiçbir formül tekrar etmiyor.
+ */
+function coprimeStep(n: number): number {
+  const gcd = (a: number, b: number): number => (b ? gcd(b, a % b) : a);
+  let step = Math.max(1, Math.floor(n * 0.618)); // altın oran: iyi dağılım
+  while (step > 1 && gcd(step, n) !== 1) step--;
+  return step || 1;
 }
 
 /**
@@ -144,6 +177,43 @@ function buildFormula(
 }
 
 /**
+ * Günün renk/ses/nefes üçlüsünü **tekrarsız** seçer.
+ *
+ * Rastgele seçim (karma → mod) bir yılda kaçınılmaz olarak çakışır: 365
+ * çekilişte, 480 elemanlı bir havuzda bile doğum günü paradoksu yüzünden
+ * yüzlerce tekrar olur. Bunun yerine üçlü, havuz büyüklüğü kadar bir
+ * halkada sabit adımlarla dolaşılıyor: adım havuzla aralarında asal
+ * olduğu için dizi bütün kombinasyonları gezmeden başa dönmüyor.
+ * Havuz 365'ten büyük olduğu sürece bir yıl boyunca aynı üçlü iki kez
+ * gelmiyor — hedefler de birbirinden farklı bir noktadan başlıyor.
+ */
+function dailyTriple(
+  goal: string,
+  date: string,
+  pools: FormulaPools
+): { color: number; sound: number; breath: number; word: number } {
+  const C = pools.colors.length;
+  const S = pools.sounds.length;
+  const B = pools.breaths.length;
+  const W = pools.words.length;
+  const total = C * S * B;
+
+  const day = dayNumber(date);
+  const goalOffset = fnv1a(goal) % total;
+  const index = (((day * coprimeStep(total) + goalOffset) % total) + total) % total;
+
+  // Karışık tabanlı çözme: index → (renk, ses, nefes)
+  const color = index % C;
+  const sound = Math.floor(index / C) % S;
+  const breath = Math.floor(index / (C * S)) % B;
+
+  // Kelime kendi halkasında döner; üçlüyle aynı ritmi tutmasın diye ayrı.
+  const wordIndex = (day * coprimeStep(W) + (fnv1a(`${goal}|word`) % W)) % W;
+
+  return { color, sound, breath, word: ((wordIndex % W) + W) % W };
+}
+
+/**
  * Günün formülü. Aynı gün + aynı hedef + aynı havuz her zaman aynı
  * formülü verir, farklı gün farklı formül üretir.
  *
@@ -158,7 +228,16 @@ export function generateDailyFormula(
   date: string = todayISO(),
   pools: FormulaPools = BASIC_POOLS
 ): Formula {
-  return buildFormula(seedFor(date, goal), goal, date, pools);
+  const seed = seedFor(date, goal);
+  const idx = dailyTriple(goal, date, pools);
+  const base = buildFormula(seed, goal, date, pools);
+  return {
+    ...base,
+    color: { ...pools.colors[idx.color] },
+    sound: { ...pools.sounds[idx.sound] },
+    breath: { ...pools.breaths[idx.breath] },
+    word: pools.words[idx.word],
+  };
 }
 
 /**

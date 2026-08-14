@@ -93,6 +93,29 @@ Dil, Ayarlar → Görünüm → Dil altından seçilir (`Sistem` / `Türkçe` /
 
 Değişkenler `{ad}` biçiminde taşınır: `t('Merhaba {ad}', { ad: user.name })`.
 
+## Ana ekran widget'ı
+
+Android ana ekranına eklenebilen küçük bir widget var: günün formülünün
+adı, seri ve durum satırı. Widget'ın kendi formül mantığı yok — uygulama
+ana ekranını her çizdiğinde özeti `files/widget.json` dosyasına yazıyor
+(`src/utils/widget.ts`), Kotlin tarafı da yalnızca onu okuyor
+(`plugins/widget/PlaseboWidget.kt`). Böylece motor tek yerde kalıyor.
+
+Dosyalar `plugins/widget/` altında durur ve `plugins/withWidget.js`
+eklentisi her prebuild'de bunları `android/` içine kopyalayıp manifeste
+alıcıyı yazar.
+
+## Hatırlatıcılar
+
+İki ayrı mekanizma var:
+
+- **Günlük hatırlatıcı** — kullanıcının seçtiği sabit saatte, sistemin
+  saat seçicisiyle belirlenir.
+- **Akıllı hatırlatıcı** — günün rastgele saatlerine dağıtılan kısa
+  dürtmeler (`src/constants/nudges.ts`). Arka planda çalışan bir servis
+  olmadığı için bir haftalık kuyruk önden zamanlanır ve uygulama her
+  açıldığında yeniden doldurulur (`App.tsx`).
+
 ## Ekranlar
 
 | Ekran | Ne yapar |

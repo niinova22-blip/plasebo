@@ -18,6 +18,7 @@
  *   assets/android-icon-background.png    1024  yalnızca zemin
  *   assets/android-icon-monochrome.png    1024  tek renk siluet (temalı simge)
  *   assets/splash-icon.png                1024  açılış ekranı işareti (şeffaf)
+ *   assets/notification-icon.png           256  bildirim küçük simgesi (siluet)
  *   assets/favicon.png                      96  web
  *
  * Kenar yumuşatma, hedef boyutun 3 katında çizip kutu filtresiyle
@@ -48,46 +49,69 @@ function smoothstep(e0, e1, x) {
 /**
  * İşaretin bir noktadaki katkısı.
  *
+ * İşaret bir **kapsül**: eğik duran, ortadan ikiye ayrılmış bir hap.
+ * Önceki sürüm iç içe halkalardan oluşuyordu ve küçültüldüğünde kamera
+ * lensine benziyordu — uygulamayla hiçbir ilgisi olmayan bir çağrışım.
+ * Kapsül ise uygulamanın kendisini anlatıyor: içinde etkin madde olmayan
+ * bir hap. Üst yarısı mor, alt yarısı yeşil; ikisi arasında ince bir dikiş.
+ *
  * `u`, `v` merkeze göre -0.5..0.5 aralığında normalize edilmiş koordinat.
- * Dönen değer: { color, alpha }.
  */
 function mark(u, v, opts = {}) {
   const { halo = true, flat = false } = opts;
-  const d = Math.hypot(u, v);
 
-  const R_ORB = 0.225; // ışık küresi
-  const R_RING = 0.360; // ince halka
-  const RING_W = 0.013;
+  // --- kapsülün geometrisi ------------------------------------------
+  const ANGLE = (-38 * Math.PI) / 180; // sağ üste doğru eğik
+  const HALF = 0.135; // gövdenin yarı uzunluğu
+  const R = 0.115; // uçların yarıçapı
+  const dirX = Math.cos(ANGLE);
+  const dirY = Math.sin(ANGLE);
 
-  // --- küre --------------------------------------------------------
-  // Renk çapraz bir geçiş: sol altta yeşil, sağ üstte mor.
-  const t = clamp((u - v) / (2 * R_ORB) * 0.5 + 0.5);
-  let color = mix(GLOW, PULSE, t);
-  // Sol üstten gelen yumuşak ışık; küreyi düz bir daire olmaktan çıkarır.
-  const spec = smoothstep(0.85, 0.0, Math.hypot(u + 0.085, v + 0.095) / R_ORB);
-  color = mix(color, LIGHT, spec * 0.3);
-  const orbA = 1 - smoothstep(R_ORB - 0.006, R_ORB + 0.006, d);
+  // Noktanın eksen üzerindeki izdüşümü ve eksene uzaklığı.
+  const t = clamp(u * dirX + v * dirY, -HALF, HALF);
+  const px = u - dirX * t;
+  const py = v - dirY * t;
+  const d = Math.hypot(px, py); // eksene dik uzaklık
+  const along = u * dirX + v * dirY; // hangi yarıda?
 
-  // --- halka -------------------------------------------------------
-  const ringA =
-    (1 - smoothstep(RING_W - 0.004, RING_W + 0.004, Math.abs(d - R_RING))) * 0.42;
+  const bodyA = 1 - smoothstep(R - 0.005, R + 0.005, d);
 
-  // --- ışıma -------------------------------------------------------
-  const haloA = halo ? Math.exp(-Math.pow((d - R_ORB) / 0.135, 2)) * 0.42 : 0;
+  // --- dikiş: iki yarının arasındaki ince çizgi ----------------------
+  const seam = 1 - smoothstep(0.004, 0.010, Math.abs(along));
 
   if (flat) {
-    // Tek renk siluet: küre + halka, ışıma yok.
-    return { color: [255, 255, 255], alpha: clamp(Math.max(orbA, ringA / 0.42)) };
+    // Tek renk siluet (bildirim simgesi, temalı simge): dolu kapsül.
+    return { color: [255, 255, 255], alpha: clamp(bodyA) };
   }
+
+  // --- renkler -------------------------------------------------------
+  // Üst yarı mor, alt yarı yeşil; her ikisinde de içten dışa hafif koyulaşma.
+  // İki yarı arasında çok dar bir geçiş: dikiş keskin kalsın ama
+  // pikselleşmesin.
+  const side = smoothstep(-0.006, 0.006, along);
+  const MINT = [0x8c, 0xf0, 0xa8]; // neon yeşil yerine daha yumuşak nane
+  const half = mix(MINT, PULSE, side);
+  const edge = 1 - smoothstep(R * 0.35, R, d); // merkeze yakın yerler parlak
+  let color = mix(mix(half, [0, 0, 0], 0.18), lightenOf(half), edge * 0.75);
+
+  // Sol üstten gelen ışık.
+  const spec = smoothstep(0.9, 0.0, Math.hypot(u + 0.09, v + 0.1) / (R * 2.4));
+  color = mix(color, LIGHT, spec * 0.35);
+
+  // Dikiş, gövdeyi koyultarak çiziliyor.
+  color = mix(color, [0x14, 0x14, 0x1a], seam * 0.55 * bodyA);
+
+  // --- ışıma ---------------------------------------------------------
+  const haloA = halo ? Math.exp(-Math.pow((d - R) / 0.105, 2)) * 0.38 : 0;
+  // Işımanın rengi geniş bir bantta karışıyor; sert geçiş, zeminde
+  // kapsülün dışına taşan bir çapraz çizgi bırakıyordu.
+  const haloColor = mix([0x8c, 0xf0, 0xa8], PULSE, smoothstep(-0.22, 0.22, along));
 
   const out = [0, 0, 0];
   let alpha = 0;
-
-  // Işıma → halka → küre sırasıyla üst üste bindiriliyor.
   const layers = [
-    { c: PULSE, a: haloA },
-    { c: mix(LIGHT, PULSE, 0.35), a: ringA },
-    { c: color, a: orbA },
+    { c: haloColor, a: clamp(haloA) },
+    { c: color, a: clamp(bodyA) },
   ];
   for (const layer of layers) {
     const a = clamp(layer.a);
@@ -99,6 +123,11 @@ function mark(u, v, opts = {}) {
   }
 
   return { color: out, alpha };
+}
+
+/** Bir rengin açık tonu — kapsülün iç parlaklığı için. */
+function lightenOf(c) {
+  return mix(c, [255, 255, 255], 0.45);
 }
 
 /** Zemin: ink üzerine merkezden yayılan çok yumuşak bir mor ışıma. */
@@ -169,22 +198,26 @@ function write(name, png) {
 
 function main() {
   // Tam simge — işaret kenarlardan rahat dursun diye biraz küçültülüyor.
-  write('icon.png', render(1024, composite(0.82)));
+  write('icon.png', render(1024, composite(0.92)));
 
   // Uyarlanabilir simge: ön plan, maskelenen alanın dışında kalmamalı.
   // Android 108dp tuvalin yalnızca ortadaki ~72dp'sini garanti ediyor,
   // bu yüzden işaret %60'a çekiliyor.
-  write('android-icon-foreground.png', render(1024, markAt(0.6)));
+  write('android-icon-foreground.png', render(1024, markAt(0.66)));
   write('android-icon-background.png', render(1024, (u, v) => ({
     color: backgroundColor(u, v),
     alpha: 1,
   })));
-  write('android-icon-monochrome.png', render(1024, markAt(0.6, { flat: true })));
+  write('android-icon-monochrome.png', render(1024, markAt(0.66, { flat: true })));
 
   // Açılış ekranı: koyu zemin app.json'dan geliyor, işaret şeffaf.
-  write('splash-icon.png', render(1024, markAt(0.95)));
+  write('splash-icon.png', render(1024, markAt(1.0)));
 
-  write('favicon.png', render(96, composite(0.82)));
+  // Bildirim simgesi: Android küçük simgeyi tek renge indirip kendi
+  // rengiyle boyar, o yüzden şeffaf zeminde beyaz siluet olmalı.
+  write('notification-icon.png', render(256, markAt(0.78, { flat: true })));
+
+  write('favicon.png', render(96, composite(0.92)));
 }
 
 main();
