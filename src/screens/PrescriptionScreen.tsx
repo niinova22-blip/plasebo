@@ -10,7 +10,7 @@ import Screen from '../components/Screen';
 import PressableScale from '../components/PressableScale';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import { complaintById } from '../constants/complaints';
+import { resolveComplaint } from '../constants/complaints';
 import { useSettings, useT, useTheme } from '../context/SettingsContext';
 import { useUser } from '../context/UserContext';
 import { usePremium } from '../context/PremiumContext';
@@ -57,7 +57,7 @@ export default function PrescriptionScreen({ navigation, route }: Props) {
   const { isPremium, packs, limits } = usePremium();
   const motion = useMotion();
 
-  const complaint = complaintById(route.params.complaintId);
+  const complaint = resolveComplaint(route.params.complaintId, route.params.customText);
   const today = toISODate();
 
   const formula = useMemo(() => {
@@ -145,6 +145,7 @@ export default function PrescriptionScreen({ navigation, route }: Props) {
               haptics.tap();
               navigation.navigate('ScoreBefore', {
                 complaintId: complaint.id,
+                customText: route.params.customText,
                 formula,
               });
             }}

@@ -51,7 +51,7 @@ function formatTime(total: number): string {
 }
 
 export default function RitualScreen({ navigation, route }: Props) {
-  const { formula, complaintId, scoreBefore } = route.params;
+  const { formula, complaintId, customText, scoreBefore } = route.params;
   const { recordSession } = useUser();
   /** Ritüelin gerçekte ne kadar sürdüğü — seans özetinde gösteriliyor. */
   const startedAt = useRef(Date.now());
@@ -190,6 +190,7 @@ export default function RitualScreen({ navigation, route }: Props) {
     if (complaintId && scoreBefore !== undefined) {
       navigation.replace('ScoreAfter', {
         complaintId,
+        customText,
         formula,
         scoreBefore,
         durationSeconds: Math.max(1, Math.round((Date.now() - startedAt.current) / 1000)),
@@ -199,7 +200,7 @@ export default function RitualScreen({ navigation, route }: Props) {
     }
 
     setFinished(true);
-  }, [index, steps, formula, complaintId, scoreBefore, navigation]);
+  }, [index, steps, formula, complaintId, customText, scoreBefore, navigation]);
 
   useEffect(() => {
     if (remaining === 0 && !finished) goNext();

@@ -27,15 +27,22 @@ export type RootStackParamList = {
   /* --- Şikayet → muayene → reçete → ölçüm akışı ------------------- */
   /** Akışın başı: bugün ne şikayet var? */
   Complaint: undefined;
-  /** Üç saniyelik sahte muayene; kendiliğinden reçeteye geçer. */
-  Examination: { complaintId: string };
+  /**
+   * Sahte muayene; kendiliğinden reçeteye geçer.
+   *
+   * `customText`, kullanıcı şikayetini kendi cümlesiyle yazdığında
+   * doluyor ve akışın sonuna kadar taşınıyor — şikayet nesnesi her
+   * ekranda bu metinden yeniden kuruluyor (bkz. `resolveComplaint`).
+   */
+  Examination: { complaintId: string; customText?: string };
   /** Reçete kartı — kabul edilirse ölçüme geçilir. */
-  Prescription: { complaintId: string };
+  Prescription: { complaintId: string; customText?: string };
   /** Ritüel öncesi ölçüm. */
-  ScoreBefore: { complaintId: string; formula: Formula };
+  ScoreBefore: { complaintId: string; customText?: string; formula: Formula };
   /** Ritüel sonrası ölçüm; kaydı da bu ekran yazar. */
   ScoreAfter: {
     complaintId: string;
+    customText?: string;
     formula: Formula;
     scoreBefore: number;
     durationSeconds: number;
@@ -44,6 +51,7 @@ export type RootStackParamList = {
   /** Seans özeti — akışın sonu. */
   SessionSummary: {
     complaintId: string;
+    customText?: string;
     formula: Formula;
     scoreBefore: number;
     scoreAfter: number;
@@ -57,6 +65,7 @@ export type RootStackParamList = {
   Ritual: {
     formula: Formula;
     complaintId?: string;
+    customText?: string;
     scoreBefore?: number;
   };
 };

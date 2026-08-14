@@ -1292,4 +1292,56 @@ export const EN: Record<string, string> = {
     'Tension',
   'Motivasyon':
     'Motivation',
+  'Kendim anlatayım':
+    'Let me describe it myself',
+  'Örn. Sabahları kalkmakta zorlanıyorum':
+    'e.g. I struggle to get up in the mornings',
+  'Kendi cümlen reçetenin adını ve formülün hedefini belirler. {kalan} karakter kaldı.':
+    'Your own words decide the prescription’s name and the formula’s goal. {kalan} characters left.',
+  'Kendi cümlen':
+    'Your own words',
+  'Anlattığın şeyin şiddetini şu an puanla':
+    'Rate the intensity of what you described right now',
+  'Kişiye Özel Karışım':
+    'Bespoke Mixture',
+  'Tarif Dışı Formül':
+    'Off-Recipe Formula',
+  'Özel Terkip':
+    'Special Compound',
+  'Ad Hoc Reçete':
+    'Ad Hoc Prescription',
+  'Anlattığın tabloya göre hazırlanmış, tek seferlik bir bileşim':
+    'A one-off compound prepared from the picture you described',
+  'Cümlendeki örüntüye eşlenen renk, ses ve nefes üçlüsü':
+    'A colour, sound and breath trio matched to the pattern in your sentence',
+  'Tarif ettiğin duruma göre ayarlanmış özel bir terkip':
+    'A special compound tuned to the state you described',
+  'Yalnızca bugünün ve senin cümlenin belirlediği bir formül':
+    'A formula decided by today and your own sentence alone',
+  'Arşiv taranıyor, sayfalar karıştırılıyor...':
+    'Scanning the archive, shuffling pages...',
+  'Bileşenler kaba dökülüyor...':
+    'Pouring the ingredients into the vessel...',
+  'Karışım demleniyor...':
+    'The mixture is steeping...',
+  'Formülün mühürleniyor...':
+    'Sealing your formula...',
+  '🩺 Nokta atışı reçete al':
+    '🩺 Get a targeted prescription',
+  '✓ Bugünkü nokta atışı reçeten alındı':
+    '✓ Today’s targeted prescription is done',
+  'Şikayetini anlat, sana özel bir reçete hazırlansın. Günde bir kez.':
+    'Describe your complaint and get a prescription of your own. Once a day.',
+  'Sonucu görmek için dokun. Yarın yeni bir reçete hakkın olacak.':
+    'Tap to see the result. Tomorrow you get a new one.',
+  'Dört formülün hazır':
+    'Your four formulas are ready',
+  'Odak, uyku, kaygı ve enerji — dördü de sabit olarak kullanımına açık ve her yeni gün için dördüne birden yeni bir formül hazırlanıyor. İstersen Ayarlar’dan değiştirebilirsin. Aşağıdan bugün hangisiyle başlayacağını seç.':
+    'Focus, sleep, anxiety and energy — all four are permanently available, and a fresh formula is prepared for each of them every new day. You can change this in Settings. Pick the one you are starting with today.',
+  'Dört sabit formül — her gün yenilenir, sınırsız tekrar':
+    'Four fixed formulas — renewed daily, unlimited replays',
+  'Günde 1 nokta atışı reçete (şikayete özel)':
+    '1 targeted prescription a day (complaint-specific)',
+  'Sınırsız nokta atışı reçete (günde bir sınırı kalkar)':
+    'Unlimited targeted prescriptions (the daily limit is lifted)',
 };

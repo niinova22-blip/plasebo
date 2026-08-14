@@ -6,7 +6,7 @@ import PressableScale from '../components/PressableScale';
 import ScoreSlider from '../components/ScoreSlider';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import { complaintById } from '../constants/complaints';
+import { resolveComplaint } from '../constants/complaints';
 import { useT } from '../context/SettingsContext';
 import { useUser } from '../context/UserContext';
 import { haptics } from '../utils/haptics';
@@ -29,8 +29,9 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ScoreAfter'>;
 export default function ScoreAfterScreen({ navigation, route }: Props) {
   const t = useT();
   const { recordSession } = useUser();
-  const { formula, complaintId, scoreBefore, durationSeconds, steps } = route.params;
-  const complaint = complaintById(complaintId);
+  const { formula, complaintId, customText, scoreBefore, durationSeconds, steps } =
+    route.params;
+  const complaint = resolveComplaint(complaintId, customText);
 
   const [score, setScore] = useState(scoreBefore);
   const [touched, setTouched] = useState(false);
@@ -55,6 +56,9 @@ export default function ScoreAfterScreen({ navigation, route }: Props) {
       sham: formula.sham,
       dose: formula.dose ?? 1,
       complaintId,
+      // Serbest metin de saklanıyor: arşivde "kendi cümlen" satırının
+      // ne olduğu sonradan okunabilsin diye.
+      complaintText: customText,
       prescriptionName: complaint?.prescriptionName,
       scoreBefore,
       scoreAfter: score,
@@ -62,6 +66,7 @@ export default function ScoreAfterScreen({ navigation, route }: Props) {
     });
     navigation.replace('SessionSummary', {
       complaintId,
+      customText,
       formula,
       scoreBefore,
       scoreAfter: score,

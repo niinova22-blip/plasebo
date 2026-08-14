@@ -51,11 +51,11 @@ export default function OnboardingScreen({ navigation }: Props) {
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={[styles.eyebrow, { color: theme.sub }]}>{t('KURULUM · 3/3')}</Text>
         <Text style={[styles.title, { color: theme.text }]}>
-          {t('Bugün hangisiyle başlıyorsun?')}
+          {t('Dört formülün hazır')}
         </Text>
         <Text style={[styles.sub, { color: theme.sub }]}>
           {t(
-            'Dört hedefin de her gün kendi formülü üretilir; hepsi açık. Burada yalnızca hangisiyle başlayacağını söylüyorsun — ana ekrandan istediğin an diğerine geçebilirsin.'
+            'Odak, uyku, kaygı ve enerji — dördü de sabit olarak kullanımına açık ve her yeni gün için dördüne birden yeni bir formül hazırlanıyor. İstersen Ayarlar’dan değiştirebilirsin. Aşağıdan bugün hangisiyle başlayacağını seç.'
           )}
         </Text>
 

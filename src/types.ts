@@ -42,6 +42,8 @@ export interface Session {
    */
   /** Seçilen şikayetin kimliği (`src/constants/complaints.ts`). */
   complaintId?: string;
+  /** Şikayet kendi cümlesiyle yazıldıysa o metin. */
+  complaintText?: string;
   /** Reçetenin adı — şikayetten gelir. */
   prescriptionName?: string;
   /** Ritüel ÖNCESİ şikayet şiddeti (1-10; yüksek = kötü). */

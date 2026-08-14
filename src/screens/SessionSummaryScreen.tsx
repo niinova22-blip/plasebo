@@ -13,7 +13,7 @@ import PressableScale from '../components/PressableScale';
 import TransparencyPill from '../components/TransparencyPill';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import { complaintById } from '../constants/complaints';
+import { resolveComplaint } from '../constants/complaints';
 import { useT, useTheme } from '../context/SettingsContext';
 import { useMotion } from '../hooks/useMotion';
 import { translateFormulaName } from '../i18n';
@@ -33,8 +33,9 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
   const theme = useTheme();
   const t = useT();
   const motion = useMotion();
-  const { complaintId, formula, scoreBefore, scoreAfter, durationSeconds } = route.params;
-  const complaint = complaintById(complaintId);
+  const { complaintId, customText, formula, scoreBefore, scoreAfter, durationSeconds } =
+    route.params;
+  const complaint = resolveComplaint(complaintId, customText);
 
   const diff = scoreBefore - scoreAfter;
   const percent = scoreBefore > 0 ? Math.round((diff / scoreBefore) * 100) : 0;

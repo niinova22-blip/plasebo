@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -14,7 +14,11 @@ import PressableScale from '../components/PressableScale';
 import TransparencyPill from '../components/TransparencyPill';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import { COMPLAINTS, type Complaint } from '../constants/complaints';
+import {
+  COMPLAINTS,
+  CUSTOM_COMPLAINT_ID,
+  type Complaint,
+} from '../constants/complaints';
 import { useT, useTheme } from '../context/SettingsContext';
 import { useMotion } from '../hooks/useMotion';
 import { haptics } from '../utils/haptics';
@@ -33,6 +37,21 @@ export default function ComplaintScreen({ navigation }: Props) {
   const theme = useTheme();
   const t = useT();
   const [selected, setSelected] = useState<Complaint | null>(null);
+  /** Listedeki hazır şikayetler yerine kendi cümlesini yazıyor mu? */
+  const [custom, setCustom] = useState(false);
+  const [customText, setCustomText] = useState('');
+
+  const customReady = customText.trim().length >= 3;
+  const canContinue = custom ? customReady : selected !== null;
+
+  const start = () => {
+    if (!canContinue) return;
+    haptics.tap();
+    navigation.navigate('Examination', {
+      complaintId: custom ? CUSTOM_COMPLAINT_ID : (selected as Complaint).id,
+      customText: custom ? customText.trim() : undefined,
+    });
+  };
 
   return (
     <Screen background={theme.bg}>
@@ -61,9 +80,62 @@ export default function ComplaintScreen({ navigation }: Props) {
               onPress={() => {
                 haptics.tap();
                 setSelected(complaint);
+                setCustom(false);
               }}
             />
           ))}
+
+          {/* Listede karşılığı olmayan durumlar için: kendi cümlesi. */}
+          <PressableScale
+            onPress={() => {
+              haptics.tap();
+              setCustom(true);
+              setSelected(null);
+            }}
+            pressedScale={0.99}
+            accessibilityRole="button"
+            accessibilityState={{ selected: custom }}
+            style={[
+              styles.row,
+              {
+                backgroundColor: custom ? theme.accentSoft : theme.surface,
+                borderColor: custom ? theme.pulse : theme.border,
+              },
+            ]}
+          >
+            <Text style={styles.icon}>✍️</Text>
+            <Text style={[styles.label, { color: theme.text }]}>
+              {t('Kendim anlatayım')}
+            </Text>
+          </PressableScale>
+
+          {custom ? (
+            <View style={styles.customWrap}>
+              <TextInput
+                value={customText}
+                onChangeText={setCustomText}
+                placeholder={t('Örn. Sabahları kalkmakta zorlanıyorum')}
+                placeholderTextColor={theme.faint}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: theme.surface,
+                    borderColor: theme.border,
+                    color: theme.text,
+                  },
+                ]}
+                multiline
+                maxLength={120}
+                autoFocus
+              />
+              <Text style={[styles.inputHint, { color: theme.faint }]}>
+                {t(
+                  'Kendi cümlen reçetenin adını ve formülün hedefini belirler. {kalan} karakter kaldı.',
+                  { kalan: 120 - customText.length }
+                )}
+              </Text>
+            </View>
+          ) : null}
         </View>
 
         <TransparencyPill
@@ -73,19 +145,17 @@ export default function ComplaintScreen({ navigation }: Props) {
         />
 
         <PressableScale
-          onPress={() => {
-            if (!selected) return;
-            haptics.tap();
-            navigation.navigate('Examination', { complaintId: selected.id });
-          }}
-          disabled={!selected}
+          onPress={start}
+          disabled={!canContinue}
           accessibilityRole="button"
           style={[
             styles.cta,
-            { backgroundColor: selected ? colors.pulse : theme.border },
+            { backgroundColor: canContinue ? colors.pulse : theme.border },
           ]}
         >
-          <Text style={[styles.ctaText, { color: selected ? colors.white : theme.faint }]}>
+          <Text
+            style={[styles.ctaText, { color: canContinue ? colors.white : theme.faint }]}
+          >
             {t('Devam Et')}
           </Text>
         </PressableScale>
@@ -166,6 +236,19 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   label: { flex: 1, fontFamily: fonts.sans, fontSize: 14, lineHeight: 20 },
+  customWrap: { marginTop: 2, marginBottom: 10 },
+  input: {
+    borderWidth: 1,
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    fontFamily: fonts.sans,
+    fontSize: 14,
+    lineHeight: 20,
+    minHeight: 92,
+    textAlignVertical: 'top',
+  },
+  inputHint: { fontFamily: fonts.sans, fontSize: 10, lineHeight: 15, marginTop: 6 },
   pill: { marginTop: 8 },
   cta: {
     borderRadius: 14,

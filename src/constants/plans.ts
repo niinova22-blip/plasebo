@@ -41,8 +41,8 @@ export const PLAN_TIERS: PlanTier[] = [
     price: '₺0',
     tagline: 'Başlangıç için yeterli.',
     features: [
-      'Dört hedefin her biri için günde 1 formül',
-      'Aynı formülü sınırsız tekrar',
+      'Dört sabit formül — her gün yenilenir, sınırsız tekrar',
+      'Günde 1 nokta atışı reçete (şikayete özel)',
       'Temel formül havuzu',
       '7 günlük geçmiş',
       'Günlük hatırlatıcı ve kör test',
@@ -56,7 +56,7 @@ export const PLAN_TIERS: PlanTier[] = [
     period: '/ay',
     tagline: 'Uygulamanın tamamı.',
     features: [
-      'Sınırsız formül üretimi (kriz modu)',
+      'Sınırsız nokta atışı reçete (günde bir sınırı kalkar)',
       'Gelişmiş formül havuzu',
       'Tüm geçmiş',
       'Çift doz — ritüel süresini kendin ayarla',

@@ -94,6 +94,7 @@ export const COMPLAINTS: Complaint[] = [
 
 /** Kategorilerin ekranda görünen adı. */
 export const CATEGORY_LABELS: Record<string, string> = {
+  custom: 'Kendi cümlen',
   focus: 'Odak',
   anxiety: 'Kaygı',
   energy: 'Enerji',
@@ -104,4 +105,111 @@ export const CATEGORY_LABELS: Record<string, string> = {
 
 export function complaintById(id?: string): Complaint | undefined {
   return id ? COMPLAINTS.find((c) => c.id === id) : undefined;
+}
+
+/* ------------------------------------------------------------------ */
+/* Kendi cümlesiyle anlatan kullanıcı                                  */
+/* ------------------------------------------------------------------ */
+
+/** Serbest metinle açılan şikayetin kimliği. */
+export const CUSTOM_COMPLAINT_ID = 'custom';
+
+/**
+ * Hedef, kullanıcının yazdığı cümleden çıkarılır.
+ *
+ * Anahtar kelime eşlemesi bilerek basit: gerçek bir dil işleme yok,
+ * olduğunu da iddia etmiyoruz. Hiçbir kelime tutmazsa cümlenin karması
+ * hedefi belirler — yani sonuç yine deterministik: aynı cümle her zaman
+ * aynı hedefi verir.
+ */
+const KEYWORDS: { goal: Goal; words: string[] }[] = [
+  {
+    goal: 'sleep',
+    words: ['uyu', 'uyku', 'uykusuz', 'yorgun', 'yatak', 'gece', 'sleep', 'insomnia'],
+  },
+  {
+    goal: 'anxiety',
+    words: [
+      'kaygı', 'kaygi', 'endişe', 'endise', 'gergin', 'stres', 'panik', 'korku',
+      'sıkış', 'sikis', 'anxious', 'stress', 'panic', 'worry',
+    ],
+  },
+  {
+    goal: 'energy',
+    words: [
+      'enerji', 'motivasyon', 'isteksiz', 'halsiz', 'tembel', 'başlaya', 'baslaya',
+      'energy', 'motivation', 'tired', 'lazy',
+    ],
+  },
+  {
+    goal: 'focus',
+    words: [
+      'odak', 'dikkat', 'dağınık', 'dagilan', 'dagitik', 'konsantre', 'focus',
+      'concentrat', 'distract',
+    ],
+  },
+];
+
+function hashText(text: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h >>> 0;
+}
+
+export function goalForText(text: string): Goal {
+  const lower = text.toLocaleLowerCase('tr-TR');
+  for (const entry of KEYWORDS) {
+    if (entry.words.some((w) => lower.includes(w))) return entry.goal;
+  }
+  const goals: Goal[] = ['focus', 'sleep', 'anxiety', 'energy'];
+  return goals[hashText(lower) % goals.length];
+}
+
+/** Serbest şikayet için reçete adları — metnin karmasına göre seçilir. */
+const CUSTOM_NAMES = [
+  'Kişiye Özel Karışım',
+  'Tarif Dışı Formül',
+  'Özel Terkip',
+  'Ad Hoc Reçete',
+];
+
+/** Serbest şikayet için sözde etki açıklamaları. */
+const CUSTOM_DESCS = [
+  'Anlattığın tabloya göre hazırlanmış, tek seferlik bir bileşim',
+  'Cümlendeki örüntüye eşlenen renk, ses ve nefes üçlüsü',
+  'Tarif ettiğin duruma göre ayarlanmış özel bir terkip',
+  'Yalnızca bugünün ve senin cümlenin belirlediği bir formül',
+];
+
+/**
+ * Kullanıcının yazdığı cümleden bir şikayet nesnesi kurar.
+ *
+ * Sabit şikayetlerle aynı yapıda döner, böylece akışın geri kalanı
+ * (muayene, reçete, ölçüm, özet) hiçbir özel durum bilmek zorunda kalmaz.
+ */
+export function customComplaint(text: string): Complaint {
+  const clean = text.trim();
+  const hash = hashText(clean.toLocaleLowerCase('tr-TR'));
+  return {
+    id: CUSTOM_COMPLAINT_ID,
+    label: clean,
+    category: 'custom',
+    goal: goalForText(clean),
+    prescriptionName: CUSTOM_NAMES[hash % CUSTOM_NAMES.length],
+    formulaDesc: CUSTOM_DESCS[(hash >>> 8) % CUSTOM_DESCS.length],
+    measureQuestion: 'Anlattığın şeyin şiddetini şu an puanla',
+    icon: '✍️',
+  };
+}
+
+/** Kimlik + serbest metinden şikayeti çözer. */
+export function resolveComplaint(
+  id?: string,
+  customText?: string
+): Complaint | undefined {
+  if (id === CUSTOM_COMPLAINT_ID && customText) return customComplaint(customText);
+  return complaintById(id);
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
@@ -20,7 +20,6 @@ import {
   ALL_GOALS,
   GOAL_LABELS,
   applyDose,
-  generateCrisisFormula,
   generateDailyFormula,
   isShamDay,
   poolsFor,
@@ -29,7 +28,7 @@ import { canFreeze, freezeYesterday, toISODate } from '../utils/storage';
 import { writeWidgetSnapshot } from '../utils/widget';
 import { translateFormulaName } from '../i18n';
 import { useSettings } from '../context/SettingsContext';
-import type { Formula, Goal } from '../types';
+import type { Goal } from '../types';
 import type { RootStackParamList } from '../navigation/types';
 
 /**
@@ -69,18 +68,21 @@ export default function HomeScreen() {
     return settings.blindTest && isShamDay(today) ? { ...dosed, sham: true } : dosed;
   }, [activeGoal, today, pools, settings.dose, settings.blindTest, limits.customDose]);
 
-  /** Kriz modunda üretilen geçici formül; null ise günün formülü geçerli. */
-  const [crisisFormula, setCrisisFormula] = useState<Formula | null>(null);
-  const formula = crisisFormula ?? dailyFormula;
+  const formula = dailyFormula;
 
   const doneToday = user.lastRitualDate === today;
   /**
-   * Bugün akıştan geçilmiş bir seans var mı? Varsa kart, ritüeli yeniden
-   * başlatmak yerine o seansın özetini açar.
+   * Nokta atışı reçete günde bir kez üretilir.
+   *
+   * Ücretsiz kademenin sınırı burada: dört sabit formül her zaman açık ve
+   * sınırsız tekrar edilebilir, şikayete özel reçete ise günde bir. Sınır
+   * ayrı bir sayaçla değil, o güne ait şikayetli bir seans olup olmadığına
+   * bakılarak uygulanıyor — yarım kalan akış hakkı yakmıyor.
    */
   const todaySession = user.sessions.find(
-    (s) => s.date === today && s.scoreAfter !== undefined
+    (s) => s.date === today && s.complaintId !== undefined
   );
+  const targetedUsed = Boolean(todaySession) && !limits.crisisMode;
 
   /**
    * Hedef seçici her zaman dört hedefi birden gösterir.
@@ -91,7 +93,6 @@ export default function HomeScreen() {
    * formül **üretmekte** (kriz modu), günün formüllerine erişmekte değil.
    */
   const selectGoal = (goal: Goal) => {
-    setCrisisFormula(null);
     update({ goals: [goal], activeGoal: goal });
   };
 
@@ -172,12 +173,21 @@ export default function HomeScreen() {
           <FormulCard
             formula={formula}
             doneToday={doneToday}
-            onStart={() => {
-              // Ritüel artık doğrudan başlamıyor: önce şikayet sorulur,
-              // muayene ve reçete ekranları da o seçimden türer.
-              if (doneToday && todaySession) {
+            // Dört sabit formül her zaman serbest: doğrudan ritüele girer
+            // ve istenildiği kadar tekrar oynatılır.
+            onStart={() => navigation.navigate('Ritual', { formula })}
+          />
+        </AnimatedIn>
+
+        {/* Nokta atışı reçete: şikayet → muayene → reçete akışı. */}
+        <AnimatedIn delay={150} style={styles.targetedWrap}>
+          <PressableScale
+            onPress={() => {
+              if (targetedUsed && todaySession) {
+                // Hak kullanıldıysa buton, o günün özetini açar.
                 navigation.navigate('SessionSummary', {
                   complaintId: todaySession.complaintId ?? '',
+                  customText: todaySession.complaintText,
                   formula,
                   scoreBefore: todaySession.scoreBefore ?? 0,
                   scoreAfter: todaySession.scoreAfter ?? 0,
@@ -187,45 +197,35 @@ export default function HomeScreen() {
               }
               navigation.navigate('Complaint');
             }}
-          />
-        </AnimatedIn>
-
-        <AnimatedIn delay={150} style={styles.diceWrap}>
-          <PressableScale
-            onPress={() => {
-              if (!limits.crisisMode) {
-                navigation.navigate('Plans');
-                return;
-              }
-              setCrisisFormula(generateCrisisFormula(activeGoal, pools));
-            }}
             accessibilityRole="button"
             style={[
-              styles.dice,
-              { backgroundColor: theme.surface, borderColor: theme.border },
+              styles.targeted,
+              {
+                backgroundColor: targetedUsed ? theme.surface : theme.accentSoft,
+                borderColor: targetedUsed ? theme.border : theme.pulse,
+              },
             ]}
           >
-            <Text style={[styles.diceText, { color: theme.sub }]}>
-              {t(limits.crisisMode ? '🎲 Farklı formül dene' : '🔒 Kriz modu · yakında')}
+            <Text
+              style={[
+                styles.targetedTitle,
+                { color: targetedUsed ? theme.sub : theme.pulse },
+              ]}
+            >
+              {t(
+                targetedUsed
+                  ? '✓ Bugünkü nokta atışı reçeten alındı'
+                  : '🩺 Nokta atışı reçete al'
+              )}
+            </Text>
+            <Text style={[styles.targetedSub, { color: theme.faint }]}>
+              {t(
+                targetedUsed
+                  ? 'Sonucu görmek için dokun. Yarın yeni bir reçete hakkın olacak.'
+                  : 'Şikayetini anlat, sana özel bir reçete hazırlansın. Günde bir kez.'
+              )}
             </Text>
           </PressableScale>
-
-          {crisisFormula ? (
-            <View style={styles.crisisNote}>
-              <Text style={[styles.crisisNoteText, { color: theme.sub }]}>
-                {t('Bu bugünkü formülün değil. Yarın normal formülüne döneceksin.')}
-              </Text>
-              <PressableScale
-                onPress={() => setCrisisFormula(null)}
-                accessibilityRole="button"
-                style={styles.crisisBack}
-              >
-                <Text style={[styles.crisisBackText, { color: theme.pulse }]}>
-                  {t('Günün formülüne dön')}
-                </Text>
-              </PressableScale>
-            </View>
-          ) : null}
         </AnimatedIn>
 
         <AnimatedIn delay={180} style={styles.coach}>
@@ -314,6 +314,20 @@ const styles = StyleSheet.create({
   crisisBackText: {
     fontFamily: fonts.sansMedium,
     fontSize: 11,
+  },
+  targetedWrap: { marginTop: 14 },
+  targeted: {
+    borderWidth: 1,
+    borderRadius: 18,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+  },
+  targetedTitle: { fontFamily: fonts.sansBold, fontSize: 14 },
+  targetedSub: {
+    fontFamily: fonts.sans,
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 4,
   },
   coach: { marginTop: 22 },
   pill: { marginTop: 26 },

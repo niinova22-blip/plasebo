@@ -7,7 +7,7 @@ import ScoreSlider from '../components/ScoreSlider';
 import TransparencyPill from '../components/TransparencyPill';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import { complaintById } from '../constants/complaints';
+import { resolveComplaint } from '../constants/complaints';
 import { useT } from '../context/SettingsContext';
 import { haptics } from '../utils/haptics';
 import type { RootStackParamList } from '../navigation/types';
@@ -23,7 +23,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ScoreBefore'>;
  */
 export default function ScoreBeforeScreen({ navigation, route }: Props) {
   const t = useT();
-  const complaint = complaintById(route.params.complaintId);
+  const complaint = resolveComplaint(route.params.complaintId, route.params.customText);
   const [score, setScore] = useState(6);
 
   return (
@@ -53,6 +53,7 @@ export default function ScoreBeforeScreen({ navigation, route }: Props) {
           navigation.navigate('Ritual', {
             formula: route.params.formula,
             complaintId: route.params.complaintId,
+            customText: route.params.customText,
             scoreBefore: score,
           });
         }}
