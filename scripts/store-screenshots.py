@@ -38,7 +38,11 @@ SANS_MED = os.path.join(FONTS, 'space-grotesk', '500Medium', 'SpaceGrotesk_500Me
 # yuklerken karismasin.
 PRESETS = {
     'play': {'size': (1080, 1920), 'dir': 'play'},
+    # App Store, yuklenen slota gore olcu istiyor. 6.9 inclik set zorunlu;
+    # digerleri, yukleyici o sekmeyi acmakta israr ederse elde dursun diye.
     'ios': {'size': (1290, 2796), 'dir': 'ios'},
+    'ios67': {'size': (1284, 2778), 'dir': os.path.join('ios', '6.7-inch')},
+    'ios65': {'size': (1242, 2688), 'dir': os.path.join('ios', '6.5-inch')},
 }
 
 INK = (14, 14, 18)

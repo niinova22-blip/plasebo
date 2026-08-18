@@ -333,10 +333,22 @@ sürüm incelemeye gönderilemez.
 
 ### 6.5 Sürüm sayfası (iOS Uygulaması 1.1.1)
 
-**a) Ekran görüntüleri.** "iPhone 6.9 inç" sekmesine masaüstündeki
-`2-Apple-App-Store\Ekran-Goruntuleri` klasöründeki **6 dosyayı** sürükle.
-Hepsi 1290×2796; bu ölçü yüklendiğinde küçük ekranlar için ayrıca görsel
-istenmez. iPad sekmesi görünmez (iPad desteği kapalı).
+**a) Ekran görüntüleri.** Üç ölçüde hazır:
+
+| Klasör | Ölçü | Sekme |
+| --- | --- | --- |
+| `store/graphics/screenshots/ios/` | 1290×2796 | **iPhone 6.9"** — asıl set |
+| `.../ios/6.7-inch/` | 1284×2778 | 6.7" sekmesi açılırsa |
+| `.../ios/6.5-inch/` | 1242×2688 | 6.5" sekmesi açılırsa |
+
+Masaüstündeki kopyaları `2-Apple-App-Store\Ekran-Goruntuleri` altında aynı
+ayrımla duruyor. 6.9 inçlik set yüklendiğinde küçük ekranlar için ayrıca
+görsel istenmez; iPad sekmesi görünmez (iPad desteği kapalı).
+
+> Yükleyici dosyaları reddediyorsa dosyalarda sorun yok (1290×2796, RGB,
+> alfa kanalı yok, 1 MB altı). Sırasıyla şunlara bak: açık olan sekmenin
+> ölçüsü, dosyaları tek tek eklemek, arayüzü İngilizceye almak, gizli
+> pencerede denemek.
 
 **b) Metinler.** `Magaza-Metinleri.txt` dosyasından kopyala:
 
