@@ -41,6 +41,7 @@ PRESETS = {
     # App Store, yuklenen slota gore olcu istiyor. 6.9 inclik set zorunlu;
     # digerleri, yukleyici o sekmeyi acmakta israr ederse elde dursun diye.
     'ios': {'size': (1290, 2796), 'dir': 'ios'},
+    'ios69b': {'size': (1320, 2868), 'dir': os.path.join('ios', '6.9-inch-1320')},
     'ios67': {'size': (1284, 2778), 'dir': os.path.join('ios', '6.7-inch')},
     'ios65': {'size': (1242, 2688), 'dir': os.path.join('ios', '6.5-inch')},
 }

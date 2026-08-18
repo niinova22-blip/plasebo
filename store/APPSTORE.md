@@ -312,7 +312,10 @@ Sonuç 13+ civarı çıkar. Elle yükseltebilirsin, düşüremezsin.
 Sol menüde ayrı bir başlıktır ve **sürümden bağımsızdır**; doldurulmadan
 sürüm incelemeye gönderilemez.
 
-1. **Gizlilik Politikası URL'i**: 6.1'deki adresin aynısı.
+1. **Gizlilik Politikası URL'i**: 6.1'deki adresin aynısı. Uygulama
+   Bilgileri'ne yazmış olman yetmiyor; App Privacy bölümünde de ayrıca
+   girilmesi gerekiyor, yoksa "You must enter a Privacy Policy URL in
+   App Privacy" hatası çıkıyor.
 2. "Bu uygulama kullanıcı verisi topluyor mu?" → **Evet**
 3. Toplanan veri türleri olarak yalnızca şu ikisini işaretle:
 
@@ -366,6 +369,7 @@ görsel istenmez; iPad sekmesi görünmez (iPad desteği kapalı).
 > emoji duruyor; orası kabul ediyor.
 | Destek URL'i | `https://niinova22-blip.github.io/plasebo/privacy.html` |
 | Pazarlama URL'i | boş |
+| **Telif hakkı (Copyright)** | `2026 Ahmet KÖKDOGAN` — zorunlu alan; yıl + hak sahibi. © işareti yazılmaz, Apple ekler. |
 
 "Bu Sürümdeki Yenilikler" alanı ilk sürümde çıkmaz; yalnızca
 güncellemelerde istenir.
