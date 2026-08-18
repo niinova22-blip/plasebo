@@ -337,9 +337,9 @@ sürüm incelemeye gönderilemez.
 
 | Klasör | Ölçü | Sekme |
 | --- | --- | --- |
-| `store/graphics/screenshots/ios/` | 1290×2796 | **iPhone 6.9"** — asıl set |
+| `store/graphics/screenshots/ios/` | 1290×2796 | iPhone 6.9" |
 | `.../ios/6.7-inch/` | 1284×2778 | 6.7" sekmesi açılırsa |
-| `.../ios/6.5-inch/` | 1242×2688 | 6.5" sekmesi açılırsa |
+| `.../ios/6.5-inch/` | 1242×2688 | **6.5" — yükleyicinin kabul ettiği set bu oldu** |
 
 Masaüstündeki kopyaları `2-Apple-App-Store\Ekran-Goruntuleri` altında aynı
 ayrımla duruyor. 6.9 inçlik set yüklendiğinde küçük ekranlar için ayrıca
@@ -357,6 +357,13 @@ görsel istenmez; iPad sekmesi görünmez (iPad desteği kapalı).
 | Tanıtım metni (170) | dosyanın 3. başlığı |
 | Açıklama (4000) | dosyanın 5. başlığı |
 | Anahtar kelimeler (100) | dosyanın 4. başlığı |
+
+> **Açıklamada emoji kullanma.** Metnin sonundaki ⚗️ işareti App Store
+> Connect'te uyarı verdi; kaldırıldı, yerine "Not:" yazıldı. Madde imi (•)
+> ve uzun tire (—) sorun çıkarmıyor, ama yükleyici yine de itiraz ederse
+> `Magaza-Metinleri.txt` içindeki **5b — sade sürüm** kullanılır (madde
+> imleri ve uzun tireler düz tireye çevrilmiş hâli). Play listelemesinde
+> emoji duruyor; orası kabul ediyor.
 | Destek URL'i | `https://niinova22-blip.github.io/plasebo/privacy.html` |
 | Pazarlama URL'i | boş |
 
