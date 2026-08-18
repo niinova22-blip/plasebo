@@ -41,7 +41,8 @@ sunucusu yoktur ve ritüel verilerin cihazından hiçbir yere gönderilmez.</str
   <tr><th>Veri</th><th>Nereden</th><th>Nerede tutulur</th><th>Neden</th></tr>
   <tr>
     <td>Ad, e-posta adresi, profil fotoğrafı bağlantısı</td>
-    <td>Google hesabınla oturum açtığında Google'dan</td>
+    <td>Google hesabınla oturum açtığında Google'dan; iPhone'da Apple ile
+    giriş yaptığında Apple'dan</td>
     <td>Yalnızca cihazının yerel deposunda</td>
     <td>Uygulamada hesabını tanımak ve seni adınla selamlamak</td>
   </tr>
@@ -61,12 +62,17 @@ sunucusu yoktur ve ritüel verilerin cihazından hiçbir yere gönderilmez.</str
 </div>
 
 <h2>3. Ağ bağlantıları</h2>
-<p>Plasebo yalnızca iki durumda internete bağlanır:</p>
+<p>Plasebo yalnızca oturum açarken internete bağlanır:</p>
 <ul>
   <li><strong>Google ile oturum açma.</strong> Tarayıcı üzerinden Google'ın kendi
   oturum açma sayfasına yönlendirilirsin. Bu, Google'ın gizlilik politikasına
   tabidir. Uygulama Google'dan yalnızca <code>profile</code> ve <code>email</code>
   kapsamlarını ister.</li>
+  <li><strong>Apple ile oturum açma (yalnızca iPhone).</strong> Apple'ın sistem
+  penceresi açılır; bu, Apple'ın gizlilik politikasına tabidir. Uygulama yalnızca
+  ad ve e-posta ister. Bu iki bilgi Apple tarafından yalnızca ilk girişte verilir;
+  e-postanı gizlemeyi seçersen uygulamaya yalnızca Apple'ın ürettiği yönlendirme
+  adresi (<code>@privaterelay.appleid.com</code>) ulaşır.</li>
   <li><strong>Profil bilgisinin okunması.</strong> Oturum açtıktan hemen sonra
   <code>googleapis.com</code> adresinden adın, e-postan ve profil fotoğrafı
   bağlantın bir kez okunur ve cihazına yazılır. Erişim anahtarı saklanmaz.</li>
@@ -83,8 +89,8 @@ kimseye satılmaz veya paylaşılmaz.</p>
   <li><strong>Bildirimler (<code>POST_NOTIFICATIONS</code>)</strong> — yalnızca sen
   Ayarlar'dan günlük hatırlatıcıyı açarsan istenir. Bildirimler cihazda
   zamanlanır; push sunucusu kullanılmaz.</li>
-  <li><strong>İnternet (<code>INTERNET</code>)</strong> — yalnızca Google ile oturum
-  açma için.</li>
+  <li><strong>İnternet (<code>INTERNET</code>)</strong> — yalnızca Google ya da
+  Apple ile oturum açma için.</li>
   <li><strong>Titreşim (<code>VIBRATE</code>)</strong> — dokunsal geri bildirim için,
   Ayarlar'dan kapatılabilir.</li>
 </ul>
@@ -92,14 +98,16 @@ kimseye satılmaz veya paylaşılmaz.</p>
 
 <h2>6. Verilerini silmek</h2>
 <p>Uygulama içinde <em>Ayarlar → Veri → Tüm verileri sil</em> adımı; adını,
-hedeflerini, tüm ritüel kayıtlarını, ayarlarını ve kayıtlı Google hesap
-bilgilerini cihazından kalıcı olarak siler. Oturumunu kapatmak için
+hedeflerini, tüm ritüel kayıtlarını, ayarlarını ve kayıtlı Google ya da Apple
+hesap bilgilerini cihazından kalıcı olarak siler. Oturumunu kapatmak için
 <em>Ayarlar → Hesap → Oturumu kapat</em> yeterlidir.</p>
 <p>Ayrıntılı yönergeler ve talep formu:
 <a href="./data-deletion.html">Hesap ve veri silme</a>.</p>
 <p>Google hesabının Plasebo'ya verdiği erişimi dilediğin zaman
 <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>
-adresinden kaldırabilirsin.</p>
+adresinden kaldırabilirsin. Apple ile giriş kullandıysan aynı işlem iPhone'da
+<em>Ayarlar → (adın) → Oturum Açma ve Güvenlik → Apple ile Oturum Aç</em>
+altından yapılır.</p>
 
 <h2>7. Çocuklar</h2>
 <p>Plasebo çocuklara yönelik değildir ve 13 yaşın altındaki kullanıcılardan

@@ -440,7 +440,7 @@ export const STEP_ICONS: Record<StepKind, string> = {
 
 /** Her ekranda görünen şeffaflık cümleleri. */
 export const TRANSPARENCY_LINES = [
-  '⚗️ Plasebo etkisi aktif — Harvard çalışması: %62 iyileşme',
+  '⚗️ Beklenti etkisi aktif — Harvard çalışması: %59 iyileşme bildirimi',
   '⚗️ Bu adımın bilinen bir fizyolojik etkisi yok. Yine de sayılıyor.',
   '⚗️ Açık etiketli plasebo: ne olduğunu bilmen etkiyi bozmuyor.',
   '⚗️ Hiçbir şey yapmıyoruz. Beraber yapıyoruz.',

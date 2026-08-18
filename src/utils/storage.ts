@@ -5,9 +5,16 @@ import { complaintById } from '../constants/complaints';
 const USER_KEY = '@plasebo/user';
 const ONBOARDED_KEY = '@plasebo/onboarded';
 
+/**
+ * Dört hedefin de formülü her kademede açık; `goals` bir seçim değil,
+ * uygulamanın verdiği kümenin kendisi. Eski kayıtlarda tek hedef yazıyor
+ * olabilir, `loadUser` onları da dörde tamamlar.
+ */
+const EVERY_GOAL: Goal[] = ['focus', 'sleep', 'anxiety', 'energy'];
+
 export const defaultUser: UserData = {
   name: '',
-  goals: ['focus'],
+  goals: [...EVERY_GOAL],
   activeGoal: 'focus',
   streak: 0,
   lastRitualDate: '',
@@ -36,16 +43,16 @@ export async function loadUser(): Promise<UserData> {
     const raw = await AsyncStorage.getItem(USER_KEY);
     if (!raw) return { ...defaultUser };
     const parsed = JSON.parse(raw) as Partial<UserData>;
-    const goals = parsed.goals?.length ? parsed.goals : defaultUser.goals;
     return {
       ...defaultUser,
       ...parsed,
-      goals,
-      // Aktif hedef her zaman seçili hedefler arasından gelmeli.
+      // Kümeyi kayıttan değil koddan alıyoruz: eski sürümlerde buraya tek
+      // hedef yazılmış olabilir, oysa dördü de açık.
+      goals: [...EVERY_GOAL],
       activeGoal:
-        parsed.activeGoal && goals.includes(parsed.activeGoal)
+        parsed.activeGoal && EVERY_GOAL.includes(parsed.activeGoal)
           ? parsed.activeGoal
-          : goals[0],
+          : 'focus',
       sessions: parsed.sessions ?? [],
       freezeDates: parsed.freezeDates ?? [],
     };
@@ -152,6 +159,8 @@ export function dailyScores(
   days: number,
   today = toISODate()
 ): { date: string; label: string; score: number }[] {
+  // Bu kısaltmalar birer çeviri anahtarıdır: modül saf kalsın diye burada
+  // çevrilmez, ekrana basan taraf `t(point.label)` ile geçirir.
   const dayLabels = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
   const [y, m, d] = today.split('-').map(Number);
   const base = new Date(y, m - 1, d);
@@ -318,6 +327,7 @@ export function bestWeekday(
   sessions: Session[]
 ): { day: string; percent: number } | null {
   if (sessions.length < 3) return null;
+  // Kısaltmalarda olduğu gibi: çeviri anahtarı, çağıran taraf `t()`'ler.
   const names = ['Pazar', 'Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi'];
   const buckets: { total: number; count: number }[] = names.map(() => ({ total: 0, count: 0 }));
 

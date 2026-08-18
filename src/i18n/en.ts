@@ -57,9 +57,7 @@ export const EN: Record<string, string> = {
   /* ---------------------------------------------------------------- */
   /* Kurulum                                                           */
   /* ---------------------------------------------------------------- */
-  'KURULUM · 1/3': 'SETUP · 1/3',
-  'KURULUM · 2/3': 'SETUP · 2/3',
-  'KURULUM · 3/3': 'SETUP · 3/3',
+  'SON ADIM': 'LAST STEP',
   'Sana nasıl hitap edelim?': 'What should we call you?',
   'Tek satırlık bir şey. Uygulama içinde seni bununla selamlayacak, başka hiçbir yere gitmeyecek.':
     'Just one line. The app will greet you with it and it goes nowhere else.',
@@ -68,10 +66,14 @@ export const EN: Record<string, string> = {
     '⚗️ Your name does not change the formula. Nothing does — except the date.',
   'Devam etmek için Google hesabınla giriş yap. Hesap, serini ve ileride üyeliğini bu cihaza bağlamak için gerekiyor. Ritüel kayıtların yine telefonunda kalır.':
     'Sign in with your Google account to continue. The account ties your streak and, later, your membership to this device. Your ritual records still stay on your phone.',
+  'Devam etmek için bir hesapla giriş yap. Hesap, serini ve ileride üyeliğini bu cihaza bağlamak için gerekiyor. Ritüel kayıtların yine telefonunda kalır.':
+    'Sign in with an account to continue. The account ties your streak and, later, your membership to this device. Your ritual records still stay on your phone.',
   'Google ile devam et': 'Continue with Google',
   'Google girişi yapılandırılmamış': 'Google sign-in is not configured',
   'Bu derlemede Google Web istemci kimliği tanımlı olmadığı için giriş yapılamıyor ve giriş zorunlu olduğundan uygulama burada duruyor. Kurulum için src/config/auth.ts dosyasındaki açıklamaya bak.':
     'This build has no Google web client ID, so signing in is impossible — and since sign-in is required, the app stops here. See the notes in src/config/auth.ts to set it up.',
+  "Devam ederek Gizlilik Politikası'nı kabul etmiş olursun. Girişten yalnızca adın ve e-postan okunur; ritüel verilerin hiçbir sunucuya gönderilmez.":
+    'By continuing you accept the Privacy Policy. Sign-in reads only your name and email; your ritual data is never sent to any server.',
   "Devam ederek Gizlilik Politikası'nı kabul etmiş olursun. Google'dan yalnızca adın, e-postan ve profil fotoğrafın okunur; ritüel verilerin hiçbir sunucuya gönderilmez.":
     'By continuing you accept the Privacy Policy. Only your name, email and profile picture are read from Google; your ritual data is never sent to any server.',
   '⚗️ Giriş yapmak formülü değiştirmez. Hiçbir şey etkiyi değiştirmez.':
@@ -297,6 +299,9 @@ export const EN: Record<string, string> = {
   'Ritüel verilerin yalnızca bu cihazda tutulur.':
     'Your ritual data is kept on this device only.',
   'HESAP': 'ACCOUNT',
+  'Hesabınla giriş yap': 'Sign in with your account',
+  'Apple ile giriş yapıldı': 'Signed in with Apple',
+  'Google ile giriş yapıldı': 'Signed in with Google',
   'Google ile giriş yap': 'Sign in with Google',
   'Devam etmek için gerekli.': 'Required to continue.',
   'Oturumu kapat': 'Sign out',
@@ -345,6 +350,7 @@ export const EN: Record<string, string> = {
   'Her gün {saat}': 'Every day at {saat}',
   'Hatırlatma saati': 'Reminder time',
   'Dokun ve istediğin saati seç.': 'Tap and pick any time you like.',
+  'Ayarları aç': 'Open Settings',
   'Bildirim izni yok': 'No notification permission',
   'Hatırlatıcı için telefon ayarlarından bildirimlere izin vermen gerekiyor.':
     'You need to allow notifications in your phone settings for the reminder.',
@@ -359,7 +365,7 @@ export const EN: Record<string, string> = {
   'Cihazdaki her kayıt silinir. Sunucu olmadığı için başka bir yerde kopyası yoktur.':
     'Every record on the device is deleted. There is no server, so no copy exists anywhere else.',
   'Hesap ve veriler silinsin mi?': 'Delete account and data?',
-  'Google hesap bağlantın, adın, hedeflerin, serin, ayarların ve tüm ritüel kayıtların telefonundan silinir. Sunucuda kopyası yok. Geri alınamaz.':
+  'Hesap bağlantın, adın, hedeflerin, serin, ayarların ve tüm ritüel kayıtların telefonundan silinir. Sunucuda kopyası yok. Geri alınamaz.':
     'Your Google account link, name, goals, streak, settings and all ritual records are deleted from your phone. There is no copy on a server. This cannot be undone.',
   'YASAL': 'LEGAL',
   'Gizlilik politikası': 'Privacy policy',
@@ -1364,4 +1370,201 @@ export const EN: Record<string, string> = {
     'Tracking that shows how much you improve per complaint will be unlocked with premium in a future update.',
   'Reçete takibi — hangi şikayette ne kadar iyileştiğini izle':
     'Prescription tracking — follow how much you improve per complaint',
+
+  /* ---- Hikâye akışlı giriş dersi ---- */
+  '1955. Boston.\nBir hasta ağrı\ndindirilmez dedi.':
+    '1955. Boston.\nA patient said the pain\ncould not be stopped.',
+  'Dr. Henry Beecher ona bir iğne yaptı.\nİğnede sadece tuzlu su vardı.\n\nHasta 20 dakika sonra\n“ağrım geçti” dedi.':
+    'Dr. Henry Beecher gave him an injection.\nThe syringe held nothing but saline.\n\nTwenty minutes later the patient said\n“the pain is gone.”',
+  'Bu uygulamanın temeli o gün atıldı. →': 'This app was founded that day. →',
+  '“Beyin bir sinyal aldığında ‘bu işe yarayacak’ diye karar verirse — gerçekten işe yarıyor.”':
+    '“When the brain gets a signal and decides ‘this will work’ — it really does work.”',
+  'Buna beklenti etkisi deniyor.': 'This is called the expectation effect.',
+  'Beyin, inanılan şeyi\ngerçekleştirmek için\ngerçek kimyasallar salgılıyor.\n\nEndorfin. Dopamin. Serotonin.\n\nSahte bir tetikleyici,\ngerçek bir sonuç.':
+    'To deliver what is believed,\nthe brain releases\nreal chemicals.\n\nEndorphin. Dopamine. Serotonin.\n\nA fake trigger,\na real result.',
+  'Mehmet, 34, İstanbul': 'Mehmet, 34, Istanbul',
+  'Sınav öncesi panik atak yaşıyordum. 3 hafta sonra sınav salonunda sakin oturdum.':
+    'I used to have panic attacks before exams. Three weeks later I sat calmly in the exam hall.',
+  'Ayşe, 28, Ankara': 'Ayşe, 28, Ankara',
+  'Sabahları yataktan kalkmak çok zordu. Şimdi 07:00’de gözlerim kendiliğinden açılıyor.':
+    'Getting out of bed was very hard. Now my eyes open by themselves at 07:00.',
+  'Can, 41, İzmir': 'Can, 41, Izmir',
+  'Toplantı öncesi ellerim titriyordu. Artık titremiyorlar.':
+    'My hands shook before meetings. They do not shake anymore.',
+  '⚗️ Etken madde kullanılmadı': '⚗️ No active ingredient was used',
+  '* Temsili kullanıcı hikâyeleri': '* Representative user stories',
+  'Böyle görünüyor.': 'This is what it looks like.',
+  'Mucize değil.\nBeyin kimyası.': 'Not a miracle.\nBrain chemistry.',
+  '😰  Bugün ne hissediyorsun?': '😰  How do you feel today?',
+  '⚗️  Reçeten hazırlanıyor...': '⚗️  Preparing your prescription...',
+  '🌀  Renk · Ses · Nefes · 4dk': '🌀  Color · Sound · Breath · 4 min',
+  '📊  Önce: 8/10 → Sonra: 3/10': '📊  Before: 8/10 → After: 3/10',
+  'Günde 4 dakika.': 'Four minutes a day.',
+  'Önce bugün ne hissettiğini söylüyorsun.\n\nSonra sana özel bir protokol hazırlanıyor.\n\n4 dakika uyguluyorsun.\n\nÖncesi ve sonrasını ölçüyoruz.\n\nHepsi bu.':
+    'First you say how you feel today.\n\nThen a protocol is prepared for you.\n\nYou apply it for four minutes.\n\nWe measure before and after.\n\nThat is all.',
+  'Şüpheciler de dahil': 'Sceptics included',
+  'olumlu etki bildirdi': 'reported a positive effect',
+  '“İşe yaramaz” diye başlayanlar': 'Those who started with “it will not work”',
+  '“Saçmalık” diyenler': 'Those who called it nonsense',
+  'Doktorlar': 'Doctors',
+  'Psikologlar': 'Psychologists',
+  'Mühendisler': 'Engineers',
+  '* Temsili dağılım': '* Representative distribution',
+  'İnanmak zorunda değilsin.': 'You do not have to believe.',
+  '2010 yılında Harvard’da yapılan çalışmada katılımcılara şu söylendi:\n\n“Bu hap tamamen şekerden yapılmış. İçinde hiçbir etken madde yok.”\n\nSonra hapı verdiler.\n\nKatılımcıların %59’u iyileşme bildirdi.\n\nBilmek, etkiyi durdurmadı.':
+    'In a 2010 study at Harvard, participants were told:\n\n“This pill is made entirely of sugar. It contains no active ingredient at all.”\n\nThen they were given the pill.\n\n59% of participants reported improvement.\n\nKnowing did not stop the effect.',
+  'ADIN NE?': 'WHAT IS YOUR NAME?',
+  'Adını yaz...': 'Type your name...',
+  '{ad}, beynin\nseni bekliyor.': '{ad}, your brain\nis waiting for you.',
+  'Hazırlanıyor...': 'Preparing...',
+  'İlk protokolümü başlat →': 'Start my first protocol →',
+  'Verin cihazında kalır · Ücretsiz başla': 'Your data stays on your device · Start free',
+
+  /* ---- Marka ve dil rehberi ---- */
+  'ZİHİN PROTOKOLÜ': 'MIND PROTOCOL',
+  'Plasebo Protokol Merkezi': 'Placebo Protocol Centre',
+  'Dr. Plasebo, Nörobilim': 'Dr. Placebo, Neuroscience',
+  '⚠️ Bu reçetede etken madde yok — etki var. Etki beklentiden gelir.':
+    '⚠️ This prescription has no active ingredient — it has an effect. The effect comes from expectation.',
+  '⚗️ Etken madde yok — etki var. Bu bir beklenti protokolü.':
+    '⚗️ No active ingredient — there is an effect. This is an expectation protocol.',
+  'Beklenti etkisi gerçektir': 'The expectation effect is real',
+  '⚗️ Beklenti etkisi aktif — Harvard çalışması: %59 iyileşme bildirimi':
+    '⚗️ Expectation effect active — Harvard study: 59% reported improvement',
+  'Merhaba {ad}.': 'Hello {ad}.',
+  'Dürüst ol. Beklenti protokolü dürüstlükle daha iyi çalışır.':
+    'Be honest. An expectation protocol works better with honesty.',
+
+  /* ---- Yeni tonal sesler ---- */
+  'Handpan · D Minör': 'Handpan · D Minor',
+  'Kalimba Deseni': 'Kalimba Pattern',
+  'Rüzgâr Çanları': 'Wind Chimes',
+  'Sıcak Ped · Am9': 'Warm Pad · Am9',
+  'Handpan (uzun oturum)': 'Handpan (long session)',
+  'Kalimba (çalışma)': 'Kalimba (study)',
+  'Sıcak Ped (gece)': 'Warm Pad (night)',
+  'Rüzgâr Çanları (gece)': 'Wind Chimes (night)',
+  '⚗️ Handpan’ın pentatonik aralıkları zihinsel gezinmeyi %42 seyreltir':
+    '⚗️ The handpan’s pentatonic intervals thin out mind-wandering by 42%',
+  '⚗️ Kalimba deseninin düzenli aralıkları iç sesi %31 maskeler':
+    '⚗️ The kalimba’s even intervals mask inner speech by 31%',
+  '⚗️ Rüzgâr çanlarının seyrek vuruşları hafıza penceresini %21 uzatır':
+    '⚗️ Sparse wind-chime strikes extend the memory window by 21%',
+  '⚗️ Am9 pedinin sürekli tanısı solunum ritmini %35 düzleştirir':
+    '⚗️ The sustained Am9 pad flattens breathing rhythm by 35%',
+
+  /* ---- Hikâye slaytları (yeniden yazım) ---- */
+  '1955. Boston, Amerika.': '1955. Boston, America.',
+  'Bir hasta hastaneye geldi.': 'A patient came to the hospital.',
+  'Aylardır süren ağrısı vardı.': 'He had been in pain for months.',
+  'Hiçbir ilaç işe yaramamıştı.': 'No drug had worked.',
+  'Doktorlar çaresiz kalmıştı.': 'The doctors were out of options.',
+  'Dr. Henry Beecher ona bir iğne yaptı.': 'Dr. Henry Beecher gave him an injection.',
+  'İğnenin içinde': 'The syringe held',
+  'sadece tuzlu su vardı.': 'nothing but saline.',
+  'Hasta 20 dakika sonra': 'Twenty minutes later the patient said',
+  '“ağrım geçti”': '“the pain is gone”',
+  ' dedi.': '.',
+  'Bu uygulamanın temelleri\no gün atıldı.': 'This app was founded\nthat day.',
+
+  'Beyin, inanılan şeyi\ngerçekleştirmek için\n': 'To deliver what is believed,\nthe brain releases\n',
+  'gerçek kimyasallar': 'real chemicals',
+  ' salgılıyor.': '.',
+  'Endorfin.': 'Endorphin.',
+  'Dopamin.': 'Dopamine.',
+  'Serotonin.': 'Serotonin.',
+  'Sahte bir tetikleyici': 'A fake trigger',
+  'gerçek bir sonuç': 'a real result',
+
+  'Sınav öncesi ': 'Before exams I had ',
+  'panik atak': 'panic attacks',
+  ' yaşıyordum. 3 hafta sonra sınav salonunda ': '. Three weeks later, in the exam hall, I ',
+  'sakin oturdum': 'sat calmly',
+  'Sabahları yataktan kalkmak ': 'Getting out of bed in the morning was ',
+  'çok zordu': 'very hard',
+  '. Şimdi 07:00’de gözlerim ': '. Now at 07:00 my eyes ',
+  'kendiliğinden açılıyor': 'open by themselves',
+  'Toplantı öncesi ellerim ': 'Before meetings my hands ',
+  'titriyordu': 'used to shake',
+  '. ': '. ',
+  'Artık titremiyorlar': 'They do not shake anymore',
+
+  '2010 yılında Harvard’da\nbir deney yapıldı.': 'In 2010 an experiment\nwas run at Harvard.',
+  'Kronik ağrısı': 'Patients with chronic pain',
+  ' olan hastalara\nküçük bir hap verildi.': '\nwere given a small pill.',
+  'Tedaviniz için bu hapı kullanacaksınız.': 'You will take this pill as your treatment.',
+  'Ancak bu hap tamamen ': 'But this pill is made entirely of ',
+  'şekerden yapılmış': 'sugar',
+  'İçinde hiçbir etken madde yok.': 'It contains no active ingredient at all.',
+  'Yine de ': 'Even so, ',
+  'iyileşeceksiniz': 'you will get better',
+  'Hastalar hapı aldı.': 'The patients took the pill.',
+  'Hapın plasebo olduğunu\n': 'Although they knew\n',
+  'bildikleri halde...': 'it was a placebo...',
+  '%59’u iyileşti.': '59% got better.',
+  '— Kaptchuk et al., Harvard Medical School, 2010':
+    '— Kaptchuk et al., Harvard Medical School, 2010',
+
+  /* ---- Paylaşılan belge ---- */
+  'PROTOKOL BELGESİ': 'PROTOCOL CERTIFICATE',
+  '/10 hissettim': '/10 felt',
+  'gün seri': 'day streak',
+  'ETKİN MADDE: YOK': 'ACTIVE INGREDIENT: NONE',
+  '— (sahte ritüel, kör test)': '— (sham ritual, blind test)',
+
+  /* ---- Metin denetimi: anlatı ve arayüz ---- */
+  'Bir hasta, ': 'A patient came to the hospital ',
+  'aylardır geçmeyen bir ağrıyla': 'with pain that had not eased for months',
+  ' hastaneye başvurdu.': '.',
+  'Denenen ilaçlar sonuç vermedi.': 'The drugs that were tried did not work.',
+  'Dr. Henry Beecher ona bir enjeksiyon yaptı.': 'Dr. Henry Beecher gave him an injection.',
+  'Şırıngada': 'The syringe held',
+  'yalnızca tuzlu su vardı.': 'nothing but saline.',
+  'Yirmi dakika sonra hasta,': 'Twenty minutes later the patient',
+  'ağrısının geçtiğini bildirdi.': 'reported that the pain was gone.',
+  'Bu uygulamanın çıkış\nnoktası o çalışma.': 'That study is where\nthis app begins.',
+  'fayda görebilirsiniz': 'you may still benefit',
+  '%59’u iyileşme bildirdi.': '59% reported improvement.',
+
+  'Telefonun bildirim ayarlarını kontrol edip tekrar dene.':
+    'Check your phone’s notification settings and try again.',
+  'Hatırlatmalar 10:00 ile 21:00 arasına dağıtılır; saatleri her hafta değişir.':
+    'Reminders are spread between 10:00 and 21:00; the times change every week.',
+  'Gün içinde değişen saatlerde kısa bir hatırlatma gönderir; her seferinde başka bir cümle. Sabit saatli günlük hatırlatıcıdan ayrıdır.':
+    'Sends a short reminder at changing times through the day, with a different line each time. Separate from the fixed daily reminder.',
+  'Dokunarak istediğin saati seç.': 'Tap to pick the time you want.',
+  'Silme adımları ve kapsamı.': 'What deletion covers, step by step.',
+
+  '⚗️ Bu ölçüm senin izlenimin. Araştırmalarda ölçülen de tam olarak bu.':
+    '⚗️ This measure is your own impression — exactly what the studies measure.',
+  '⚗️ Doğru cevabı yok. Verdiğin puan, o anki hâlinin kaydı.':
+    '⚗️ There is no right answer. Your score is a record of how you were.',
+  '⚗️ İki ölçüm arasındaki fark bir kanıt değil, bir kayıt. Zamanla anlam kazanır.':
+    '⚗️ The gap between the two scores is a record, not proof. It gains meaning over time.',
+  'Bugün zordu. Yarın yeniden dene.': 'Today was hard. Try again tomorrow.',
+  '⚗️ Bu analiz de plasebo. Burada hesaplanan hiçbir şey yok — yalnızca beklemek var.':
+    '⚗️ This analysis is placebo too. Nothing is being computed here — only waiting.',
+  'Google girişi şu an kullanılamıyor': 'Google sign-in is unavailable right now',
+
+  /* ---- Akıllı hatırlatıcı mesajları ---- */
+  'Bugünün formülü hâlâ seni bekliyor. İçinde hâlâ etken madde yok.':
+    'Today’s formula is still waiting. It still has no active ingredient.',
+  'Üç adım, iki dakika': 'Three steps, two minutes',
+  'Renk, ses, nefes. Beklenti ölçülmüş bir mekanizma.':
+    'Color, sound, breath. Expectation is a measured mechanism.',
+  'İki dakika sonra da aynı yerde olacaksın. Bu sefer durarak.':
+    'In two minutes you will be in the same place. This time having paused.',
+  'Dikkatin dağıldıysa': 'If your attention has scattered',
+  'Odak formülü 90 saniye sürüyor. Telefonu bırakmadan önce sığar.':
+    'The focus formula takes 90 seconds. It fits before you put the phone down.',
+  'Omuzların gerginse': 'If your shoulders are tight',
+  'Sükunet formülünde nefes başa geçiyor. Sayıları tutturmak zorunda değilsin.':
+    'In the calm formula, breath comes first. You do not have to hit the counts.',
+  'Güne hız gerekiyorsa': 'If the day needs speed',
+  'Enerji formülü parlak bir renkle başlıyor.': 'The energy formula opens with a bright color.',
+  'Aynı formül bir yıl boyunca ikinci kez gelmiyor.':
+    'The same formula does not come round twice in a year.',
+
+  'İçeriğinin özel olduğunu ve ağrısını mutlaka dindireceğini söyledi.':
+    'He told him the contents were special and would certainly stop the pain.',
 };

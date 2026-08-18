@@ -34,6 +34,8 @@ import {
 } from '../utils/formulaEngine';
 import { playTone, prepareAudioMode, stopTone } from '../utils/audio';
 import { newSessionId } from '../utils/storage';
+import { resolveComplaint } from '../constants/complaints';
+import { getDailyWord, motivationCategory } from '../constants/motivationWords';
 import type { StepKind } from '../types';
 import type { RootStackParamList } from '../navigation/types';
 
@@ -52,7 +54,7 @@ function formatTime(total: number): string {
 
 export default function RitualScreen({ navigation, route }: Props) {
   const { formula, complaintId, customText, scoreBefore } = route.params;
-  const { recordSession } = useUser();
+  const { user, recordSession } = useUser();
   /** Ritüelin gerçekte ne kadar sürdüğü — seans özetinde gösteriliyor. */
   const startedAt = useRef(Date.now());
   const { settings } = useSettings();
@@ -62,7 +64,15 @@ export default function RitualScreen({ navigation, route }: Props) {
   const motion = useMotion();
 
   // Sahte ritüelde adımlar çalıştırılmaz; tek bir bekleme adımı gelir.
-  const steps: StepKind[] = formula.sham ? ['color'] : formula.stepOrder;
+  //
+  // `useMemo` şart: dizi her render'da yeniden üretildiğinde `goNext`
+  // geri çağrısı da yenileniyor, o da geri sayım efektini her render'da
+  // yeniden kuruyordu. Ritüel ekranı saniyede bir render alan, animasyon
+  // yüklü bir ekran; bu, düşük donanımlı cihazda ilk tökezleyecek yerdi.
+  const steps: StepKind[] = useMemo(
+    () => (formula.sham ? ['color'] : formula.stepOrder),
+    [formula.sham, formula.stepOrder]
+  );
   const seed = useMemo(
     () => seedFor(formula.generatedAt, formula.goal),
     [formula.generatedAt, formula.goal]
@@ -104,6 +114,21 @@ export default function RitualScreen({ navigation, route }: Props) {
     }),
     [formula, noteFor, t]
   );
+
+  /**
+   * Ritüelin ortasında duran motivasyon kelimesi.
+   *
+   * Şikâyete zıt ama umut veren bir kelime seçiliyor: "kafam dağınık"
+   * diyene BERRAK, "kalkamıyorum" diyene BAŞLA. Şikâyet yoksa (ana
+   * ekrandan doğrudan başlatılan günlük formül) formülün kendi kelimesi
+   * kullanılıyor, böylece merkez hiç boş kalmıyor.
+   */
+  const motivationWord = useMemo(() => {
+    const complaint = resolveComplaint(complaintId, customText);
+    if (!complaint) return null;
+    const category = motivationCategory(complaint.category, complaint.goal);
+    return getDailyWord(category, user.streak);
+  }, [complaintId, customText, user.streak]);
 
   const [index, setIndex] = useState(0);
   const [remaining, setRemaining] = useState(() => stepSeconds(formula, steps[0]));
@@ -313,7 +338,11 @@ export default function RitualScreen({ navigation, route }: Props) {
           phaseSeconds={phaseSecondsValue}
           phaseKey={phaseKey}
           colorHex={formula.color.hex}
-          word={step === 'color' ? undefined : t(formula.word)}
+          // Motivasyon kelimesi renk adımında da görünüyor: ritüelin
+          // tamamı boyunca merkezde duran tek sabit o.
+          word={
+            motivationWord ?? (step === 'color' ? undefined : t(formula.word))
+          }
           // Renk ve ses adımlarında faz yok; daire kendi nabzıyla döner.
           ambient={step !== 'breath'}
         />

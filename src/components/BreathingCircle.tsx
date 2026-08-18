@@ -1,8 +1,15 @@
 import React, { useEffect } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import {
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import Animated, {
   Easing,
   cancelAnimation,
+  interpolate,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
@@ -18,28 +25,21 @@ import type { BreathAction } from '../utils/formulaEngine';
 import type { BreathId } from '../constants/formulaPools';
 import RadialGlow from './RadialGlow';
 
-const OUTER = 160;
-const MIDDLE = 136;
-const INNER = 112;
-const CORE = 76;
-/** Halkaların dışına taşan neon parlaması — bloom bu boyutta çiziliyor. */
-const BLOOM = 300;
-
 /**
- * Kelimenin çekirdeğe sığması için punto ve harf aralığı.
+ * Halka yığınının ölçüleri artık sabit piksel değil, ekranın kısa
+ * kenarına bağlı oranlar.
  *
- * Çekirdek 76 piksel; sabit 13 punto ve 1.5 harf aralığıyla "BAŞLANGIÇ"
- * ya da "SESSİZLİK" gibi uzun kelimeler sığmayıp alt satıra taşıyordu.
- * Uzunluğa göre küçültüyoruz; `adjustsFontSizeToFit` de son bir emniyet
- * olarak duruyor (kelime havuzuna beklenmedik uzunlukta bir şey girerse).
+ * Dinlenme hâlindeki top eskiden 160 pikseldi — 1080 piksel genişliğinde
+ * bir ekranda kısa kenarın yalnızca %15'i. Ritüelin merkezi olması
+ * gereken şey, ekranın ortasında küçük bir nokta gibi duruyordu. Yeni
+ * taban %30: top gözle "orada duran bir şey" hâline geliyor, yayılan
+ * ışık da onun etrafından açılıyor.
  */
-function wordSize(word: string): { fontSize: number; letterSpacing: number } {
-  const n = word.length;
-  if (n <= 5) return { fontSize: 13, letterSpacing: 1.5 };
-  if (n <= 7) return { fontSize: 11, letterSpacing: 0.8 };
-  if (n <= 9) return { fontSize: 9.5, letterSpacing: 0.3 };
-  return { fontSize: 8.5, letterSpacing: 0 };
-}
+const BALL_RATIO = 0.3;
+const MIDDLE_RATIO = 0.85;
+const INNER_RATIO = 0.7;
+const CORE_RATIO = 0.65;
+const BLOOM_RATIO = 1.9;
 
 /**
  * Nefes alırken daire ne kadar büyüyor?
@@ -53,6 +53,29 @@ function wordSize(word: string): { fontSize: number; letterSpacing: number } {
  */
 const MIN_SCALE = 0.7;
 const MAX_SCALE = 1.62;
+
+/**
+ * Yayılan ışık katmanı.
+ *
+ * Halkalar sabit 160 pikselde duruyor; asıl büyüme artık onların
+ * arkasındaki bu katmanda. Ölçü ekranın kısa kenarına bağlı, çünkü
+ * "ekranı doldurma" hissi piksel sayısına değil cihazın enine göre
+ * değişiyor. En büyük hâlinde ekranı taşıyor (1.8 kat) — merkez hiç
+ * kaybolmadığı için kullanıcı yönünü şaşırmıyor, yalnızca ışık yayılıyor.
+ *
+ * Boyut `width/height` yerine `scale` ile değiştiriliyor: ölçü
+ * animasyonu her karede yeniden yerleşim (layout) tetikler ve JS
+ * tarafına düşer; ölçek dönüşümü UI iş parçacığında kalır.
+ */
+const WASH_MAX_RATIO = 1.8;
+/** Hareket azaltılmışken büyüme neredeyse yok. */
+const WASH_REDUCED_RATIO = 0.22;
+
+/**
+ * Nefes dışındaki adımlarda (renk, ses) topun tek bir açılıp kapanma
+ * süresi. Gerçek bir nefes fazı olmadığı için sakin ve uzun tutuldu.
+ */
+const AMBIENT_CYCLE_MS = 5200;
 
 export interface BreathingCircleProps {
   /** Nefes deseni — geçişlerin sertliğini belirler. */
@@ -97,29 +120,51 @@ export default function BreathingCircle({
   ambient = false,
 }: BreathingCircleProps) {
   const motion = useMotion();
-  const scale = useSharedValue(MIN_SCALE);
-  const intensity = useSharedValue(0); // 0 = sönük, 1 = parlak
+  const { width: winWidth, height: winHeight } = useWindowDimensions();
+  const base = Math.min(winWidth, winHeight);
+  // Işık, topun kendi boyutundan başlayıp ekranı taşacak kadar açılıyor.
+  const outer = base * BALL_RATIO;
+  const middle = outer * MIDDLE_RATIO;
+  const inner = outer * INNER_RATIO;
+  const core = outer * CORE_RATIO;
+  const bloom = outer * BLOOM_RATIO;
+  const washMin = outer;
+  const washMax = base * (motion.reduced ? WASH_REDUCED_RATIO : WASH_MAX_RATIO);
+
+  /**
+   * Tek ilerleme: 0 = top en küçük hâlinde ve ışık toplanmış,
+   * 1 = top en büyük hâlinde ve ışık en geniş hâlinde.
+   *
+   * Halkalar, parlaklık, yayılan ışık ve ekran tonu — hepsi bundan
+   * türüyor. Ayrı ayrı zamanlayıcılarla sürüldüklerinde aralarında
+   * sürekli bir kayma oluyordu: top küçülürken ışık büyüyor, top
+   * dururken ışık patlıyordu. Tek kaynak bunu yapısal olarak imkânsız
+   * kılıyor.
+   */
+  const progress = useSharedValue(0);
 
   useEffect(() => {
     if (motion.reduced) {
-      // Hareket azaltılmışsa daireler sabit, okunur bir boyutta durur.
-      scale.value = 0.85;
-      intensity.value = action === 'inhale' || action === 'hold' ? 0.8 : 0.35;
+      // Hareket azaltılmışsa her şey sabit, okunur bir orta noktada durur.
+      cancelAnimation(progress);
+      progress.value = action === 'inhale' || action === 'hold' ? 0.6 : 0.35;
       return;
     }
 
+    cancelAnimation(progress);
+
     if (ambient) {
-      cancelAnimation(scale);
-      cancelAnimation(intensity);
-      scale.value = 0.88;
-      intensity.value = 0.72;
-      const pulse = { duration: 3400, easing: Easing.inOut(Easing.sin) };
-      scale.value = withRepeat(withTiming(1.2, pulse), -1, true);
-      intensity.value = withRepeat(withTiming(1, pulse), -1, true);
-      return () => {
-        cancelAnimation(scale);
-        cancelAnimation(intensity);
-      };
+      // Nefes dışındaki adımlarda gerçek bir faz yok: top tek bir sakin
+      // ritimde açılıp kapanıyor, ışık da onunla birlikte.
+      progress.value = withRepeat(
+        withTiming(1, {
+          duration: AMBIENT_CYCLE_MS,
+          easing: Easing.inOut(Easing.sin),
+        }),
+        -1,
+        true
+      );
+      return () => cancelAnimation(progress);
     }
 
     const durationMs = Math.max(phaseSeconds, 0.2) * 1000;
@@ -127,104 +172,208 @@ export default function BreathingCircle({
     const easing =
       pattern === 'coherent_5s' ? Easing.inOut(Easing.sin) : Easing.inOut(Easing.ease);
 
-    cancelAnimation(scale);
-
+    // Nefes adımında süreler formülün kendi deseninden geliyor: 4-7-8 ile
+    // kutu nefesi aynı hızda açılsaydı desenin bir anlamı kalmazdı.
     switch (action) {
       case 'inhale':
-        scale.value = withTiming(MAX_SCALE, { duration: durationMs, easing });
-        intensity.value = withTiming(1, { duration: durationMs, easing });
+        progress.value = withTiming(1, { duration: durationMs, easing });
         break;
 
       case 'exhale':
-        scale.value = withTiming(MIN_SCALE, { duration: durationMs, easing });
-        intensity.value = withTiming(0, { duration: durationMs, easing });
+        progress.value = withTiming(0, { duration: durationMs, easing });
         break;
 
       case 'hold':
-        // Boyut sabit; daireler yalnızca ±0.02 titrer.
-        intensity.value = withTiming(1, { duration: 300 });
-        scale.value = withRepeat(
-          withSequence(
-            withTiming(MAX_SCALE + 0.02, { duration: 500, easing: Easing.inOut(Easing.ease) }),
-            withTiming(MAX_SCALE - 0.02, { duration: 500, easing: Easing.inOut(Easing.ease) })
-          ),
-          -1,
-          true
+        // Açık hâlde duruyor; yalnızca çok hafif bir salınım var ki
+        // ekran donmuş gibi görünmesin.
+        progress.value = withSequence(
+          withTiming(1, { duration: 300, easing }),
+          withRepeat(
+            withSequence(
+              withTiming(0.97, { duration: 700, easing: Easing.inOut(Easing.sin) }),
+              withTiming(1, { duration: 700, easing: Easing.inOut(Easing.sin) })
+            ),
+            -1,
+            true
+          )
         );
         break;
 
       case 'pause':
       default:
-        scale.value = withTiming(MIN_SCALE, { duration: 400, easing });
-        intensity.value = withTiming(0.15, { duration: 400, easing });
+        progress.value = withTiming(0, { duration: 400, easing });
         break;
     }
 
-    return () => {
-      cancelAnimation(scale);
-      cancelAnimation(intensity);
-    };
+    return () => cancelAnimation(progress);
     // phaseKey her faz değişiminde değişir; animasyon böylece yeniden kurulur.
-  }, [phaseKey, action, phaseSeconds, pattern, motion.reduced, ambient, scale, intensity]);
+  }, [phaseKey, action, phaseSeconds, pattern, motion.reduced, ambient, progress]);
+
+  /**
+   * Ekranın tamamına yayılan hafif renk tonu — topla birlikte koyulaşıp
+   * topla birlikte çekiliyor.
+   */
+  /*
+   * Aşağıdaki katmanların hepsi tek bir `progress` üzerinden türüyor.
+   * Top hangi anda ne kadar büyükse ışık da tam o kadar geniş: en büyük
+   * hâlde saçılma en geniş, toplandığında saçılma yok.
+   */
+
+  /** Halkaların ortak ölçeği: 0 → MIN_SCALE, 1 → MAX_SCALE. */
+  const ringScale = (p: number) => {
+    'worklet';
+    return MIN_SCALE + p * (MAX_SCALE - MIN_SCALE);
+  };
+
+  /** Parlaklık da aynı yerden: taban 0.25, tepe 1. */
+  const glowOf = (p: number) => {
+    'worklet';
+    return 0.25 + p * 0.75;
+  };
+
+  const tintStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(progress.value, [0, 1], [0, 0.13]),
+  }));
+
+  /**
+   * Yayılan ışık.
+   *
+   * Ölçek topun kendi boyutundan ekranı taşan boyuta gidiyor; opaklık
+   * toplanmışken sıfır, en geniş hâlde en yüksek. Eskiden zirveye
+   * varmadan sönüyordu: top hâlâ büyürken ışık çekiliyor, ikisi ayrı
+   * şeyler yapıyormuş gibi duruyordu.
+   */
+  const washStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(progress.value, [0, 0.15, 1], [0, 0.08, 0.6]),
+    transform: [
+      { scale: interpolate(progress.value, [0, 1], [washMin / washMax, 1]) },
+    ],
+  }));
+
+  /**
+   * Ortadaki kelimenin ölçüleri.
+   *
+   * Kelime artık hiç kıpırdamıyor. Önce ışıkla birlikte büyüyüp
+   * sönüyordu; ritüelin tek sabit noktası olması gereken şey, döngünün
+   * yarısında kayboluyordu. Şimdi baştan sona aynı yerde ve aynı
+   * boyutta duruyor.
+   *
+   * Punto çekirdeğe göre hesaplanıyor: halka yığını ekran genişliğine
+   * bağlı olduğu için sabit bir punto, küçük ekranda taşıyor, büyük
+   * ekranda kayboluyordu.
+   */
+  const wordSize = Math.round(core * 0.24);
+  const wordTracking = wordSize * 0.1;
+  const ruleWidth = core * 0.42;
+  // Kelime parlak çekirdeğin içinde kalmalı: dışına taştığında harflerin
+  // ucu koyu zemine düşüyor ve aynı kelimenin yarısı okunmuyordu.
+  const wordMaxWidth = core * 0.86;
 
   const outerStyle = useAnimatedStyle(() => ({
-    opacity: 0.3 + intensity.value * 0.2,
-    transform: [{ scale: 0.97 + scale.value * 0.03 }],
+    opacity: 0.3 + glowOf(progress.value) * 0.2,
+    transform: [{ scale: 0.97 + ringScale(progress.value) * 0.03 }],
   }));
 
   const middleStyle = useAnimatedStyle(() => ({
-    opacity: 0.3 + intensity.value * 0.5, // 0.3 → 0.8
-    transform: [{ scale: 0.94 + scale.value * 0.06 }],
+    opacity: 0.3 + glowOf(progress.value) * 0.5,
+    transform: [{ scale: 0.94 + ringScale(progress.value) * 0.06 }],
   }));
 
   const innerStyle = useAnimatedStyle(() => ({
-    opacity: 0.5 + intensity.value * 0.5,
-    transform: [{ scale: 0.9 + scale.value * 0.1 }],
+    opacity: 0.5 + glowOf(progress.value) * 0.5,
+    transform: [{ scale: 0.9 + ringScale(progress.value) * 0.1 }],
   }));
 
   const coreStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: ringScale(progress.value) }],
     // iOS'ta gerçek gölge yarıçapı, Android'de aşağıdaki ışıma katmanı çalışır.
     ...(Platform.OS === 'ios'
-      ? { shadowRadius: intensity.value * 20, shadowOpacity: 0.4 + intensity.value * 0.5 }
+      ? {
+          shadowRadius: glowOf(progress.value) * 20,
+          shadowOpacity: 0.4 + glowOf(progress.value) * 0.5,
+        }
       : null),
   }));
 
   const haloStyle = useAnimatedStyle(() => ({
-    opacity: 0.15 + intensity.value * 0.65,
-    transform: [{ scale: 0.8 + scale.value * 0.5 }],
+    opacity: 0.15 + glowOf(progress.value) * 0.65,
+    transform: [{ scale: 0.8 + ringScale(progress.value) * 0.5 }],
   }));
 
   // Geniş bloom halodan daha yavaş büyür ve daha sönük kalır; yoksa
   // ekranın yarısını dolduran düz bir renk lekesine dönüşüyor.
   const bloomStyle = useAnimatedStyle(() => ({
-    opacity: 0.22 + intensity.value * 0.5,
-    transform: [{ scale: 0.85 + scale.value * 0.2 }],
+    opacity: 0.22 + glowOf(progress.value) * 0.5,
+    transform: [{ scale: 0.85 + ringScale(progress.value) * 0.2 }],
   }));
 
   return (
     <View style={styles.wrap}>
+      {/* Ekran boyunca uzanan renk tonu. Sarmalayıcı ekranın ortasında
+          durduğu için, ekran ölçüsünde ve ortalanmış bir katman tüm
+          yüzeyi kaplıyor. */}
+      <Animated.View
+        pointerEvents="none"
+        style={[
+          styles.tint,
+          {
+            width: winWidth * 1.2,
+            height: winHeight * 1.2,
+            backgroundColor: colorHex,
+          },
+          tintStyle,
+        ]}
+      />
+
+      {/* Yayılan ışık — halkaların arkasında, ekranı taşacak boyutta.
+          Sert kenarlı bir disk yerine radyal geçiş: kenarı belli olan
+          bir daire, büyürken ekrana yapıştırılmış bir leke gibi
+          duruyordu. */}
+      <Animated.View
+        pointerEvents="none"
+        style={[styles.wash, { width: washMax, height: washMax }, washStyle]}
+      >
+        <RadialGlow
+          id="breathWash"
+          size={washMax}
+          color={colorHex}
+          intensity={0.7}
+          falloff="bloom"
+        />
+      </Animated.View>
+
       {/* En arkada, halkaların dışına taşan geniş neon parlaması. */}
       <Animated.View style={[styles.bloom, bloomStyle]} pointerEvents="none">
-        <RadialGlow id="breathBloom" size={BLOOM} color={colorHex} intensity={0.5} falloff="bloom" />
+        <RadialGlow id="breathBloom" size={bloom} color={colorHex} intensity={0.5} falloff="bloom" />
       </Animated.View>
 
       <Animated.View
-        style={[styles.circle, styles.outer, { borderColor: withAlpha(colorHex, 0.55) }, outerStyle]}
+        style={[
+          styles.circle,
+          styles.outer,
+          { width: outer, height: outer, borderColor: withAlpha(colorHex, 0.55) },
+          outerStyle,
+        ]}
       />
       <Animated.View
         style={[
           styles.circle,
           styles.middle,
-          { borderColor: withAlpha(lighten(colorHex, 0.25), 0.8) },
+          {
+            width: middle,
+            height: middle,
+            borderColor: withAlpha(lighten(colorHex, 0.25), 0.8),
+          },
           middleStyle,
         ]}
       />
 
-      <Animated.View style={[styles.circle, styles.inner, innerStyle]}>
+      <Animated.View
+        style={[styles.circle, styles.inner, { width: inner, height: inner }, innerStyle]}
+      >
         <RadialGlow
           id="breathInner"
-          size={INNER}
+          size={inner}
           color={colorHex}
           intensity={0.55}
           falloff="bloom"
@@ -236,14 +385,20 @@ export default function BreathingCircle({
       <Animated.View style={[styles.halo, haloStyle]} pointerEvents="none">
         <RadialGlow
           id="breathHalo"
-          size={OUTER}
+          size={outer}
           color={colorHex}
           intensity={0.85}
           falloff="bloom"
         />
       </Animated.View>
 
-      <Animated.View style={[styles.coreWrap, coreStyle, { shadowColor: colorHex }]}>
+      <Animated.View
+        style={[
+          styles.coreWrap,
+          { borderRadius: core / 2, shadowColor: colorHex },
+          coreStyle,
+        ]}
+      >
         <LinearGradient
           // Sıcak merkez → saf renk → hafif koyu kenar: tüpün içi yanıyor
           // gibi dursun diye. Düz dolgu, koyu zeminde mat bir daire oluyordu.
@@ -251,76 +406,111 @@ export default function BreathingCircle({
           locations={[0, 0.55, 1]}
           start={{ x: 0.25, y: 0.05 }}
           end={{ x: 0.85, y: 1 }}
-          style={[styles.core, { borderColor: withAlpha(lighten(colorHex, 0.85), 0.9) }]}
-        >
-          {word ? (
-            <Text
-              style={[styles.word, wordSize(word), { textShadowColor: colorHex }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.6}
-            >
-              {word}
-            </Text>
-          ) : null}
-        </LinearGradient>
+          style={[
+            styles.core,
+            {
+              width: core,
+              height: core,
+              borderRadius: core / 2,
+              borderColor: withAlpha(lighten(colorHex, 0.85), 0.9),
+            },
+          ]}
+        />
       </Animated.View>
+
+      {/* Kelime çekirdeğin üstünde, her şeyin önünde. Çekirdeğin içine
+          konsaydı onunla birlikte ölçeklenir ve nefes alırken okunmaz
+          hâle gelirdi.
+
+          Üstündeki ve altındaki ince çizgiler kelimeyi bir eczane
+          etiketine benzetiyor: tek başına duran bir kelime, parlak
+          çekirdeğin üstünde havada asılı kalıyordu. Gölge rengi
+          formülün rengi değil koyu mürekkep — açık renkli çekirdeklerde
+          (sarı, açık yeşil) beyaz yazı kendi ışığında kayboluyordu. */}
+      {word ? (
+        <View style={[styles.wordWrap, { maxWidth: wordMaxWidth }]} pointerEvents="none">
+          <View style={[styles.wordRule, { width: ruleWidth }]} />
+          <Text
+            style={[
+              styles.word,
+              { fontSize: wordSize, letterSpacing: wordTracking },
+            ]}
+            numberOfLines={1}
+            adjustsFontSizeToFit
+            minimumFontScale={0.5}
+          >
+            {word}
+          </Text>
+          <View style={[styles.wordRule, { width: ruleWidth }]} />
+        </View>
+      ) : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   wrap: {
-    width: OUTER,
-    height: OUTER,
     alignItems: 'center',
     justifyContent: 'center',
   },
   circle: { position: 'absolute', borderRadius: 999 },
-  outer: {
-    width: OUTER,
-    height: OUTER,
-    borderWidth: 1,
-  },
+  outer: { borderWidth: 1 },
   middle: {
-    width: MIDDLE,
-    height: MIDDLE,
     // İç halka biraz daha kalın: neon tüplerde parlak çizgi hep en içte.
     borderWidth: 1.5,
   },
   inner: {
-    width: INNER,
-    height: INNER,
+    borderRadius: 999,
     overflow: 'hidden',
   },
   halo: { position: 'absolute' },
   bloom: { position: 'absolute' },
+  // İkisi de sarmalayıcıdan taşıyor; hiçbir üst görünümde
+  // `overflow: 'hidden'` olmamalı, yoksa ışık kenardan kesilir.
+  tint: { position: 'absolute', borderRadius: 0 },
+  wash: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   coreWrap: {
     position: 'absolute',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.9,
-    shadowRadius: 22,
-    elevation: 18,
-    borderRadius: CORE / 2,
+    shadowRadius: 30,
+    // Burada `elevation` YOK. Android'de elevation, kardeşler arasındaki
+    // çizim sırasını ağaçtaki sıradan bağımsız olarak belirliyor: yükseltilen
+    // çekirdek, kendisinden sonra gelen kelimenin de üstüne çıkıyor ve
+    // merkezdeki kelime topun altında kayboluyordu. Android'de çekirdeğin
+    // ışıması zaten `halo`/`bloom` katmanlarından geliyor, gölgeye gerek yok;
+    // yukarıdaki shadow* değerleri yalnızca iOS'ta iş görüyor.
   },
   core: {
-    width: CORE,
-    height: CORE,
-    borderRadius: CORE / 2,
     alignItems: 'center',
     justifyContent: 'center',
     // Kenardaki ince açık çizgi neon tüpün camı gibi duruyor.
     borderWidth: 1,
   },
+  wordWrap: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  wordRule: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    marginVertical: 5,
+  },
   word: {
-    fontFamily: fonts.sansBold,
+    fontFamily: fonts.serif,
     color: colors.white,
     textAlign: 'center',
-    // Çekirdeğin kenarına dayanmasın; sığdırma hesabı bu boşluğu varsayıyor.
-    paddingHorizontal: 6,
-    maxWidth: CORE,
+    paddingHorizontal: 4,
     includeFontPadding: false,
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 8,
+    // Koyu gölge okunurluk için: parlak çekirdek üstünde beyaz yazı
+    // gölgesiz okunmuyordu. Renk formülden değil sabit mürekkepten.
+    textShadowColor: 'rgba(14,14,18,0.55)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 6,
   },
 });

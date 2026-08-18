@@ -53,6 +53,15 @@ async function ensureNudgeChannel(): Promise<void> {
   });
 }
 
+/** İzin daha önce verilmiş mi? Kullanıcıya soru sormaz. */
+export async function hasPermission(): Promise<boolean> {
+  try {
+    return (await Notifications.getPermissionsAsync()).granted;
+  } catch {
+    return false;
+  }
+}
+
 export async function requestPermission(): Promise<boolean> {
   try {
     const current = await Notifications.getPermissionsAsync();
@@ -64,6 +73,41 @@ export async function requestPermission(): Promise<boolean> {
   }
 }
 
+/**
+ * Zamanlama işleri sıraya girer.
+ *
+ * "Önce iptal et, sonra kur" adımı iki kez iç içe çalışırsa ikinci
+ * çağrının iptali, birincinin henüz kurduğu bildirimi göremeyebiliyor ve
+ * aynı saate iki hatırlatıcı kalıyordu (iOS'ta saat seçicisi çark
+ * çevrildikçe olay yolladığı için gerçekten oluyor). Bütün kurma/iptal
+ * çağrıları tek bir zincirden geçirilerek bu ihtimal ortadan kalkıyor.
+ */
+let queue: Promise<unknown> = Promise.resolve();
+
+function serialize<T>(job: () => Promise<T>): Promise<T> {
+  const next = queue.then(job, job);
+  queue = next.catch(() => {});
+  return next;
+}
+
+/** Günlük hatırlatıcıyı dürtmelerden ayırmak için içeriğe konan işaret. */
+const DAILY_MARK = { plaseboDaily: true } as const;
+
+/** Verilen işareti taşıyan zamanlanmış bildirimleri iptal eder. */
+async function cancelMarked(flag: 'plaseboDaily' | 'plaseboNudge'): Promise<void> {
+  try {
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    for (const item of scheduled) {
+      const data = item.content.data as Record<string, unknown> | null;
+      if (data?.[flag]) {
+        await Notifications.cancelScheduledNotificationAsync(item.identifier);
+      }
+    }
+  } catch {
+    // yoksay
+  }
+}
+
 /** Var olan hatırlatıcıyı iptal eder ve yenisini kurar. */
 export async function scheduleDailyReminder(
   hour: number,
@@ -71,30 +115,60 @@ export async function scheduleDailyReminder(
   /** Bildirim metni de arayüzle aynı dilde kurulur. */
   t: TranslateFn = (text) => text
 ): Promise<boolean> {
-  try {
-    await cancelReminder();
-    await ensureChannel();
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: t('Bugünün formülü hazır'),
-        body: t('Hâlâ plasebo. Yine de iki dakikanı ayır.'),
-        ...(Platform.OS === 'android' ? { channelId: CHANNEL_ID } : null),
-      },
-      trigger: {
-        type: Notifications.SchedulableTriggerInputTypes.DAILY,
-        hour,
-        minute,
-      },
-    });
-    return true;
-  } catch {
-    return false;
-  }
+  return serialize(async () => {
+    try {
+      await cancelMarked('plaseboDaily');
+      await ensureChannel();
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: t('Bugünün formülü hazır'),
+          body: t('Hâlâ plasebo. Yine de iki dakikanı ayır.'),
+          data: { ...DAILY_MARK },
+          ...(Platform.OS === 'android' ? { channelId: CHANNEL_ID } : null),
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
+          hour,
+          minute,
+        },
+      });
+      return true;
+    } catch {
+      return false;
+    }
+  });
 }
 
+/**
+ * Yalnızca günlük hatırlatıcıyı iptal eder.
+ *
+ * Eskiden burada `cancelAllScheduledNotificationsAsync()` çağrılıyordu ve
+ * bu, akıllı hatırlatıcının bir haftalık kuyruğunu da siliyordu: kullanıcı
+ * hatırlatma saatini değiştirdiğinde ya da günlük hatırlatıcıyı
+ * kapattığında dürtmeler sessizce yok oluyor, uygulama yeniden açılana
+ * kadar geri gelmiyordu. Artık iptal, işarete bakarak seçici yapılıyor.
+ */
 export async function cancelReminder(): Promise<void> {
+  await serialize(() => cancelMarked('plaseboDaily'));
+}
+
+/**
+ * İşaretsiz kalmış eski bildirimleri temizler.
+ *
+ * Önceki sürümlerde günlük hatırlatıcıya `data` konmuyordu; o sürümden
+ * güncelleyen bir cihazda kuyrukta işaretsiz bir bildirim kalmış olabilir
+ * ve seçici iptal ona dokunamaz — kullanıcı hatırlatıcıyı kapatsa bile
+ * bildirim düşmeye devam ederdi. Uygulama açılışında bir kez çağrılır.
+ */
+export async function cancelUnmarked(): Promise<void> {
   try {
-    await Notifications.cancelAllScheduledNotificationsAsync();
+    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
+    for (const item of scheduled) {
+      const data = item.content.data as Record<string, unknown> | null;
+      if (!data?.plaseboDaily && !data?.plaseboNudge) {
+        await Notifications.cancelScheduledNotificationAsync(item.identifier);
+      }
+    }
   } catch {
     // yoksay
   }
@@ -113,17 +187,7 @@ function randomInt(min: number, max: number): number {
 
 /** Zamanlanmış dürtmeleri iptal eder; günlük hatırlatıcıya dokunmaz. */
 export async function cancelNudges(): Promise<void> {
-  try {
-    const scheduled = await Notifications.getAllScheduledNotificationsAsync();
-    for (const item of scheduled) {
-      const data = item.content.data as Record<string, unknown> | null;
-      if (data?.plaseboNudge) {
-        await Notifications.cancelScheduledNotificationAsync(item.identifier);
-      }
-    }
-  } catch {
-    // yoksay
-  }
+  await serialize(() => cancelMarked('plaseboNudge'));
 }
 
 /**
@@ -142,51 +206,53 @@ export async function scheduleNudges(
   perDay: number,
   t: TranslateFn = (text) => text
 ): Promise<boolean> {
-  try {
-    await cancelNudges();
-    await ensureNudgeChannel();
+  return serialize(async () => {
+    try {
+      await cancelMarked('plaseboNudge');
+      await ensureNudgeChannel();
 
-    const count = Math.max(1, Math.min(perDay, 4));
-    const slotHours = (NUDGE_END_HOUR - NUDGE_START_HOUR) / count;
-    // Havuzu karıştırıp sırayla dolaş: tekrar, havuz bitmeden gelmesin.
-    const pool = [...NUDGES].sort(() => Math.random() - 0.5);
-    let cursor = 0;
+      const count = Math.max(1, Math.min(perDay, 4));
+      const slotHours = (NUDGE_END_HOUR - NUDGE_START_HOUR) / count;
+      // Havuzu karıştırıp sırayla dolaş: tekrar, havuz bitmeden gelmesin.
+      const pool = [...NUDGES].sort(() => Math.random() - 0.5);
+      let cursor = 0;
 
-    for (let day = 0; day < NUDGE_DAYS; day++) {
-      for (let slot = 0; slot < count; slot++) {
-        const when = new Date();
-        when.setDate(when.getDate() + day);
-        const startHour = NUDGE_START_HOUR + slotHours * slot;
-        when.setHours(
-          Math.floor(startHour),
-          randomInt(0, Math.max(1, Math.floor(slotHours * 60)) - 1),
-          0,
-          0
-        );
-        // Geçmiş bir saate bildirim kurulamaz.
-        if (when.getTime() <= Date.now() + 60_000) continue;
+      for (let day = 0; day < NUDGE_DAYS; day++) {
+        for (let slot = 0; slot < count; slot++) {
+          const when = new Date();
+          when.setDate(when.getDate() + day);
+          const startHour = NUDGE_START_HOUR + slotHours * slot;
+          when.setHours(
+            Math.floor(startHour),
+            randomInt(0, Math.max(1, Math.floor(slotHours * 60)) - 1),
+            0,
+            0
+          );
+          // Geçmiş bir saate bildirim kurulamaz.
+          if (when.getTime() <= Date.now() + 60_000) continue;
 
-        const nudge = pool[cursor % pool.length];
-        cursor++;
+          const nudge = pool[cursor % pool.length];
+          cursor++;
 
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: t(nudge.title),
-            body: t(nudge.body),
-            data: { ...NUDGE_MARK },
-            ...(Platform.OS === 'android' ? { channelId: NUDGE_CHANNEL_ID } : null),
-          },
-          trigger: {
-            type: Notifications.SchedulableTriggerInputTypes.DATE,
-            date: when,
-          },
-        });
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: t(nudge.title),
+              body: t(nudge.body),
+              data: { ...NUDGE_MARK },
+              ...(Platform.OS === 'android' ? { channelId: NUDGE_CHANNEL_ID } : null),
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.DATE,
+              date: when,
+            },
+          });
+        }
       }
+      return true;
+    } catch {
+      return false;
     }
-    return true;
-  } catch {
-    return false;
-  }
+  });
 }
 
 /** Saat/dakikayı "09:00" biçiminde döndürür. */

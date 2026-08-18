@@ -1,5 +1,5 @@
 /**
- * Google Play mağaza görsellerini üretir.
+ * Mağaza görsellerini üretir.
  *
  *   npm run store:assets
  *
@@ -7,6 +7,11 @@
  *
  *   icon-512.png          Play Console "Uygulama simgesi" (512x512, 32-bit PNG)
  *   feature-graphic.png   Play Console "Öne çıkan grafik" (1024x500)
+ *   icon-1024.png         App Store pazarlama simgesi (1024x1024, saydamlıksız)
+ *
+ * App Store Connect simgeyi normalde derlemenin içinden okur; 1024'lük
+ * dosya yine de elde dursun diye üretiliyor. Apple saydam (alfa kanallı)
+ * simge kabul etmez, bu yüzden düz zemine oturtuluyor.
  *
  * Öne çıkan grafik, uyarlanabilir simgenin zemin rengi üzerine ön plan
  * katmanının ortalanmasıyla kurulur — yani mağaza görseli uygulamanın
@@ -53,6 +58,28 @@ async function main() {
   );
   fs.writeFileSync(path.join(OUT, 'icon-512.png'), icon.source);
   console.log('✔ store/graphics/icon-512.png (512x512)');
+
+  // --- 1024x1024 App Store simgesi --------------------------------------
+  const iconLarge = await generateImageAsync(
+    { projectRoot: ROOT, cacheType: 'plasebo-appstore-icon' },
+    {
+      src: path.join(ASSETS, 'icon.png'),
+      width: 1024,
+      height: 1024,
+      resizeMode: 'cover',
+      backgroundColor: BACKGROUND,
+    }
+  );
+  // Alfa kanalını tamamen kaldırmak için zemine yapıştırılıyor: Apple,
+  // saydamlık taşıyan simgeyi yüklemede reddeder.
+  const flattened = new Jimp(1024, 1024, BACKGROUND);
+  flattened.composite(await Jimp.read(iconLarge.source), 0, 0);
+  flattened.rgba(false); // PNG'yi alfa kanalsız yaz
+  fs.writeFileSync(
+    path.join(OUT, 'icon-1024.png'),
+    await flattened.getBufferAsync(Jimp.MIME_PNG)
+  );
+  console.log('✔ store/graphics/icon-1024.png (1024x1024, saydamlıksız)');
 
   // --- 1024x500 öne çıkan grafik ----------------------------------------
   const background = new Jimp(FEATURE_W, FEATURE_H, BACKGROUND);

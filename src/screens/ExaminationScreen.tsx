@@ -104,7 +104,7 @@ export default function ExaminationScreen({ navigation, route }: Props) {
       </Animated.View>
 
       <Text style={styles.footnote}>
-        {t('⚗️ Bu analiz plasebodur. Yine de beynin şu an buna inanıyor.')}
+        {t('⚗️ Bu analiz de plasebo. Burada hesaplanan hiçbir şey yok — yalnızca beklemek var.')}
       </Text>
     </Screen>
   );

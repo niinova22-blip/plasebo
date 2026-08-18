@@ -69,7 +69,13 @@ export default function PreparationScreen({ navigation }: Props) {
     );
     timers.push(
       setTimeout(() => {
-        navigation.reset({ index: 0, routes: [{ name: 'Main' }] });
+        // Kurulumdan sonraki ilk ekran sikayet sorusu: kisisellestirme
+        // beklenti etkisini hemen tetikliyor. Ana ekran altta duruyor ki
+        // geri tusu bosluga dusmesin.
+        navigation.reset({
+          index: 1,
+          routes: [{ name: 'Main' }, { name: 'Complaint' }],
+        });
       }, TOTAL_MS)
     );
 

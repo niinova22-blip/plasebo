@@ -1,6 +1,10 @@
 ﻿import React, { useState } from 'react';
 import {
   Alert,
+  Linking,
+  Modal,
+  Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,7 +18,6 @@ import DateTimePicker, {
   type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker';
 import Screen from '../components/Screen';
-import GoalTag from '../components/GoalTag';
 import SettingRow from '../components/SettingRow';
 import SegmentedControl from '../components/SegmentedControl';
 import TransparencyPill from '../components/TransparencyPill';
@@ -23,7 +26,6 @@ import { useUser } from '../context/UserContext';
 import { useSettings, useT, useTheme } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { usePremium } from '../context/PremiumContext';
-import { ALL_GOALS, GOAL_LABELS } from '../utils/formulaEngine';
 import {
   cancelNudges,
   cancelReminder,
@@ -33,7 +35,6 @@ import {
   scheduleNudges,
 } from '../utils/reminders';
 import { haptics } from '../utils/haptics';
-import type { Goal } from '../types';
 import type { ThemeMode } from '../theme/theme';
 import { LANGUAGE_LABELS, type LanguagePref } from '../i18n';
 import type { RootStackParamList } from '../navigation/types';
@@ -77,23 +78,17 @@ export default function SettingsScreen() {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { user, update, reset } = useUser();
   const { settings, update: updateSettings, reset: resetSettings } = useSettings();
-  const { account, signOut } = useAuth();
+  const { account, appleAvailable, signOut } = useAuth();
   const { isPremium, limits, packs, reset: resetPremium } = usePremium();
   const theme = useTheme();
   const t = useT();
   const [name, setName] = useState(user.name);
   /** Saat seçici açık mı? Android'de sistem penceresi olarak açılır. */
   const [pickingTime, setPickingTime] = useState(false);
-
-  const activeGoal = user.activeGoal ?? user.goals[0] ?? 'focus';
-
-  /**
-   * Hedef seçimi tek seçimlidir: dört hedefin de günlük formülü zaten
-   * açık, seçilen yalnızca bugünün formülünü belirleyen hedeftir.
-   */
-  const selectGoal = (goal: Goal) => {
-    update({ goals: [goal], activeGoal: goal });
-  };
+  // iOS'ta seçici, kullanıcı çarkı çevirdikçe onChange yolluyor. Saat
+  // onaylanana kadar burada bekletiliyor; ayar ve bildirim yalnızca
+  // "Tamam"a basılınca bir kez kuruluyor.
+  const [draftTime, setDraftTime] = useState<Date | null>(null);
 
   const onReminderToggle = async (enabled: boolean) => {
     if (!enabled) {
@@ -103,9 +98,16 @@ export default function SettingsScreen() {
     }
     const granted = await requestPermission();
     if (!granted) {
+      // İzin bir kez reddedildikten sonra sistem aynı soruyu bir daha
+      // sormaz; tek yol ayarlar ekranıdır, o yüzden oraya bir kısayol
+      // veriliyor.
       Alert.alert(
         t('Bildirim izni yok'),
-        t('Hatırlatıcı için telefon ayarlarından bildirimlere izin vermen gerekiyor.')
+        t('Hatırlatıcı için telefon ayarlarından bildirimlere izin vermen gerekiyor.'),
+        [
+          { text: t('Vazgeç'), style: 'cancel' },
+          { text: t('Ayarları aç'), onPress: () => void Linking.openSettings() },
+        ]
       );
       return;
     }
@@ -117,7 +119,7 @@ export default function SettingsScreen() {
     if (!ok) {
       Alert.alert(
         t('Hatırlatıcı kurulamadı'),
-        t('Expo Go bazı bildirim özelliklerini kısıtlıyor. Kendi derlemende sorunsuz çalışır.')
+        t('Telefonun bildirim ayarlarını kontrol edip tekrar dene.')
       );
       return;
     }
@@ -132,16 +134,26 @@ export default function SettingsScreen() {
    * Artık sistemin kendi saat seçicisi açılıyor: istenen saat ve dakika
    * doğrudan giriliyor.
    */
-  const onTimePicked = async (event: DateTimePickerEvent, date?: Date) => {
-    setPickingTime(false);
-    // Kullanıcı vazgeçtiyse ayara dokunulmaz.
-    if (event.type !== 'set' || !date) return;
+  const applyTime = async (date: Date) => {
     const hour = date.getHours();
     const minute = date.getMinutes();
     updateSettings({ reminderHour: hour, reminderMinute: minute });
     if (settings.reminderEnabled) {
       await scheduleDailyReminder(hour, minute, t);
     }
+  };
+
+  /** Android: seçici bir sistem penceresidir, sonucu tek seferde döner. */
+  const onTimePicked = async (event: DateTimePickerEvent, date?: Date) => {
+    setPickingTime(false);
+    // Kullanıcı vazgeçtiyse ayara dokunulmaz.
+    if (event.type !== 'set' || !date) return;
+    await applyTime(date);
+  };
+
+  const openTimePicker = () => {
+    setDraftTime(reminderDate());
+    setPickingTime(true);
   };
 
   /**
@@ -158,7 +170,11 @@ export default function SettingsScreen() {
     if (!granted) {
       Alert.alert(
         t('Bildirim izni yok'),
-        t('Hatırlatıcı için telefon ayarlarından bildirimlere izin vermen gerekiyor.')
+        t('Hatırlatıcı için telefon ayarlarından bildirimlere izin vermen gerekiyor.'),
+        [
+          { text: t('Vazgeç'), style: 'cancel' },
+          { text: t('Ayarları aç'), onPress: () => void Linking.openSettings() },
+        ]
       );
       return;
     }
@@ -166,7 +182,7 @@ export default function SettingsScreen() {
     if (!ok) {
       Alert.alert(
         t('Hatırlatıcı kurulamadı'),
-        t('Expo Go bazı bildirim özelliklerini kısıtlıyor. Kendi derlemende sorunsuz çalışır.')
+        t('Telefonun bildirim ayarlarını kontrol edip tekrar dene.')
       );
       return;
     }
@@ -208,7 +224,7 @@ export default function SettingsScreen() {
     Alert.alert(
       t('Hesap ve veriler silinsin mi?'),
       t(
-        'Google hesap bağlantın, adın, hedeflerin, serin, ayarların ve tüm ritüel kayıtların telefonundan silinir. Sunucuda kopyası yok. Geri alınamaz.'
+        'Hesap bağlantın, adın, hedeflerin, serin, ayarların ve tüm ritüel kayıtların telefonundan silinir. Sunucuda kopyası yok. Geri alınamaz.'
       ),
       [
         { text: t('Vazgeç'), style: 'cancel' },
@@ -246,12 +262,22 @@ export default function SettingsScreen() {
         <Text style={[styles.section, { color: theme.sub }]}>{t('HESAP')}</Text>
         {account ? (
           <>
-            <SettingRow label={account.name} hint={account.email} />
+            <SettingRow
+              label={account.name}
+              // Apple girişinde e-posta ikinci girişten sonra gelmez;
+              // satır boş kalmasın diye hangi hesapla girildiği yazılır.
+              hint={
+                account.email ??
+                (account.mode === 'apple'
+                  ? t('Apple ile giriş yapıldı')
+                  : t('Google ile giriş yapıldı'))
+              }
+            />
             <SettingRow label={t('Oturumu kapat')} destructive onPress={confirmSignOut} />
           </>
         ) : (
           <SettingRow
-            label={t('Google ile giriş yap')}
+            label={appleAvailable ? t('Hesabınla giriş yap') : t('Google ile giriş yap')}
             hint={t('Devam etmek için gerekli.')}
             onPress={() => navigation.navigate('SignIn')}
           />
@@ -285,25 +311,9 @@ export default function SettingsScreen() {
           maxLength={24}
         />
 
-        <Text style={[styles.section, { color: theme.sub }]}>
-          {t('FORMÜLÜ BELİRLEYEN HEDEF')}
-        </Text>
-        <View style={styles.tags}>
-          {ALL_GOALS.map((goal) => (
-            <View key={goal} style={styles.tagWrap}>
-              <GoalTag
-                label={t(GOAL_LABELS[goal])}
-                active={goal === activeGoal}
-                onPress={() => selectGoal(goal)}
-              />
-            </View>
-          ))}
-        </View>
-        <Text style={[styles.hint, { color: theme.faint }]}>
-          {t(
-            'Dört hedefin de günlük formülü açık. Günün formülü yalnızca seçtiğin hedeften ve tarihten üretilir; hedefi ana ekrandan da değiştirebilirsin.'
-          )}
-        </Text>
+        {/* Hedef seçimi burada değil, ana ekrandaki şeritte yapılır:
+            aynı seçimin iki yerde durması, hangisinin geçerli olduğunu
+            belirsizleştiriyordu. */}
 
         {/* ---------------- Görünüm ---------------- */}
         <Text style={[styles.section, { color: theme.sub }]}>{t('GÖRÜNÜM')}</Text>
@@ -402,14 +412,14 @@ export default function SettingsScreen() {
           <SettingRow
             label={t('Hatırlatma saati')}
             value={formatTime(settings.reminderHour, settings.reminderMinute)}
-            hint={t('Dokun ve istediğin saati seç.')}
-            onPress={() => setPickingTime(true)}
+            hint={t('Dokunarak istediğin saati seç.')}
+            onPress={openTimePicker}
           />
         ) : null}
         <SettingRow
           label={t('Akıllı hatırlatıcı')}
           hint={t(
-            'Günün rastgele saatlerinde kısa bir dürtme gönderir — her seferinde başka bir cümle. Sabit saatli günlük hatırlatıcıdan ayrıdır.'
+            'Gün içinde değişen saatlerde kısa bir hatırlatma gönderir; her seferinde başka bir cümle. Sabit saatli günlük hatırlatıcıdan ayrıdır.'
           )}
           switchValue={settings.smartNudges}
           onSwitchChange={(v) => void onNudgeToggle(v)}
@@ -423,12 +433,20 @@ export default function SettingsScreen() {
               onChange={(v) => void onNudgeCountChange(v)}
             />
             <Text style={[styles.hint, { color: theme.faint }]}>
-              {t('Dürtmeler 10:00 ile 21:00 arasına dağıtılır; saatleri her hafta değişir.')}
+              {t('Hatırlatmalar 10:00 ile 21:00 arasına dağıtılır; saatleri her hafta değişir.')}
             </Text>
           </>
         ) : null}
 
-        {pickingTime ? (
+        {/*
+          iOS ve Android'de seçici tamamen farklı davranıyor. Android'de
+          sistem penceresi açılır ve sonucu bir kez döner. iOS'ta ise
+          bileşen ağaca gömülü küçük bir alan olarak çizilir (ekranın
+          ortasında beliren gri kutu buydu) ve çark çevrildikçe onChange
+          yollar — her seferinde bildirimi yeniden kurmak, aynı saate
+          birden fazla hatırlatıcı kalmasına yol açıyordu.
+        */}
+        {pickingTime && Platform.OS === 'android' ? (
           <DateTimePicker
             value={reminderDate()}
             mode="time"
@@ -437,6 +455,55 @@ export default function SettingsScreen() {
             onChange={(event, date) => void onTimePicked(event, date)}
           />
         ) : null}
+
+        <Modal
+          visible={pickingTime && Platform.OS === 'ios'}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setPickingTime(false)}
+        >
+          <Pressable style={styles.backdrop} onPress={() => setPickingTime(false)}>
+            <Pressable
+              style={[styles.sheet, { backgroundColor: theme.surface }]}
+              onPress={() => {}}
+            >
+              <Text style={[styles.sheetTitle, { color: theme.text }]}>
+                {t('Hatırlatma saati')}
+              </Text>
+              <DateTimePicker
+                value={draftTime ?? reminderDate()}
+                mode="time"
+                is24Hour
+                display="spinner"
+                themeVariant={theme.blurTint}
+                onChange={(_event, date) => {
+                  if (date) setDraftTime(date);
+                }}
+              />
+              <View style={styles.sheetRow}>
+                <Text
+                  style={[styles.sheetAction, { color: theme.sub }]}
+                  accessibilityRole="button"
+                  onPress={() => setPickingTime(false)}
+                >
+                  {t('Vazgeç')}
+                </Text>
+                <Text
+                  style={[styles.sheetAction, { color: theme.pulse }]}
+                  accessibilityRole="button"
+                  onPress={() => {
+                    const picked = draftTime ?? reminderDate();
+                    setPickingTime(false);
+                    haptics.tap();
+                    void applyTime(picked);
+                  }}
+                >
+                  {t('Tamam')}
+                </Text>
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
 
         {/* ---------------- Veri ---------------- */}
         <Text style={[styles.section, { color: theme.sub }]}>{t('VERİ')}</Text>
@@ -462,7 +529,7 @@ export default function SettingsScreen() {
         />
         <SettingRow
           label={t('Hesap ve veri silme')}
-          hint={t('Silme adımlarının açıklaması.')}
+          hint={t('Silme adımları ve kapsamı.')}
           onPress={() => navigation.navigate('Legal', { doc: 'dataDeletion' })}
         />
 
@@ -503,12 +570,41 @@ const styles = StyleSheet.create({
     fontFamily: fonts.sans,
     fontSize: 15,
   },
-  tags: { flexDirection: 'row', flexWrap: 'wrap' },
-  tagWrap: { marginBottom: 8 },
   hint: { fontFamily: fonts.sans, fontSize: 11, lineHeight: 16, marginTop: 6 },
   spaced: { marginTop: 16 },
   spacer: { height: 14 },
   pill: { marginTop: 24 },
+  backdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  sheet: {
+    width: '100%',
+    maxWidth: 340,
+    borderRadius: 20,
+    paddingTop: 18,
+    paddingHorizontal: 18,
+    paddingBottom: 8,
+  },
+  sheetTitle: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  sheetRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 24,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  sheetAction: {
+    fontFamily: fonts.sansBold,
+    fontSize: 14,
+  },
   version: {
     fontFamily: fonts.sans,
     fontSize: 10,

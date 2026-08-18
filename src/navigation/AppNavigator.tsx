@@ -4,8 +4,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import TabBar from '../components/TabBar';
 import SplashScreen from '../screens/SplashScreen';
-import IntroScreen from '../screens/IntroScreen';
-import NameScreen from '../screens/NameScreen';
 import SignInScreen from '../screens/SignInScreen';
 import OnboardingScreen from '../screens/OnboardingScreen';
 import PreparationScreen from '../screens/PreparationScreen';
@@ -92,8 +90,6 @@ export default function AppNavigator() {
         }}
       >
         <Stack.Screen name="Splash" component={SplashScreen} />
-        <Stack.Screen name="Intro" component={IntroScreen} />
-        <Stack.Screen name="Name" component={NameScreen} />
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="Onboarding" component={OnboardingScreen} />
         <Stack.Screen

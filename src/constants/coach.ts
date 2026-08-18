@@ -110,7 +110,7 @@ export const COACH_TIPS: CoachTip[] = [
   /* --- Plasebonun gücü ------------------------------------------- */
   {
     tag: 'PLASEBONUN GÜCÜ',
-    title: 'Plasebo etkisi gerçektir',
+    title: 'Beklenti etkisi gerçektir',
     body: 'Klinik çalışmalarda plasebo alan grup düzenli olarak iyileşme bildirir; bu, tekrar tekrar ölçülmüş bir olgu. "Hayal görmek" değil — beklentinin, bedenin sinyalleri nasıl işlediğini değiştirmesi.',
   },
   {

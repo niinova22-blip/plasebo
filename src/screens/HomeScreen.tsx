@@ -25,7 +25,8 @@ import {
   isShamDay,
   poolsFor,
 } from '../utils/formulaEngine';
-import { canFreeze, freezeYesterday, toISODate } from '../utils/storage';
+import { canFreeze, freezeYesterday } from '../utils/storage';
+import { useToday } from '../hooks/useToday';
 import { writeWidgetSnapshot } from '../utils/widget';
 import { translateFormulaName } from '../i18n';
 import { useSettings } from '../context/SettingsContext';
@@ -57,7 +58,9 @@ export default function HomeScreen() {
   const theme = useTheme();
   const t = useT();
 
-  const today = toISODate();
+  // Gün dönerse tarih kendini tazeler: uygulama gece boyunca açık kalsa
+  // bile ana ekran dünün formülünde takılı kalmaz.
+  const today = useToday();
   const activeGoal = user.activeGoal ?? user.goals[0] ?? 'focus';
   const pools = useMemo(() => poolsFor(isPremium, packs), [isPremium, packs]);
 
@@ -119,7 +122,11 @@ export default function HomeScreen() {
    * formül **üretmekte** (kriz modu), günün formüllerine erişmekte değil.
    */
   const selectGoal = (goal: Goal) => {
-    update({ goals: [goal], activeGoal: goal });
+    // `goals` dördü birden kalır: seçim yalnızca aktif hedefi değiştirir.
+    // Eskiden burada listeye tek hedef yazılıyordu; hedefler kümesi bir
+    // seçim gibi davrandığı için "hangi hedefler açık" sorusunun cevabı
+    // son dokunulan hedefe göre değişiyordu.
+    update({ goals: [...ALL_GOALS], activeGoal: goal });
   };
 
   /**

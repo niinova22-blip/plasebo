@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import Animated, {
   Easing,
@@ -17,7 +17,12 @@ import { resolveComplaint } from '../constants/complaints';
 import { useT, useTheme } from '../context/SettingsContext';
 import { useMotion } from '../hooks/useMotion';
 import { translateFormulaName } from '../i18n';
-import { shareReceipt } from '../utils/receipt';
+import { shareReceiptImage } from '../utils/receipt';
+import ReceiptCard, {
+  RECEIPT_CARD_HEIGHT,
+  RECEIPT_CARD_WIDTH,
+} from '../components/ReceiptCard';
+import { useUser } from '../context/UserContext';
 import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SessionSummary'>;
@@ -33,6 +38,7 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
   const theme = useTheme();
   const t = useT();
   const motion = useMotion();
+  const { user } = useUser();
   const { complaintId, customText, formula, scoreBefore, scoreAfter, durationSeconds } =
     route.params;
   const complaint = resolveComplaint(complaintId, customText);
@@ -74,8 +80,12 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
     width: `${bar.value * 100}%`,
   }));
 
+  /** Ekran dışında duran belge — paylaşımda görüntüsü alınıyor. */
+  const cardRef = useRef<View>(null);
+
   const share = () => {
-    void shareReceipt(
+    void shareReceiptImage(
+      cardRef,
       [
         t('Bugün "{sikayet}" için plasebo ritüeli yaptım.', {
           sikayet: t(complaint?.label ?? ''),
@@ -139,7 +149,7 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
               ? t('%{yuzde} etki gözlemlendi', { yuzde: percent })
               : diff === 0
                 ? t('Değişim yok — bu da veri')
-                : t('Bugün zordu. Yarın tekrar.')}
+                : t('Bugün zordu. Yarın yeniden dene.')}
           </Text>
 
           <Divider />
@@ -153,7 +163,7 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
         <TransparencyPill
           light
           style={styles.pill}
-          text={t('⚗️ Ölçtüğün şey senin izlenimin — plasebo araştırmaları da bunu ölçer.')}
+          text={t('⚗️ İki ölçüm arasındaki fark bir kanıt değil, bir kayıt. Zamanla anlam kazanır.')}
         />
 
         <PressableScale
@@ -171,6 +181,19 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
         >
           <Text style={[styles.ghostText, { color: theme.sub }]}>{t('Paylaş')}</Text>
         </PressableScale>
+        {/* Paylaşılacak belge: görünmez ama çizili olmak zorunda. */}
+        <View style={styles.offscreen} pointerEvents="none">
+          <View ref={cardRef} collapsable={false}>
+            <ReceiptCard
+              formula={formula}
+              score={Math.max(1, Math.min(10, 11 - scoreAfter))}
+              streak={user.streak}
+              date={formula.generatedAt}
+              name={user.name}
+              t={t}
+            />
+          </View>
+        </View>
       </ScrollView>
     </Screen>
   );
@@ -192,6 +215,15 @@ function Divider() {
 }
 
 const styles = StyleSheet.create({
+  // Ölçü açıkça veriliyor: yakalama, görünümün ölçülmüş sınırlarını
+  // kullanıyor ve boyutsuz bir sarmalayıcıda belgenin altı kesilebiliyor.
+  offscreen: {
+    position: 'absolute',
+    left: -2000,
+    top: 0,
+    width: RECEIPT_CARD_WIDTH,
+    height: RECEIPT_CARD_HEIGHT,
+  },
   content: { padding: 20, paddingBottom: 40 },
   title: {
     fontFamily: fonts.serif,

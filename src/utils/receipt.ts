@@ -1,4 +1,7 @@
-import { Share } from 'react-native';
+import type React from 'react';
+import { Share, type View } from 'react-native';
+import { captureRef } from 'react-native-view-shot';
+import * as Sharing from 'expo-sharing';
 import { translateFormulaName, type TranslateFn } from '../i18n';
 import type { Formula } from '../types';
 
@@ -66,5 +69,42 @@ export async function shareReceipt(text: string): Promise<void> {
     await Share.share({ message: text });
   } catch {
     // Paylaşım penceresi açılamazsa sessizce geçilir.
+  }
+}
+
+/**
+ * Belgeyi görsel olarak paylaşır.
+ *
+ * Neden görsel? Düz metin paylaşımı Android'de uygulamadan uygulamaya
+ * çok farklı davranıyor: bazı hedefler metni hiç almıyor, bazıları
+ * satır sonlarını yiyor ve makbuzun hizalı düzeni bozuluyordu. Bir PNG
+ * her yerde aynı görünüyor ve paylaşmaya değer bir şeye benziyor.
+ *
+ * Görüntü alınamazsa (ekran dışındaki kart henüz çizilmemişse ya da
+ * cihazda paylaşım servisi yoksa) eski metin paylaşımına düşülüyor —
+ * düğme her hâlükârda bir şey yapıyor.
+ */
+export async function shareReceiptImage(
+  viewRef: React.RefObject<View | null>,
+  fallbackText: string
+): Promise<void> {
+  try {
+    if (!viewRef.current) throw new Error('kart hazır değil');
+
+    const uri = await captureRef(viewRef, {
+      format: 'png',
+      quality: 1,
+      result: 'tmpfile',
+    });
+
+    if (!(await Sharing.isAvailableAsync())) throw new Error('paylaşım yok');
+
+    await Sharing.shareAsync(uri, {
+      mimeType: 'image/png',
+      dialogTitle: 'Plasebo',
+      UTI: 'public.png',
+    });
+  } catch {
+    await shareReceipt(fallbackText);
   }
 }

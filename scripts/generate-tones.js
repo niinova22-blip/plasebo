@@ -553,6 +553,135 @@ function crystalChime() {
   return stereoReverb(raw, { mix: 0.4, decay: 0.82 });
 }
 
+/* ------------------------------------------------------------------ */
+/* Tonal dokular — gürültülerin yerine                                 */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Zamana yayılmış vuruşlar.
+ *
+ * Beyaz/pembe/kahverengi gürültü ve yağmur katmanı kaldırıldı: dördü de
+ * geniş bantlı gürültüydü ve uzun dinlemede dinlendirmek yerine yoruyordu.
+ * Yerlerine gelen sesler tınılı — yani bir perdesi var. Dikişsizlik burada
+ * kendiliğinden sağlanıyor: son vuruş döngü bitmeden tamamen sönümlendiği
+ * için dosyanın sonu sessizliktir.
+ */
+function plucked(seconds, events) {
+  const n = samples(seconds);
+  const out = new Float32Array(n);
+  for (const ev of events) {
+    const start = samples(ev.at);
+    const slowest = Math.min(...ev.partials.map((p) => p.decay));
+    // Duyulmaz hâle geldiği yerde kes — tüm dosyayı taramaya gerek yok.
+    const tail = Math.min(n - start, samples(Math.log(1e5) / slowest));
+    for (let i = 0; i < tail; i++) {
+      const t = i / SAMPLE_RATE;
+      let v = 0;
+      for (const p of ev.partials) {
+        v += Math.sin(TAU * p.freq * t + (p.phase ?? 0)) * p.gain * Math.exp(-t * p.decay);
+      }
+      const attack = Math.min(1, i / samples(0.004));
+      out[start + i] += v * attack * (ev.gain ?? 1);
+    }
+  }
+  return out;
+}
+
+/** Bir notanın kısmi frekansları: temel + oktav + beşli, azalan kazançla. */
+function note(freq, { decay = 1.1, bright = 1 } = {}) {
+  return [
+    { freq, gain: 1.0, decay },
+    { freq: freq * 2, gain: 0.4 * bright, decay: decay * 1.45 },
+    { freq: freq * 3, gain: 0.16 * bright, decay: decay * 2.0, phase: 0.6 },
+    { freq: freq * 4.2, gain: 0.05 * bright, decay: decay * 2.8, phase: 1.3 },
+  ];
+}
+
+/**
+ * Handpan: D minör pentatonik, orta register, geniş aralıklarla vurulmuş.
+ * Vuruşlar arası boşluk bilerek uzun — doldurulmuş bir ses değil, nefes
+ * alan bir ses isteniyor.
+ */
+function handpan() {
+  const D3 = 146.83, F3 = 174.61, A3 = 220, C4 = 261.63, D4 = 293.66, E4 = 329.63;
+  const events = [
+    { at: 0.0, freq: D3, gain: 1.0 },
+    { at: 1.7, freq: A3, gain: 0.72 },
+    { at: 3.0, freq: F3, gain: 0.6 },
+    { at: 4.5, freq: C4, gain: 0.66 },
+    { at: 5.9, freq: D4, gain: 0.55 },
+    { at: 7.2, freq: A3, gain: 0.5 },
+    { at: 8.6, freq: E4, gain: 0.44 },
+    { at: 9.9, freq: D3, gain: 0.6 },
+  ].map((e) => ({ at: e.at, gain: e.gain, partials: note(e.freq, { decay: 0.85 }) }));
+  return stereoReverb(plucked(BELL_SECONDS, events), { mix: 0.34, decay: 0.8 });
+}
+
+/**
+ * Kalimba: küçük, parlak, desenli. Handpan'den register ve yoğunlukla
+ * ayrılıyor — notalar daha sık ve daha yukarıda.
+ */
+function kalimba() {
+  const C5 = 523.25, D5 = 587.33, E5 = 659.25, G5 = 783.99, A5 = 880;
+  const pattern = [C5, G5, E5, A5, D5, G5, C5, E5, D5, G5, A5, E5];
+  const events = pattern.map((freq, i) => ({
+    at: 0.15 + i * 0.92,
+    gain: i % 3 === 0 ? 0.9 : 0.62,
+    partials: note(freq, { decay: 1.9, bright: 0.7 }),
+  }));
+  return stereoReverb(plucked(BELL_SECONDS, events), { mix: 0.38, decay: 0.78 });
+}
+
+/**
+ * Rüzgâr çanları: seyrek, yüksek, düzensiz aralıklı. Zamanlamalar elle
+ * yazıldı — rastgele üretilseydi her derlemede başka bir dosya çıkardı.
+ */
+function windChimes() {
+  const notes = [1046.5, 1244.5, 1396.9, 1568.0, 1864.7, 2093.0];
+  const times = [0.2, 0.55, 1.9, 2.15, 3.7, 5.1, 5.35, 6.8, 8.2, 8.5, 9.6];
+  const events = times.map((at, i) => ({
+    at,
+    gain: 0.4 + ((i * 7) % 5) * 0.1,
+    partials: note(notes[(i * 5) % notes.length], { decay: 1.6, bright: 0.5 }),
+  }));
+  return stereoReverb(plucked(BELL_SECONDS, events), { mix: 0.45, decay: 0.84 });
+}
+
+/**
+ * Sıcak ped: Am9 akoru (A2-A3-C4-E4-B4), sürekli ve yumuşak.
+ *
+ * Bütün frekanslar 0.125 Hz'in katı seçildi; 8 saniyelik döngüde her biri
+ * tam turda kapandığı için başa dönüşte sıçrama olmuyor.
+ */
+function warmPad() {
+  const voices = [
+    [110.0, 0.55],
+    [220.0, 0.4],
+    [261.625, 0.3],
+    [329.625, 0.26],
+    [493.875, 0.16],
+  ];
+  const n = samples(TONE_SECONDS);
+  const out = new Float32Array(n);
+  voices.forEach(([freq, gain], index) => {
+    const v = harmonicTone(
+      TONE_SECONDS,
+      freq,
+      [
+        [1, 1.0],
+        [2, 0.14],
+        [3, 0.05],
+      ],
+      // Her ses ayrı hızda kıpırdıyor: birlikte "koro" hissi veriyor.
+      // Hızlar 0.125'in katı, yani 8 saniyede tam tur kapatıyor.
+      { shimmerHz: 0.125 * (index + 1), shimmer: 0.12 }
+    );
+    for (let i = 0; i < n; i++) out[i] += v[i] * gain;
+  });
+  const shaped = filterPeriodic(out, biquad('lowpass', 2200, 0.7));
+  return stereoShimmer(normalize(shaped, 0.75), { rateHz: 0.125, depth: 0.18 });
+}
+
 /**
  * Arayüz tıklaması: tanıtım akışındaki "Sonraki" düğmesi için kısa,
  * yumuşak bir tık.
@@ -590,10 +719,10 @@ fs.mkdirSync(OUT_DIR, { recursive: true });
 writeWav('40hz_gamma.wav', stereoShimmer(gamma40(), { rateHz: 0.125, depth: 0.1 }));
 writeWav('528hz_solfeggio.wav', stereoShimmer(pureTone(528)));
 writeWav('432hz_verdi.wav', stereoShimmer(pureTone(432)));
-writeWav('brown_noise.wav', brownNoise());
-writeWav('white_noise.wav', whiteNoise());
-writeWav('pink_noise.wav', pinkNoise());
-writeWav('rain_layer.wav', rainLayer());
+writeWav('handpan.wav', handpan());
+writeWav('kalimba.wav', kalimba());
+writeWav('wind_chimes.wav', windChimes());
+writeWav('warm_pad.wav', warmPad());
 writeWav('deep_drone.wav', stereoShimmer(deepDrone(), { rateHz: 0.125, depth: 0.2 }));
 writeWav('tibetan_bowl.wav', tibetanBowl());
 writeWav('crystal_chime.wav', crystalChime());

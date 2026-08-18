@@ -11,9 +11,7 @@ export type TabParamList = {
 
 export type RootStackParamList = {
   Splash: undefined;
-  Intro: undefined;
   /** Kurulum 1/3 — isim. */
-  Name: undefined;
   /** Kurulum 2/3 — zorunlu Google girişi. */
   SignIn: undefined;
   /** Kurulum 3/3 — dört formülün tanıtımı. */

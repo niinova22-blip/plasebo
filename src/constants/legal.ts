@@ -47,7 +47,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: '2. İşlenen veriler',
         bullets: [
-          'Ad, e-posta adresi, profil fotoğrafı bağlantısı — Google hesabınla oturum açtığında Google’dan alınır, yalnızca cihazının yerel deposunda tutulur. Amacı: hesabını tanımak ve seni adınla selamlamak.',
+          'Ad, e-posta adresi, profil fotoğrafı bağlantısı — Google hesabınla oturum açtığında Google’dan, iPhone’da Apple ile giriş yaptığında Apple’dan alınır; yalnızca cihazının yerel deposunda tutulur. Amacı: hesabını tanımak ve seni adınla selamlamak. Apple girişinde e-postanı gizlemeyi seçersen uygulamaya yalnızca Apple’ın ürettiği yönlendirme adresi ulaşır.',
           'Adın, seçtiğin hedefler, ritüel kayıtların, puanların, notların, serin ve ayarların — uygulama içinde senin girdiğin bilgilerdir, yalnızca cihazının yerel deposunda tutulur. Amacı: geçmiş, istatistik ve hatırlatıcının çalışması.',
         ],
         callout:
@@ -58,6 +58,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
         body: ['Plasebo yalnızca iki durumda internete bağlanır:'],
         bullets: [
           'Google ile oturum açma. Google’ın kendi oturum açma ekranına yönlendirilirsin; bu, Google’ın gizlilik politikasına tabidir. Uygulama yalnızca “profile” ve “email” kapsamlarını ister.',
+          'Apple ile oturum açma (yalnızca iPhone). Apple’ın sistem penceresi açılır; bu, Apple’ın gizlilik politikasına tabidir. Uygulama yalnızca ad ve e-posta ister; ad ve e-posta Apple tarafından yalnızca ilk girişte verilir.',
           'Profil bilgisinin okunması. Oturum açtıktan hemen sonra adın, e-postan ve profil fotoğrafı bağlantın bir kez okunur ve cihazına yazılır. Erişim anahtarı saklanmaz.',
         ],
       },
@@ -71,7 +72,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
         heading: '5. İzinler',
         bullets: [
           'Bildirimler — yalnızca Ayarlar’dan günlük hatırlatıcıyı açarsan istenir. Bildirimler cihazda zamanlanır; push sunucusu kullanılmaz.',
-          'İnternet — yalnızca Google ile oturum açma için.',
+          'İnternet — yalnızca Google ya da Apple ile oturum açma için.',
           'Titreşim — dokunsal geri bildirim için; Ayarlar’dan kapatılabilir.',
         ],
         body: [
@@ -81,8 +82,8 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       {
         heading: '6. Verilerini silmek',
         body: [
-          'Ayarlar → Veri → “Hesabı ve tüm verileri sil” adımı; adını, hedeflerini, tüm ritüel kayıtlarını, ayarlarını ve kayıtlı Google hesap bilgilerini cihazından kalıcı olarak siler. Yalnızca oturumu kapatmak için Ayarlar → Hesap → Oturumu kapat yeterlidir.',
-          'Google hesabının Plasebo’ya verdiği erişimi dilediğin zaman myaccount.google.com/permissions adresinden kaldırabilirsin.',
+          'Ayarlar → Veri → “Hesabı ve tüm verileri sil” adımı; adını, hedeflerini, tüm ritüel kayıtlarını, ayarlarını ve kayıtlı Google ya da Apple hesap bilgilerini cihazından kalıcı olarak siler. Yalnızca oturumu kapatmak için Ayarlar → Hesap → Oturumu kapat yeterlidir.',
+          'Google hesabının Plasebo’ya verdiği erişimi dilediğin zaman myaccount.google.com/permissions adresinden kaldırabilirsin. Apple ile giriş kullandıysan aynı işlem iPhone’da Ayarlar → (adın) → Oturum Açma ve Güvenlik → Apple ile Oturum Aç altından yapılır.',
         ],
       },
       {
@@ -110,7 +111,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
   dataDeletion: {
     title: 'Hesap ve veri silme',
     meta: 'Plasebo · Son güncelleme: 13 Ağustos 2026 · Paket adı: com.plasebo.app',
-    lede: 'Plasebo’nun sunucusu yoktur. Ritüel kayıtların, puanların, notların, ayarların ve Google hesabından okunan ad/e-posta/profil fotoğrafı bilgisi yalnızca kendi cihazında saklanır. Bu nedenle silme işlemi tamamen senin kontrolündedir ve anında tamamlanır.',
+    lede: 'Plasebo’nun sunucusu yoktur. Ritüel kayıtların, puanların, notların, ayarların ve giriş yaptığın Google ya da Apple hesabından okunan ad/e-posta/profil fotoğrafı bilgisi yalnızca kendi cihazında saklanır. Bu nedenle silme işlemi tamamen senin kontrolündedir ve anında tamamlanır.',
     sections: [
       {
         heading: 'Yol 1 — Uygulama içinden (önerilen)',

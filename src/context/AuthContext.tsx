@@ -6,7 +6,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import {
   GoogleSignin,
   isErrorWithCode,
@@ -29,7 +31,7 @@ if (isGoogleConfigured) {
   });
 }
 
-export type AuthMode = 'google';
+export type AuthMode = 'google' | 'apple';
 
 export interface Account {
   mode: AuthMode;
@@ -46,9 +48,12 @@ interface AuthContextValue {
   googleAvailable: boolean;
   /** Oturum açma isteği gönderilebilir durumda mı? */
   googleReady: boolean;
+  /** Apple ile giriş bu cihazda kullanılabilir mi? (yalnızca iOS 13+) */
+  appleAvailable: boolean;
   signingIn: boolean;
   error: string | null;
   signInWithGoogle: () => Promise<void>;
+  signInWithApple: () => Promise<void>;
   signOut: () => void;
 }
 
@@ -68,6 +73,7 @@ function toAccount(user: User): Account {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [account, setAccount] = useState<Account | null>(null);
   const [ready, setReady] = useState(false);
+  const [appleAvailable, setAppleAvailable] = useState(false);
   const [signingIn, setSigningIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -117,6 +123,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [persist]);
 
+  // Apple ile giriş yalnızca iOS 13 ve üzerinde vardır; simülatörde ve
+  // eski sürümlerde düğme hiç gösterilmemelidir.
+  useEffect(() => {
+    if (Platform.OS !== 'ios') return;
+    let alive = true;
+    void AppleAuthentication.isAvailableAsync()
+      .then((ok) => {
+        if (alive) setAppleAvailable(ok);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const signInWithGoogle = useCallback(async () => {
     if (!isGoogleConfigured) {
       setError('Google oturum açma bu derlemede yapılandırılmamış.');
@@ -155,8 +176,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [persist]);
 
+  /**
+   * Apple ile giriş.
+   *
+   * App Store kuralı 4.8, üçüncü taraf girişi (burada Google) sunan
+   * uygulamalarda Apple ile girişin de sunulmasını şart koşar; bu yüzden
+   * iOS'ta iki düğme birden görünür.
+   *
+   * Ad ve e-posta Apple tarafından **yalnızca ilk yetkilendirmede**
+   * verilir. Kullanıcı sonra çıkıp yeniden girerse bu alanlar boş gelir —
+   * ilk seferde gelen ad cihazda saklandığı için hesap kaydı yine de
+   * dolu kalır. Kullanıcı e-postasını gizlemeyi seçerse Apple bir
+   * yönlendirme adresi (`...@privaterelay.appleid.com`) döndürür.
+   */
+  const signInWithApple = useCallback(async () => {
+    setError(null);
+    setSigningIn(true);
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+      const given = credential.fullName?.givenName?.trim();
+      const family = credential.fullName?.familyName?.trim();
+      const fullName = [given, family].filter(Boolean).join(' ');
+      persist({
+        mode: 'apple',
+        id: credential.user,
+        name: fullName || 'Apple kullanıcısı',
+        email: credential.email ?? undefined,
+      });
+    } catch (e) {
+      // Kullanıcı vazgeçtiğinde kod ERR_REQUEST_CANCELED olur; bu hata
+      // sayılmaz.
+      const code = (e as { code?: string })?.code;
+      if (code !== 'ERR_REQUEST_CANCELED') {
+        setError('Apple oturumu açılamadı.');
+      }
+    } finally {
+      setSigningIn(false);
+    }
+  }, [persist]);
+
   const signOut = useCallback(() => {
     persist(null);
+    // Apple tarafında çıkış diye bir çağrı yoktur; yerel kaydın silinmesi
+    // yeterlidir.
     if (isGoogleConfigured) void GoogleSignin.signOut().catch(() => {});
   }, [persist]);
 
@@ -168,12 +235,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Native giriş için ayrıca bir istek hazırlığı beklenmiyor; kimlik
       // tanımlıysa buton ilk karede basılabilir.
       googleReady: isGoogleConfigured,
+      appleAvailable,
       signingIn,
       error,
       signInWithGoogle,
+      signInWithApple,
       signOut,
     }),
-    [account, ready, signingIn, error, signInWithGoogle, signOut]
+    [
+      account,
+      ready,
+      appleAvailable,
+      signingIn,
+      error,
+      signInWithGoogle,
+      signInWithApple,
+      signOut,
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

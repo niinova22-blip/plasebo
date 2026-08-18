@@ -43,7 +43,7 @@ export default function ScoreBeforeScreen({ navigation, route }: Props) {
 
         <TransparencyPill
           style={styles.pill}
-          text={t('⚗️ Bu ölçüm senin izlenimin — plasebo araştırmalarının ölçtüğü de bu.')}
+          text={t('⚗️ Bu ölçüm senin izlenimin. Araştırmalarda ölçülen de tam olarak bu.')}
         />
       </View>
 

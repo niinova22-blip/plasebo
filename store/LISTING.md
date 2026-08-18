@@ -3,6 +3,9 @@
 Bu dosya, Google Play Console'daki "Ana mağaza girişi" formuna birebir
 kopyalanacak metinleri tutar. Karakter sınırları başlıklarda yazılıdır.
 
+App Store'un metinleri (alt başlık, anahtar kelimeler, tanıtım metni gibi
+Play'de karşılığı olmayan alanlar dâhil) `store/APPSTORE.md` içindedir.
+
 Uygulamanın tamamı şeffaflık üzerine kurulu olduğu için listeleme metni de
 plasebo olduğunu **gizlemek yerine öne çıkarır**. Bu aynı zamanda Play'in
 "Yanıltıcı iddialar" ve "Sağlık" politikalarına karşı en güçlü savunmadır:
@@ -166,10 +169,22 @@ Yapılması gereken: yalnızca inceleme için ayrı bir Google hesabı aç,
 kullanıcı adı ve şifresini forma gir, "Talimatlar" alanına şunu yaz:
 
 ```
-Uygulama açılışta Google ile giriş ister. Yukarıdaki hesapla giriş
-yapılabilir. Giriş sonrası isim ve hedef seçimi tamamlanınca ana ekran
-açılır ve tüm özellikler kullanılabilir. Uygulamanın sunucusu yoktur;
-tüm veriler cihazda tutulur.
+Uygulama, Google hesabıyla giriş yapılmasını ister. Yukarıdaki hesapla
+giriş yapılabilir.
+
+Sıra şöyledir: açılış ekranında "Başla" → altı ekranlık tanıtım (sağa
+kaydırarak ya da "Devam" düğmesiyle geçilir; ilk dört ekranda "Atla"
+bağlantısı da vardır) → son ekranda bir ad yazılır ve "İlk protokolümü
+başlat" düğmesine basılır → Google giriş ekranı → kısa bir hazırlık
+animasyonu → şikâyet seçim ekranı. Bu noktadan sonra tüm özellikler
+kullanılabilir.
+
+Uygulamanın sunucusu yoktur; tüm veriler cihazda tutulur.
+
+Bu sürümde satın alınabilir bir içerik yoktur: "Premium" ekranı yalnızca
+ileride gelecek özellikleri tanıtır, satın alma düğmesi bulunmaz ve hiçbir
+özellik ödemeyle açılmaz. Yukarıdaki hesap, uygulamadaki tüm içeriğe diğer
+tüm kullanıcılarla birebir aynı erişime sahiptir.
 ```
 
 Bilinmesi gereken: Google, tanımadığı bir cihazdan yapılan girişte
@@ -188,20 +203,42 @@ sorunsuz giriş yaptığını kendin dene.
 | `store/graphics/icon-512.png` | 512×512 | Uygulama simgesi |
 | `store/graphics/feature-graphic.png` | 1024×500 | Öne çıkan grafik |
 
-**Ekran görüntüleri hazır** — `store/graphics/screenshots/`, 1080×1920,
-gerçek cihazdan (Android 11) alındı:
+**Ekran görüntüleri hazır** — `store/graphics/screenshots/play/`, 1080×1920.
+(App Store ölçüsündeki kopyaları `…/screenshots/ios/` altındadır; iki
+mağazanın görselleri yüklerken karışmasın diye ayrı klasörlerde durur.)
 
-| Dosya | Ne anlatıyor |
-| --- | --- |
-| `01-ana-ekran.png` | Seri çubuğu, hedef şeridi ve günün formül kartı |
-| `02-ritual-renk.png` | Ritüelin renk adımı ve altındaki uydurma bulgu — listelemenin en önemli karesi |
-| `03-ritual-nefes.png` | Nefes adımı, faz etiketi ve geri sayım |
-| `04-istatistik.png` | Etki skoru, günlük grafik, ısı haritası, kilometre taşları |
-| `05-arsiv.png` | Ritüel kayıtları |
-| `06-nasil-calisir.png` | Şeffaflık metni ve kaynaklı gerçek çalışmalar |
+Bunlar ham cihaz kareleri değil, **tanıtım kartları**: üstte bir cümle,
+altında telefon çerçevesi içinde uygulama ekranı. Listelemede görüntüler
+küçük görünüyor; ham bir uygulama ekranı orada ne olduğunu anlatmıyor.
+Yazı tipleri uygulamanın kendi fontları, böylece mağaza görseli ile
+uygulama aynı tipografiyi kullanıyor.
 
-Yenilerini almak için:
+| Dosya | Başlık | Ekran |
+| --- | --- | --- |
+| `01-ana-ekran.png` | Her gün yeni bir formül | Ana ekran |
+| `02-ritual-renk.png` | İki dakikalık bir tören | Ritüel · renk adımı |
+| `03-ritual-nefes.png` | Nefesin ritmi ekranda | Ritüel · nefes adımı |
+| `04-giris-dersi.png` | Uygulama ne olduğunu söylüyor | Giriş dersi · 1. ekran |
+| `05-istatistik.png` | Ölçen sensin | İstatistik |
+| `06-nasil-calisir.png` | Uydurma bulgular ayrı, literatür ayrı | Nasıl çalışır? |
+
+Ham kareler `store/graphics/screenshots/raw/` altında duruyor. Kartları
+yeniden üretmek için:
 
 ```bash
-adb exec-out screencap -p > store/graphics/screenshots/01-ana-ekran.png
+npm run store:shots
+```
+
+Başlık ve alt metinler `scripts/store-screenshots.py` içindeki `CARDS`
+listesinde; metin kuralı burada da aynı: hiçbir kart bir fayda vaat etmiyor.
+
+> Arşiv ekranı sete alınmadı: birkaç günlük geçmiş olmadan neredeyse boş
+> görünüyor. Uygulamayı bir süre kullandıktan sonra kendi telefonundan
+> alınıp eklenebilir.
+
+Ham kareyi cihazdan almak için:
+
+
+```bash
+adb exec-out screencap -p > store/graphics/screenshots/raw/01-ana-ekran.png
 ```

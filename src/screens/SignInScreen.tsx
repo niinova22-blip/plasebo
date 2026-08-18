@@ -1,5 +1,6 @@
 ﻿import React, { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
 import PressableScale from '../components/PressableScale';
@@ -25,12 +26,22 @@ function GoogleMark() {
 }
 
 /**
- * Oturum açma zorunlu: uygulamaya devam etmenin tek yolu Google hesabı.
- * İleride premium üyelik hesaba bağlanacağı için misafir modu yok.
+ * Oturum açma zorunlu: ileride premium üyelik hesaba bağlanacağı için
+ * misafir modu yok. Android'de tek yol Google hesabıdır; iOS'ta ayrıca
+ * Apple ile giriş sunulur — App Store kuralı 4.8, üçüncü taraf girişi
+ * olan uygulamalarda bunu şart koşuyor.
  */
 export default function SignInScreen({ navigation }: Props) {
-  const { account, googleAvailable, googleReady, signingIn, error, signInWithGoogle } =
-    useAuth();
+  const {
+    account,
+    googleAvailable,
+    googleReady,
+    appleAvailable,
+    signingIn,
+    error,
+    signInWithGoogle,
+    signInWithApple,
+  } = useAuth();
   const { user, update } = useUser();
   const t = useT();
 
@@ -39,7 +50,7 @@ export default function SignInScreen({ navigation }: Props) {
     haptics.success();
     // Kullanıcı adını kendisi yazdıysa ona dokunmuyoruz.
     if (!user.name.trim() && account.name) update({ name: account.name });
-    navigation.navigate('Onboarding');
+    navigation.navigate('Preparation');
   }, [account, navigation, user.name, update]);
 
   return (
@@ -49,15 +60,33 @@ export default function SignInScreen({ navigation }: Props) {
         <View style={styles.ringHole} />
       </View>
 
-      <Text style={styles.eyebrow}>{t('KURULUM · 2/3')}</Text>
+      <Text style={styles.eyebrow}>{t('SON ADIM')}</Text>
       <Text style={styles.title}>
         {user.name ? t('Merhaba {ad}', { ad: user.name }) : t('Hoş geldin')}
       </Text>
       <Text style={styles.body}>
-        {t(
-          'Devam etmek için Google hesabınla giriş yap. Hesap, serini ve ileride üyeliğini bu cihaza bağlamak için gerekiyor. Ritüel kayıtların yine telefonunda kalır.'
-        )}
+        {appleAvailable
+          ? t(
+              'Devam etmek için bir hesapla giriş yap. Hesap, serini ve ileride üyeliğini bu cihaza bağlamak için gerekiyor. Ritüel kayıtların yine telefonunda kalır.'
+            )
+          : t(
+              'Devam etmek için Google hesabınla giriş yap. Hesap, serini ve ileride üyeliğini bu cihaza bağlamak için gerekiyor. Ritüel kayıtların yine telefonunda kalır.'
+            )}
       </Text>
+
+      {appleAvailable ? (
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.WHITE}
+          cornerRadius={14}
+          style={[styles.appleButton, signingIn && styles.disabled]}
+          onPress={() => {
+            if (signingIn) return;
+            haptics.tap();
+            void signInWithApple();
+          }}
+        />
+      ) : null}
 
       {googleAvailable ? (
         <PressableScale
@@ -78,9 +107,9 @@ export default function SignInScreen({ navigation }: Props) {
             </>
           )}
         </PressableScale>
-      ) : (
+      ) : appleAvailable ? null : (
         <View style={styles.notice}>
-          <Text style={styles.noticeTitle}>{t('Google girişi yapılandırılmamış')}</Text>
+          <Text style={styles.noticeTitle}>{t('Google girişi şu an kullanılamıyor')}</Text>
           <Text style={styles.noticeText}>
             {t(
               'Bu derlemede Google Web istemci kimliği tanımlı olmadığı için giriş yapılamıyor ve giriş zorunlu olduğundan uygulama burada duruyor. Kurulum için src/config/auth.ts dosyasındaki açıklamaya bak.'
@@ -96,9 +125,13 @@ export default function SignInScreen({ navigation }: Props) {
         accessibilityRole="link"
         onPress={() => navigation.navigate('Legal', { doc: 'privacy' })}
       >
-        {t(
-          "Devam ederek Gizlilik Politikası'nı kabul etmiş olursun. Google'dan yalnızca adın, e-postan ve profil fotoğrafın okunur; ritüel verilerin hiçbir sunucuya gönderilmez."
-        )}
+        {appleAvailable
+          ? t(
+              "Devam ederek Gizlilik Politikası'nı kabul etmiş olursun. Girişten yalnızca adın ve e-postan okunur; ritüel verilerin hiçbir sunucuya gönderilmez."
+            )
+          : t(
+              "Devam ederek Gizlilik Politikası'nı kabul etmiş olursun. Google'dan yalnızca adın, e-postan ve profil fotoğrafın okunur; ritüel verilerin hiçbir sunucuya gönderilmez."
+            )}
       </Text>
 
       <TransparencyPill
@@ -144,6 +177,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
     marginBottom: 32,
+  },
+  appleButton: {
+    height: 52,
+    width: '100%',
+    marginBottom: 12,
   },
   googleButton: {
     flexDirection: 'row',

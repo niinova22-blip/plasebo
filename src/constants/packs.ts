@@ -27,9 +27,9 @@ export const PACK_CONTENT: Record<PackId, PackContent> = {
       { hex: '#FFC61A', name: 'Lamba Sarısı', duration: 20 },
     ],
     sounds: [
-      { type: 'brown_noise', label: 'Kahverengi Gürültü (uzun oturum)', duration: 180 },
+      { type: 'handpan', label: 'Handpan (uzun oturum)', duration: 180 },
       { type: '40hz_gamma', label: '40Hz Gama (uzun oturum)', duration: 150 },
-      { type: 'pink_noise', label: 'Pembe Gürültü (çalışma)', duration: 200 },
+      { type: 'kalimba', label: 'Kalimba (çalışma)', duration: 200 },
     ],
     breaths: [
       { pattern: 'box_breathing', label: 'Kutu Nefesi (uzatılmış)', rounds: 8 },
@@ -50,9 +50,9 @@ export const PACK_CONTENT: Record<PackId, PackContent> = {
       { hex: '#3E5C6B', name: 'Sönmüş Kömür', duration: 32 },
     ],
     sounds: [
-      { type: 'brown_noise', label: 'Kahverengi Gürültü (gece)', duration: 240 },
+      { type: 'warm_pad', label: 'Sıcak Ped (gece)', duration: 240 },
       { type: 'tibetan_bowl', label: 'Tibet Kâsesi (sönümlü)', duration: 200 },
-      { type: 'rain_layer', label: 'Yağmur Katmanı (gece)', duration: 260 },
+      { type: 'wind_chimes', label: 'Rüzgâr Çanları (gece)', duration: 260 },
       { type: 'deep_drone', label: 'Derin Uğultu (gece)', duration: 220 },
     ],
     breaths: [

@@ -53,7 +53,10 @@ export const defaultSettings: Settings = {
   blindTest: false,
   dose: 1,
   language: 'system',
-  smartNudges: false,
+  // Akıllı hatırlatıcı varsayılan olarak açık gelir: kurulumun son adımı
+  // bildirim iznini ister ve kuyruğu doldurur. İzin verilmezse ayar orada
+  // kapalıya çekilir, böylece açık görünen bir anahtar boşa çalışmaz.
+  smartNudges: true,
   nudgesPerDay: 2,
 };
 

@@ -19,7 +19,12 @@ import { AuthProvider } from './src/context/AuthContext';
 import { PremiumProvider } from './src/context/PremiumContext';
 import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 import { setHapticsEnabled } from './src/utils/haptics';
-import { scheduleNudges } from './src/utils/reminders';
+import {
+  cancelUnmarked,
+  hasPermission,
+  scheduleDailyReminder,
+  scheduleNudges,
+} from './src/utils/reminders';
 import { colors } from './src/constants/colors';
 
 /**
@@ -34,15 +39,39 @@ function ThemedApp() {
   }, [settings.haptics]);
 
   /**
-   * Akıllı hatırlatıcılar önden zamanlanıyor (arka planda çalışan bir
-   * servis yok), bu yüzden kuyruk uygulama her açıldığında yeniden
-   * dolduruluyor. Ayar kapalıysa hiçbir şey yapılmaz — kapatma anında
-   * zaten iptal ediliyor.
+   * Bildirim kuyruğu uygulama her açıldığında yeniden kuruluyor.
+   *
+   * Arka planda çalışan bir servis yok: akıllı hatırlatıcının dürtmeleri
+   * bir haftalık olarak önden zamanlanıyor, o yüzden kuyruğun tazelenmesi
+   * gerekiyor. Aynı yerde günlük hatırlatıcı da yeniden kuruluyor, çünkü
+   * `cancelUnmarked()` eski sürümlerden kalan işaretsiz bildirimleri
+   * temizliyor ve açık olan hatırlatıcının geri gelmesi gerekiyor.
+   *
+   * İzin sorulmuyor, yalnızca var olan izne bakılıyor: izin isteme yeri
+   * kurulum ekranı ve ayarlardaki anahtarlar. Böylece uygulama açılışta
+   * kullanıcının önüne beklenmedik bir sistem penceresi çıkarmıyor.
    */
   useEffect(() => {
-    if (!ready || !settings.smartNudges) return;
-    void scheduleNudges(settings.nudgesPerDay, t);
-  }, [ready, settings.smartNudges, settings.nudgesPerDay, t]);
+    if (!ready) return;
+    void (async () => {
+      if (!(await hasPermission())) return;
+      await cancelUnmarked();
+      if (settings.reminderEnabled) {
+        await scheduleDailyReminder(settings.reminderHour, settings.reminderMinute, t);
+      }
+      if (settings.smartNudges) {
+        await scheduleNudges(settings.nudgesPerDay, t);
+      }
+    })();
+  }, [
+    ready,
+    settings.smartNudges,
+    settings.nudgesPerDay,
+    settings.reminderEnabled,
+    settings.reminderHour,
+    settings.reminderMinute,
+    t,
+  ]);
 
   return (
     <View style={[styles.root, { backgroundColor: theme.bg }]}>

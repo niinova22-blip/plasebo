@@ -25,9 +25,21 @@
  * Web istemci kimliği tanımlı değilse uygulama giriş butonunu gizleyip
  * yapılandırma uyarısı gösterir.
  */
+import { Platform } from 'react-native';
+
 export const googleClientIds = {
   ios: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? '',
   web: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ?? '',
 } as const;
 
-export const isGoogleConfigured = Boolean(googleClientIds.web);
+/**
+ * iOS'ta yalnızca web kimliği yetmez: native giriş penceresi, ters
+ * çevrilmiş iOS istemci kimliğinden üretilen URL şemasıyla uygulamaya
+ * geri döner. Kimlik tanımsızken düğmeyi göstermek, kullanıcıyı
+ * dönüşü olmayan bir pencereye sokardı; bu yüzden iOS'ta iki kimlik de
+ * gerekli sayılıyor. Android'de kimlik koda yazılmaz (paket adı + SHA-1
+ * eşleşmesine bakılır), orada web kimliği yeterlidir.
+ */
+export const isGoogleConfigured =
+  Boolean(googleClientIds.web) &&
+  (Platform.OS !== 'ios' || Boolean(googleClientIds.ios));

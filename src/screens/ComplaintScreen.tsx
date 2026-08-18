@@ -20,6 +20,7 @@ import {
   type Complaint,
 } from '../constants/complaints';
 import { useT, useTheme } from '../context/SettingsContext';
+import { useUser } from '../context/UserContext';
 import { useMotion } from '../hooks/useMotion';
 import { haptics } from '../utils/haptics';
 import type { RootStackParamList } from '../navigation/types';
@@ -36,6 +37,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Complaint'>;
 export default function ComplaintScreen({ navigation }: Props) {
   const theme = useTheme();
   const t = useT();
+  const { user } = useUser();
   const [selected, setSelected] = useState<Complaint | null>(null);
   /** Listedeki hazır şikayetler yerine kendi cümlesini yazıyor mu? */
   const [custom, setCustom] = useState(false);
@@ -64,11 +66,25 @@ export default function ComplaintScreen({ navigation }: Props) {
           <Text style={[styles.backText, { color: theme.sub }]}>{t('‹ Geri')}</Text>
         </PressableScale>
 
-        <Text style={[styles.title, { color: theme.text }]}>
-          {t('Bugün ne hissediyorsun?')}
-        </Text>
+        {/* Kurulumdan hemen sonra buraya düşüldüğü için ilk satır
+            kişisel: beklenti etkisini adıyla başlatıyor. */}
+        {user.name ? (
+          <>
+            <Text style={[styles.greeting, { color: theme.text }]}>
+              {t('Merhaba {ad}.', { ad: user.name })}
+            </Text>
+            <Text style={[styles.question, { color: theme.sub }]}>
+              {t('Bugün ne hissediyorsun?')}
+            </Text>
+          </>
+        ) : (
+          // Ad yoksa soru başlığın kendisi olur; ekran başsız kalmasın.
+          <Text style={[styles.title, { color: theme.text }]}>
+            {t('Bugün ne hissediyorsun?')}
+          </Text>
+        )}
         <Text style={[styles.sub, { color: theme.sub }]}>
-          {t('Dürüst ol. Plasebo dürüstlükle daha iyi çalışır.')}
+          {t('Dürüst ol. Beklenti protokolü dürüstlükle daha iyi çalışır.')}
         </Text>
 
         <View style={styles.list}>
@@ -217,7 +233,10 @@ const styles = StyleSheet.create({
   content: { padding: 20, paddingBottom: 40 },
   back: { alignSelf: 'flex-start', paddingVertical: 6, paddingRight: 12 },
   backText: { fontFamily: fonts.sansMedium, fontSize: 13 },
-  title: { fontFamily: fonts.serif, fontSize: 30, marginTop: 10 },
+  greeting: { fontFamily: fonts.serif, fontSize: 28, marginTop: 10 },
+  question: { fontFamily: fonts.sans, fontSize: 16, marginTop: 4 },
+  // Selamlama varken başlık ona yapışsın diye üst boşluk küçük.
+  title: { fontFamily: fonts.serif, fontSize: 30, marginTop: 4 },
   sub: { fontFamily: fonts.sans, fontSize: 12, lineHeight: 19, marginTop: 6 },
   list: { marginTop: 22 },
   row: {

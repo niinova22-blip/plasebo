@@ -4,6 +4,11 @@ Depodaki teknik hazırlık tamam. Kalanlar hesap açma, URL yayınlama ve
 Play Console formları — yani ağırlıklı olarak senin yapman gerekenler.
 Sırayı bozmadan ilerle; her adım bir sonrakinin girdisini üretiyor.
 
+> Aynı uygulamanın **App Store** yayını ayrı bir dosyada: `store/APPSTORE.md`.
+> Orada anlatılan Apple ile giriş desteği Android derlemesini de
+> değiştirdiği için, iOS hazırlığından sonra Play'e de yeni bir sürüm
+> (`1.1.0`, `versionCode` 7) gitmelidir.
+
 ---
 
 ## Depoda hazır olanlar
@@ -18,7 +23,7 @@ Sırayı bozmadan ilerle; her adım bir sonrakinin girdisini üretiyor.
 | Uygulama simgesi / açılış işareti üretici | `npm run icons` (`scripts/generate-icons.js`) |
 | Türkçe/İngilizce dil desteği | `src/i18n/` |
 | Yayın imzalama (prebuild'e dayanıklı) | `plugins/withUploadKeystore.js` + `keys/` |
-| Mağaza ekran görüntüleri (6 adet) | `store/graphics/screenshots/` |
+| Mağaza ekran görüntüleri (6 adet) | `store/graphics/screenshots/play/` |
 | Mağaza metinleri, form cevapları, ekran görüntüsü planı | `store/LISTING.md` |
 | 512×512 simge ve 1024×500 öne çıkan grafik | `npm run store:assets` |
 | OAuth kimlikleri için şablon | `.env.example` |
@@ -123,10 +128,52 @@ cd android && ./gradlew bundleRelease   # Play'e yüklenecek .aab
 cd android && ./gradlew assembleRelease # cihazda denemek için .apk
 ```
 
+> ### Yerel derlemede `.env` tuzağı — her sürümde kontrol et
+>
+> Expo, yerel Gradle derlemesinde de proje kökündeki `.env` dosyasını
+> yükler (`env: load .env` satırı derleme çıktısında görünür). Yani
+> geliştirme için `.env` içinde açık bırakılan
+> `EXPO_PUBLIC_ALLOW_TEST_PURCHASES=1`, Play'e gidecek AAB'ye de gömülür ve
+> mağazadaki uygulamada plan ekranı premium'u bedavaya açar.
+>
+> Daha sinsi ikinci yarısı: `.env`'i değiştirmek Gradle için bir girdi
+> değişikliği **değildir**. JS kaynakları aynı kaldığı için
+> `createBundleReleaseJsAndAssets` görevi "güncel" sayılır ve bir önceki
+> derlemeden kalan paket olduğu gibi yeniden kullanılır — bayrağı
+> kapatmak tek başına hiçbir şeyi değiştirmez.
+>
+> AAB derlemeden önce sırasıyla:
+>
+> ```bash
+> # 1. bayrağı kapat (0 yap ya da satırı boşalt)
+> # 2. paketi zorla yeniden ürettir:
+> rm -rf android/app/build/generated/assets/react/release
+> cd android && ./gradlew bundleRelease
+> ```
+>
+> Sonuç kontrolü — paket Hermes bayt kodudur, ASCII dizeler düz metin
+> olarak, Türkçe karakterli dizeler UTF-16 olarak durur:
+>
+> | Aranan | Kodlama | Bayrak kapalıyken |
+> | --- | --- | --- |
+> | `Test derlemesi` | ASCII | **bulunmamalı** |
+> | `Satın alma henüz açılmadı` | UTF-16 | **bulunmalı** |
+>
+> Derleme bitince `.env`'i eski hâline döndürmeyi unutma; cihazda premium
+> kilitlerini denemek için bayrağın açık olması gerekiyor.
+
 > İmza değiştiği için yeni APK, eski APK'nın üzerine kurulamaz; cihazdaki
 > eski sürümün önce kaldırılması gerekir.
 
 ## 3b. Alternatif: EAS ile derleme
+
+> **Dikkat — proje artık EAS'e bağlı** (`@ninovatech/plasebo`, iOS derlemesi
+> için gerekiyordu). Android tarafında `npm run build:play` çalıştırılırsa
+> EAS **kendi ürettiği yeni bir keystore** ile imzalar; Play'e daha önce
+> `keys/plasebo-upload.jks` ile imzalanmış bir sürüm yüklendiyse bu AAB
+> reddedilir ("yanlış imzalama anahtarı"). Android'de ya yerel
+> `bundleRelease` kullanmaya devam et ya da mevcut anahtarı önce
+> `eas credentials` ile EAS'a yükle.
 
 ```bash
 npm install -g eas-cli
@@ -203,6 +250,8 @@ bekleme süresini paralelde harcamanın tek yolu.
 
 ## 7. Abonelik — gerçek faturalandırmayı bağlama (ilk sürümde yok)
 
+> İki mağazayı birlikte anlatan ayrıntılı sürüm: `store/ABONELIK.md`.
+
 > **v1.0.0'da premium satılmıyor.** Plan ekranı bir tanıtım ekranıdır:
 > satın alma düğmesi yoktur, fiyat yerine "yakında" yazar ve kilitli
 > özellikler (kriz modu, çift doz, tüm geçmiş, içerik paketleri) kilitli
@@ -271,4 +320,4 @@ alandan okunuyor.
 - [ ] Bildirim izni isteniyor ve hatırlatıcı gerçekten geliyor
 - [ ] Demo hesapla başka bir cihazdan giriş yapılabiliyor
 - [ ] Veri güvenliği formu `LISTING.md` ile birebir aynı
-- [ ] `store/graphics/screenshots/` içinde en az 2 ekran görüntüsü var
+- [ ] `store/graphics/screenshots/play/` içinde en az 2 ekran görüntüsü var

@@ -17,17 +17,17 @@ export interface Nudge {
 
 export const NUDGES: Nudge[] = [
   /* --- Davet ------------------------------------------------------ */
-  { title: 'İki dakikan var mı?', body: 'Bugünün formülü hâlâ seni bekliyor. Hâlâ plasebo.' },
-  { title: 'Hadi odağını toparlayalım', body: 'Renk, ses, nefes. Beklenti gerçek bir mekanizma — dene.' },
+  { title: 'İki dakikan var mı?', body: 'Bugünün formülü hâlâ seni bekliyor. İçinde hâlâ etken madde yok.' },
+  { title: 'Üç adım, iki dakika', body: 'Renk, ses, nefes. Beklenti ölçülmüş bir mekanizma.' },
   { title: 'Bir ara ver', body: 'Ne yaptığın önemli değil; durduğun iki dakika önemli.' },
   { title: 'Formülün hazır', body: 'Bugünün rengi seçildi bile. Sadece bakman gerekiyor.' },
   { title: 'Nefesini uzat', body: 'Verişi alıştan uzun tut. Buradaki tek gerçek etken bu.' },
-  { title: 'Şimdi iyi bir an', body: 'Sonraya bırakılan ritüel, yapılmayan ritüeldir.' },
+  { title: 'Şimdi iyi bir an', body: 'İki dakika sonra da aynı yerde olacaksın. Bu sefer durarak.' },
 
   /* --- Hedefe göre ------------------------------------------------ */
-  { title: 'Dikkatin dağıldı mı?', body: 'Odak formülü 90 saniye sürüyor. Telefonu bırakmadan önce.' },
-  { title: 'Omuzların gergin', body: 'Sükunet formülünde nefes başa geçiyor. Sayıları dert etme.' },
-  { title: 'Güne hız lazımsa', body: 'Enerji formülü parlak bir renkle başlıyor. Gözünü aç.' },
+  { title: 'Dikkatin dağıldıysa', body: 'Odak formülü 90 saniye sürüyor. Telefonu bırakmadan önce sığar.' },
+  { title: 'Omuzların gerginse', body: 'Sükunet formülünde nefes başa geçiyor. Sayıları tutturmak zorunda değilsin.' },
+  { title: 'Güne hız gerekiyorsa', body: 'Enerji formülü parlak bir renkle başlıyor.' },
   { title: 'Gece yaklaşıyor', body: 'Uyku formülünde sesler yavaşlar. Ekranı kapatmadan önce bir tur.' },
 
   /* --- Şeffaf / esprili ------------------------------------------- */
@@ -42,5 +42,5 @@ export const NUDGES: Nudge[] = [
   { title: 'Kaçırdıysan sorun değil', body: 'Bugünden devam et. Uygulama not tutmuyor, sadece sayıyor.' },
   { title: 'Tek adım da sayılır', body: 'Tamamını yapamıyorsan yalnızca nefes adımını çalıştır.' },
   { title: 'Aynı saat, aynı köşe', body: 'Tekrarlanan bağlam beklentiyi güçlendiriyor — iddia bu.' },
-  { title: 'Bugünkü renk seni bekliyor', body: 'Bir yıl boyunca aynı formül iki kez gelmiyor. Bunu kaçırma.' },
+  { title: 'Bugünkü renk seni bekliyor', body: 'Aynı formül bir yıl boyunca ikinci kez gelmiyor.' },
 ];

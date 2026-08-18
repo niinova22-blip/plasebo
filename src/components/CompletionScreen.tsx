@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import Animated, {
   Easing,
@@ -18,7 +18,11 @@ import { useMotion } from '../hooks/useMotion';
 import { useUser } from '../context/UserContext';
 import { useT } from '../context/SettingsContext';
 import { translateFormulaName } from '../i18n';
-import { receiptText, shareReceipt } from '../utils/receipt';
+import { receiptText, shareReceiptImage } from '../utils/receipt';
+import ReceiptCard, {
+  RECEIPT_CARD_HEIGHT,
+  RECEIPT_CARD_WIDTH,
+} from './ReceiptCard';
 import { haptics } from '../utils/haptics';
 import type { Formula } from '../types';
 import ScoreSlider from './ScoreSlider';
@@ -160,9 +164,13 @@ export default function CompletionScreen({
     []
   );
 
+  /** Ekran dışında duran belge — paylaşımda bunun görüntüsü alınıyor. */
+  const cardRef = useRef<View>(null);
+
   const onShare = () => {
     haptics.tap();
-    void shareReceipt(
+    void shareReceiptImage(
+      cardRef,
       receiptText({
         formula,
         score,
@@ -256,7 +264,7 @@ export default function CompletionScreen({
 
         <TransparencyPill
           style={styles.pill}
-          text={t('⚗️ Senin izlenimin en önemli ölçüt — plasebo araştırmaları da bunu ölçer.')}
+          text={t('⚗️ Doğru cevabı yok. Verdiğin puan, o anki hâlinin kaydı.')}
         />
 
         <PressableScale onPress={onSave} accessibilityRole="button" style={styles.button}>
@@ -271,11 +279,37 @@ export default function CompletionScreen({
           <Text style={styles.secondaryText}>{t('🧾 Makbuzu paylaş')}</Text>
         </PressableScale>
       </Animated.View>
+      {/* Paylaşılacak belge ekranın dışında duruyor: görüntüsü
+          alınabilmesi için çizilmiş olması gerekiyor, ama kullanıcıya
+          gösterilmiyor. `collapsable={false}` olmadan Android bu
+          görünümü yerel ağaçtan tamamen eleyebiliyor ve yakalama
+          boş çıkıyor. */}
+      <View style={styles.offscreen} pointerEvents="none">
+        <View ref={cardRef} collapsable={false}>
+          <ReceiptCard
+            formula={formula}
+            score={score}
+            streak={user.streak}
+            date={formula.generatedAt}
+            name={user.name}
+            t={t}
+          />
+        </View>
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  // Ölçü açıkça veriliyor: yakalama, görünümün ölçülmüş sınırlarını
+  // kullanıyor ve boyutsuz bir sarmalayıcıda belgenin altı kesilebiliyor.
+  offscreen: {
+    position: 'absolute',
+    left: -2000,
+    top: 0,
+    width: RECEIPT_CARD_WIDTH,
+    height: RECEIPT_CARD_HEIGHT,
+  },
   container: {
     flexGrow: 1,
     paddingHorizontal: 24,

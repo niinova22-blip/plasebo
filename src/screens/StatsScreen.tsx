@@ -23,8 +23,8 @@ import {
   improvementByCategory,
   improvementPercent,
   overallScore,
-  toISODate,
 } from '../utils/storage';
+import { useToday } from '../hooks/useToday';
 import { CATEGORY_LABELS } from '../constants/complaints';
 import type { RootStackParamList } from '../navigation/types';
 
@@ -45,7 +45,8 @@ export default function StatsScreen() {
   const { limits } = usePremium();
   const theme = useTheme();
   const t = useT();
-  const today = toISODate();
+  // Ana ekranla aynı davranış: gün dönünce grafikler de kayar.
+  const today = useToday();
 
   const heatmapWindow = Math.min(FULL_HEATMAP_DAYS, limits.historyDays);
 

@@ -127,13 +127,21 @@ export default function ScoreAfterScreen({ navigation, route }: Props) {
             </Text>
           ) : (
             <Text style={[styles.delta, { color: colors.warn }]}>
-              {t('Bugün zordu. Yarın tekrar dene.')}
+              {t('Bugün zordu. Yarın yeniden dene.')}
             </Text>
           )}
         </View>
       </ScrollView>
 
-      <PressableScale onPress={save} accessibilityRole="button" style={styles.button}>
+      {/* Ölçüm yapılmadan kaydedilemiyor: başlangıç değeri `scoreBefore`
+          olduğu için dokunulmadan basıldığında sessizce "değişim yok"
+          kaydediliyor ve bu veri istatistikleri kirletiyordu. */}
+      <PressableScale
+        onPress={save}
+        disabled={!touched}
+        accessibilityRole="button"
+        style={[styles.button, !touched && styles.buttonDisabled]}
+      >
         <Text style={styles.buttonText}>{t('Sonucu Gör')}</Text>
       </PressableScale>
     </Screen>
@@ -211,5 +219,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
+  buttonDisabled: { opacity: 0.4 },
   buttonText: { fontFamily: fonts.sansBold, fontSize: 15, color: colors.white },
 });

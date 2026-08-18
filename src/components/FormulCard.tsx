@@ -120,7 +120,7 @@ export default function FormulCard({ formula, onStart, doneToday }: FormulCardPr
       </Text>
       <Text style={styles.title}>{translateFormulaName(formula.name, t)}</Text>
       <Text style={styles.disclaimer}>
-        {t('⚗️ Bu tamamen plasebo. Yine de işe yarayacak.')}
+        {t('⚗️ Etken madde yok — etki var. Bu bir beklenti protokolü.')}
       </Text>
 
       <View style={styles.steps}>

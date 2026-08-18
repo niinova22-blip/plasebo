@@ -84,10 +84,20 @@ export default function PrescriptionScreen({ navigation, route }: Props) {
     transform: [{ translateY: (1 - enter.value) * 40 }],
   }));
 
-  if (!complaint) {
-    navigation.goBack();
-    return null;
-  }
+  /**
+   * Şikayet çözülemezse (bozuk kayıt ya da elden geçmiş bir bağlantı)
+   * ekran boş kalmasın diye geri dönülür.
+   *
+   * Bu geri dönüş eskiden doğrudan render gövdesinde çağrılıyordu; React,
+   * çizim sırasında başka bir bileşenin durumunu güncellemekten şikâyet
+   * eder ve yönlendirme yarıda kalabilir. Artık çizim bittikten sonra,
+   * yan etki olarak yapılıyor.
+   */
+  useEffect(() => {
+    if (!complaint) navigation.goBack();
+  }, [complaint, navigation]);
+
+  if (!complaint) return null;
 
   return (
     <Screen background={theme.bg}>
@@ -101,8 +111,8 @@ export default function PrescriptionScreen({ navigation, route }: Props) {
 
           <View style={styles.cardHead}>
             <View style={styles.clinic}>
-              <Text style={styles.clinicName}>{t('Plasebo Kliniği')}</Text>
-              <Text style={styles.clinicDoctor}>{t('Dr. Algoritma, Nörobilim')}</Text>
+              <Text style={styles.clinicName}>{t('Plasebo Protokol Merkezi')}</Text>
+              <Text style={styles.clinicDoctor}>{t('Dr. Plasebo, Nörobilim')}</Text>
             </View>
             <Text style={styles.mark}>⚗️</Text>
           </View>
@@ -131,7 +141,7 @@ export default function PrescriptionScreen({ navigation, route }: Props) {
           <View style={styles.divider} />
 
           <Text style={styles.warn}>
-            {t('⚠️ Bu reçete tamamen plasebodur. Etkisi beklentiden gelir.')}
+            {t('⚠️ Bu reçetede etken madde yok — etki var. Etki beklentiden gelir.')}
           </Text>
         </Animated.View>
 

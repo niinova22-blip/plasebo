@@ -29,13 +29,13 @@ export interface BreathEntry {
 export type SoundId =
   | '40hz_gamma'
   | '528hz_solfeggio'
-  | 'brown_noise'
+  | 'handpan'
   | 'binaural_alpha'
   | 'tibetan_bowl'
-  | 'white_noise'
+  | 'kalimba'
   | '432hz_verdi'
-  | 'pink_noise'
-  | 'rain_layer'
+  | 'wind_chimes'
+  | 'warm_pad'
   | 'binaural_theta'
   | 'deep_drone'
   | 'crystal_chime';
@@ -85,13 +85,13 @@ export const COLOR_POOL: ColorEntry[] = [
 export const SOUND_POOL: SoundEntry[] = [
   { type: '40hz_gamma', label: '40Hz Gama Dalgası', duration: 90 },
   { type: '528hz_solfeggio', label: '528Hz Solfeggio', duration: 80 },
-  { type: 'brown_noise', label: 'Kahverengi Gürültü', duration: 100 },
+  { type: 'handpan', label: 'Handpan · D Minör', duration: 100 },
   { type: 'binaural_alpha', label: 'Binaural Alfa (10Hz)', duration: 95 },
   { type: 'tibetan_bowl', label: 'Tibet Kâsesi', duration: 75 },
-  { type: 'white_noise', label: 'Beyaz Gürültü', duration: 85 },
+  { type: 'kalimba', label: 'Kalimba Deseni', duration: 85 },
   { type: '432hz_verdi', label: '432Hz Verdi Akordu', duration: 85 },
-  { type: 'pink_noise', label: 'Pembe Gürültü', duration: 100 },
-  { type: 'rain_layer', label: 'Yağmur Katmanı', duration: 110 },
+  { type: 'wind_chimes', label: 'Rüzgâr Çanları', duration: 100 },
+  { type: 'warm_pad', label: 'Sıcak Ped · Am9', duration: 110 },
   { type: 'binaural_theta', label: 'Binaural Teta (6Hz)', duration: 95 },
   { type: 'deep_drone', label: 'Derin Uğultu (110Hz)', duration: 105 },
   { type: 'crystal_chime', label: 'Kristal Çan', duration: 70 },
@@ -196,13 +196,13 @@ export const PSEUDO_SCIENCE_FACTS: string[] = [
 export const SOUND_FACTS: Record<SoundId, string> = {
   '40hz_gamma': '⚗️ 40Hz gama dalgaları prefrontal korteksi %23 aktive eder',
   '528hz_solfeggio': '⚗️ 528Hz frekansı hücresel rezonansı %19 senkronize eder',
-  brown_noise: '⚗️ Kahverengi gürültü arka plan düşünce sayısını %42 azaltır',
+  handpan: '⚗️ Handpan’ın pentatonik aralıkları zihinsel gezinmeyi %42 seyreltir',
   binaural_alpha: '⚗️ Binaural alfa dalgaları hemisfer eşzamanlılığını %37 artırır',
   tibetan_bowl: '⚗️ Tibet kâsesi harmonikleri kalp ritmi değişkenliğini %28 dengeler',
-  white_noise: '⚗️ Beyaz gürültü işitsel dikkat dağınıklığını %31 maskeler',
+  kalimba: '⚗️ Kalimba deseninin düzenli aralıkları iç sesi %31 maskeler',
   '432hz_verdi': '⚗️ 432Hz akordu iç kulak mikro-titreşimini %17 yumuşatır',
-  pink_noise: '⚗️ Pembe gürültü hafıza pekiştirme penceresini %21 uzatır',
-  rain_layer: '⚗️ Yağmur dokusu zihinsel gezinme sıklığını %35 seyreltir',
+  wind_chimes: '⚗️ Rüzgâr çanlarının seyrek vuruşları hafıza penceresini %21 uzatır',
+  warm_pad: '⚗️ Am9 pedinin sürekli tanısı solunum ritmini %35 düzleştirir',
   binaural_theta: '⚗️ Binaural teta yaratıcı çağrışım hızını %29 artırır',
   deep_drone: '⚗️ 110Hz derin uğultu kas gerilim eşiğini %14 aşağı çeker',
   crystal_chime: '⚗️ Kristal çan tınısı dikkat sıfırlamasını 1.8 kat hızlandırır',
