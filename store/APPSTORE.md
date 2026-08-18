@@ -17,6 +17,35 @@ olduğu için Apple'a başka bir ödeme yapılmaz.
 
 ---
 
+## Nerede kaldık (19 Ağustos 2026)
+
+| Adım | Durum |
+| --- | --- |
+| 1. Apple Developer Program üyeliği | **Bitti** — bireysel hesap, takım `Ahmet KÖKDOGAN (GUYY5AAT36)` |
+| 2. App Store Connect uygulama kaydı | **Bitti** — `eas submit` kendisi oluşturdu. Apple kimliği **6802842875** |
+| 3. Google Cloud iOS istemcisi | **Bitti** — kimlik `.env` ve EAS ortamında tanımlı |
+| 4. Derleme ve yükleme | **Bitti** — sürüm **1.1.1**, derleme no **2**, App Store Connect'e yüklendi |
+| 5. TestFlight'ta cihazda deneme | **Bitti** — Apple girişi, Google girişi, bildirim, ses, hesap silme çalışıyor |
+| 6. Mağaza formları | **Sırada** — aşağıdaki bölüm alan alan anlatıyor |
+| 7. İncelemeye gönderme | Formlar bitince |
+
+Yol boyunca çıkan ve düzeltilen iki iOS hatası (1.1.1 sürümünde):
+
+- **Aynı hatırlatıcı iki kez düşüyordu.** iOS'un saat seçicisi çark
+  çevrildikçe olay yolluyor; her olayda bildirim yeniden kurulunca
+  "önce iptal et, sonra kur" adımları iç içe geçiyor ve aynı saate iki
+  kayıt kalıyordu. Saat artık onaylanınca bir kez kuruluyor, ayrıca tüm
+  kurma/iptal işlemleri tek sıraya alındı.
+- **Saat seçici ekranın ortasında alakasız bir yerde beliriyordu.** iOS
+  bileşeni ağaca gömülü çiziyor; artık Vazgeç/Tamam düğmeli bir pencerede
+  açılıyor. Android'de sistem penceresi aynen kaldı.
+- Bildirim izni reddedilmişse uyarıya **"Ayarları aç"** kısayolu eklendi.
+
+> Depodaki eski TestFlight derlemesinde (1.1.0) bu düzeltmeler yok.
+> İncelemeye **1.1.1 / derleme 2** gönderilecek.
+
+---
+
 ## Depoda hazır olanlar
 
 | Ne | Nerede |
@@ -203,230 +232,153 @@ Cihazda mutlaka dene:
 
 ## 6. App Store Connect formları
 
-Uygulama sayfasında **Dağıtım** sekmesindeki her alan doldurulmalı.
+Aşağıdaki sıra, App Store Connect'in sol menüsünü takip eder. Kopyalanacak
+bütün metinler masaüstündeki
+`Plasebo-Yayin-Rehberleri\2-Apple-App-Store\Magaza-Metinleri.txt`
+dosyasında da duruyor.
 
-### Mağaza metinleri
+### 6.0 Önce sürüm numarasını eşitle
 
-**Ad (30 karakter)**
+Sol menüde **Dağıtım → iOS Uygulaması** altında bir sürüm görünür.
+Uygulama kaydı açılırken oluştuğu için orada büyük ihtimalle **1.0**
+yazıyor; yüklediğimiz derleme ise **1.1.1**.
 
-```
-Plasebo
-```
+**Sürüm** alanını **1.1.1** yap ve kaydet. Numaralar eşleşmezse derleme,
+sürüm sayfasındaki listede hiç görünmez ve "derleme seçilmedi" hatası
+alırsın.
 
-**Alt başlık (30 karakter)** — App Store'a özgü, Play'de karşılığı yok:
+### 6.1 Genel → Uygulama Bilgileri
 
-```
-Bilerek inan
-```
+**Yerelleştirilebilir Bilgiler (Türkçe):**
 
-(12 karakter. Alternatif: `Açık etiketli plasebo ritüeli` — 29 karakter.)
-
-**Tanıtım metni (170 karakter)** — inceleme gerektirmeden istediğin zaman
-değiştirebildiğin tek alan:
-
-```
-Her gün bir renk, bir ses, bir nefes ve bir kelime. Formül bilimsel görünür;
-değildir. Uygulama bunu her ekranda yazar. İki dakika sürer, kararı sen
-verirsin.
-```
-
-**Açıklama (4000 karakter)** — `store/LISTING.md` içindeki "Tam açıklama"
-metninin aynısı kullanılabilir; App Store'da da aynı kurallar geçerli
-(fayda vaat edilmiyor). Tek fark: son paragrafa Apple girişi eklendi.
-
-```
-Plasebo, her gün sana bir "formül" verir: bir renk, bir ses, bir nefes tekniği
-ve bir kelime. Formül bilimsel görünür. Değildir. Tamamen plasebodur ve
-uygulama bunu senden saklamak yerine her ekranda yazar.
-
-BU UYGULAMA NE YAPMAZ
-
-Plasebo hiçbir şeyi iyileştirmez, tedavi etmez, tanı koymaz. Bir tıbbi cihaz
-değildir ve hiçbir tıbbi desteğin yerine geçmez. Sana bir fayda vaat
-etmiyoruz — çünkü ölçülmüş bir faydası yok ve bunu söylemek uygulamanın
-tasarımının merkezinde.
-
-O HALDE NEDEN?
-
-Açık etiketli plasebo (open-label placebo) gerçek bir araştırma alanıdır:
-insanlara verilenin plasebo olduğu açıkça söylendiğinde bile bazı
-çalışmalarda etki gözlenmiştir. Plasebo bu fikri bir günlük ritüele
-dönüştürür ve sana kendi üstünde deneme imkânı verir. "Nasıl çalışır?"
-ekranında bu çalışmaların kaynaklı bir listesi ve nocebo etkisine dair
-uyarı yer alır — uygulamanın ürettiği uydurma "bulgular"dan ayrı tutulmuş
-şekilde.
-
-GÜNLÜK RİTÜEL
-
-• Günün formülü tarihten ve seçtiğin hedeften üretilir. Aynı gün, aynı
-  hedef, hep aynı formül.
-• Üç adım: renk, ses, nefes. Sıraları hedefine göre değişir.
-• İki dakika sürer. Sonunda ritüeli puanlar, istersen kısa bir not
-  bırakırsın.
-• Seri, ısı haritası ve kilometre taşları devam etmeni kolaylaştırır.
-
-KENDİ İDDİASINI TEST EDER
-
-Ayarlardaki "Kör test" açıldığında bazı günler ritüel yerine eşit süreli
-boş bir bekleme gelir. Hangi günün sahte olduğu ritüel bitene kadar
-söylenmez. İstatistik ekranı gerçek ve sahte günlerin puan ortalamalarını
-karşılaştırır. Aradaki fark küçük çıkarsa bu da bir bulgudur — ve uygulama
-bunu senden gizlemez.
-
-VERİLERİN SENDE KALIR
-
-• Sunucu yok, veritabanı yok, analiz aracı yok, reklam yok.
-• Ritüel kayıtların, puanların ve notların telefonundan hiçbir yere
-  gönderilmez.
-• Apple ya da Google ile giriş yalnızca adını ve e-postanı okur; bunlar da
-  yalnızca cihazında saklanır. Apple girişinde e-postanı gizlemeyi
-  seçebilirsin.
-• Ayarlardan tek dokunuşla her şeyi kalıcı olarak silebilirsin.
-
-ERİŞİLEBİLİRLİK
-
-Cihazında "Hareketi Azalt" açıksa uygulamadaki tüm animasyonlar devre dışı
-kalır ve hiçbir içerik kaybolmaz. Koyu tema, ses seviyesi ve titreşim ayrı
-ayrı ayarlanabilir.
-
-⚗️ Plasebo bir tedavi değildir ve hiçbir tıbbi desteğin yerine geçmez.
-Sağlığınla ilgili bir endişen varsa bir sağlık profesyoneline başvur.
-```
-
-**Anahtar kelimeler (100 karakter, virgülle ayrılır, boşluk bırakma)** —
-App Store'a özgü; Play'de karşılığı yok. Uygulama adı ve kategori adı
-zaten aranıyor, onları tekrar yazma:
-
-```
-plasebo,ritüel,nefes,rutin,alışkanlık,farkındalık,odak,uyku,kaygı,günlük,protokol,deney
-```
-
-(99 karakter.)
-
-**Destek URL'i (zorunlu)**
-
-```
-https://niinova22-blip.github.io/plasebo/privacy.html
-```
-
-**Pazarlama URL'i (isteğe bağlı):** boş bırakılabilir.
-
-**Gizlilik politikası URL'i (zorunlu)**
-
-```
-https://niinova22-blip.github.io/plasebo/privacy.html
-```
-
-### Kategori
-
-| Alan | Değer | Gerekçe |
-| --- | --- | --- |
-| Birincil kategori | **Yaşam Tarzı** | Play'deki seçimle aynı. "Sağlık ve Form" seçilirse Apple sağlıkla ilgili ek beyan ve daha sıkı inceleme uygular; Plasebo bilerek hiçbir sağlık işlevi görmüyor. |
-| İkincil kategori | **Yardımcı Programlar** ya da boş | İsteğe bağlı. |
-
-### Ekran görüntüleri
-
-`store/graphics/screenshots/ios/` altındaki **6 dosyayı** yükle. Hepsi
-1290×2796 — Apple'ın istediği "6.9 inç iPhone" ölçüsü. Bu ölçü
-yüklendiğinde daha küçük ekranlar için ayrıca görsel istenmez. iPad
-görseli gerekmiyor (`supportsTablet` kapalı).
-
-| Dosya | Başlık |
+| Alan | Değer |
 | --- | --- |
-| `01-ana-ekran.png` | Her gün yeni bir formül |
-| `02-ritual-renk.png` | İki dakikalık bir tören |
-| `03-ritual-nefes.png` | Nefesin ritmi ekranda |
-| `04-giris-dersi.png` | Uygulama ne olduğunu söylüyor |
-| `05-istatistik.png` | Ölçen sensin |
-| `06-nasil-calisir.png` | Uydurma bulgular ayrı, literatür ayrı |
+| Ad | `Plasebo` |
+| Alt başlık | `Bilerek inan` |
+| Gizlilik Politikası URL'i | `https://niinova22-blip.github.io/plasebo/privacy.html` |
 
-Simge ayrıca yüklenmez; App Store Connect onu derlemenin içinden okur.
-`store/graphics/icon-1024.png` yine de elde dursun diye üretiliyor.
+**Genel Bilgiler:**
 
-### Yaş sınırı (Age Rating)
+| Alan | Değer |
+| --- | --- |
+| Paket Kimliği | `com.plasebo.app` — dokunma |
+| SKU | `plasebo-ios` |
+| Apple Kimliği | `6802842875` (Apple verdi, değiştirilemez) |
+| Birincil Kategori | **Yaşam Tarzı** |
+| İkincil Kategori | boş bırak |
+| İçerik Hakları | "Üçüncü taraf içeriği **içermiyor**" |
+| Yaş Sınırı | **Düzenle** → 6.2'deki anket |
 
-Ankette dikkat edilecekler:
+Sağ üstten **Kaydet**.
 
-- Şiddet, cinsellik, küfür, kumar, korku: **yok**.
-- **"Tıbbi/tedavi bilgisi"** → uygulama tıbbi tavsiye vermiyor ama plasebo
-  araştırmalarından söz ediyor. **"Seyrek/hafif"** işaretle; "yok" demek
-  yanlış olur, "sık/yoğun" demek gereksiz.
-- **"Uyuşturucu, tütün, alkol kullanımı veya referansı"** → **yok**.
-  Uygulamadaki "doz" ve "formül" kelimeleri mecazidir; gerçek ya da kurgusal
-  bir madde gösterilmez, tarif edilmez, özendirilmez.
-- Kullanıcılar arası etkileşim, kullanıcı üretimi içerik, konum paylaşımı,
-  web erişimi: **yok**.
-- Kısıtlanmamış web erişimi: **hayır**.
+> Kategori olarak "Sağlık ve Form" seçme. Apple o kategoride ek beyan
+> ister ve daha sıkı inceler; Plasebo bilerek hiçbir sağlık işlevi
+> görmüyor, dolayısıyla o beyanı dürüstçe dolduramayız.
 
-Beklenen sonuç 13+ civarı çıkar. Play'deki 18+ hedef kitlesiyle uyum için
-sonucu istersen elle daha yükseğe çekebilirsin; düşürmek mümkün değildir.
-
-### App Privacy (gizlilik etiketleri)
-
-Play'deki "Veri güvenliği" formunun karşılığı. Cevaplar orada olduğu gibi
-**muhafazakâr** seçilmiştir: Apple'ın tanımına göre ad ve e-posta cihazdan
-dışarı gönderilmediği için "toplanmıyor" da denebilir, ama girişte bu
-veriler Apple/Google'dan **alındığı** için beyan etmek incelemede sorun
-çıkarmaz, tersi çıkarır.
+### 6.2 Yaş sınırı anketi
 
 | Soru | Cevap |
 | --- | --- |
-| Bu uygulama veri topluyor mu? | **Evet** |
-| İletişim Bilgileri → **Ad** | Toplanıyor · Kullanıcı kimliğine bağlı · Amaç: **Uygulama İşlevselliği** · İzleme için kullanılmıyor |
-| İletişim Bilgileri → **E-posta Adresi** | Toplanıyor · Kullanıcı kimliğine bağlı · Amaç: **Uygulama İşlevselliği** · İzleme için kullanılmıyor |
-| Tanımlayıcılar → Kullanıcı Kimliği | **Beyan etme.** Apple/Google'ın hesap kimliği yalnızca cihazda tutulur; istersen "Uygulama İşlevselliği" amacıyla ekleyebilirsin. |
-| Sağlık ve Form, Finans, Konum, Kişiler, Fotoğraf, Mesaj, Arama Geçmişi, Kullanım Verisi, Tanılama | **Hiçbiri** |
-| Üçüncü taraf reklam / izleme | **Yok** |
-| Veri satışı | **Yok** |
+| Şiddet (çizgi film / gerçekçi) | Yok |
+| Cinsel içerik, çıplaklık, müstehcen tema | Yok |
+| Küfür veya kaba mizah | Yok |
+| Korku / ürkütücü tema | Yok |
+| Kumar (gerçek veya simüle) | Yok |
+| **Tıbbi / tedavi bilgisi** | **Seyrek/hafif** |
+| **Uyuşturucu, tütün, alkol kullanımı veya referansı** | **Yok** |
+| Kullanıcılar arası etkileşim, kullanıcı üretimi içerik | Yok |
+| Konum paylaşımı | Yok |
+| Kısıtlanmamış web erişimi | Hayır |
+| Uygulama içi satın alma ve para birimi | Hayır |
+
+"Tıbbi/tedavi bilgisi" sorusuna neden "yok" demiyoruz: uygulama tıbbi
+tavsiye vermiyor ama plasebo araştırmalarından söz ediyor ve "Nasıl
+çalışır?" ekranında kaynak veriyor. Beyan etmemek, incelemede
+"eksik beyan" olarak dönebilir. "Sık/yoğun" demek de gereksiz.
+
+Sonuç 13+ civarı çıkar. Elle yükseltebilirsin, düşüremezsin.
+
+### 6.3 Fiyat ve Erişilebilirlik
+
+| Alan | Değer |
+| --- | --- |
+| Fiyat | **Ücretsiz** |
+| Erişilebilirlik | Tüm ülke ve bölgeler |
+| Ön sipariş | Hayır |
+| Uygulama İçi Satın Alma | Bu sürümde yok |
+
+### 6.4 Uygulama Gizliliği (App Privacy)
+
+Sol menüde ayrı bir başlıktır ve **sürümden bağımsızdır**; doldurulmadan
+sürüm incelemeye gönderilemez.
+
+1. **Gizlilik Politikası URL'i**: 6.1'deki adresin aynısı.
+2. "Bu uygulama kullanıcı verisi topluyor mu?" → **Evet**
+3. Toplanan veri türleri olarak yalnızca şu ikisini işaretle:
+
+| Veri türü | Amaç | Kimliğe bağlı mı? | İzleme için mi? |
+| --- | --- | --- | --- |
+| İletişim Bilgileri → **Ad** | Uygulama İşlevselliği | **Evet** | **Hayır** |
+| İletişim Bilgileri → **E-posta Adresi** | Uygulama İşlevselliği | **Evet** | **Hayır** |
+
+4. Diğer bütün kategoriler (Sağlık ve Form, Finans, Konum, Kişiler,
+   Fotoğraf, Mesaj, Arama Geçmişi, Tanımlayıcılar, Kullanım Verisi,
+   Tanılama) **işaretlenmeden** bırakılır.
+5. Sağ üstten **Yayınla** de.
 
 > **Sağlık verisi beyan edilmiyor** — ve edilmemeli. Puanlar ve notlar
 > cihazdan hiç çıkmaz; Apple'ın tanımıyla "toplanan" veri değildir.
+> Ad ve e-posta ise girişte Apple/Google'dan alındığı için beyan
+> ediliyor; muhafazakâr taraf bu.
 
-### İnceleme bilgileri (App Review Information)
+### 6.5 Sürüm sayfası (iOS Uygulaması 1.1.1)
 
-**Demo hesap zorunlu** — giriş olmadan uygulama kullanılamıyor. Play için
-açtığın inceleme hesabının aynısını kullan; iki adımlı doğrulaması **kapalı**
-olmalı, yoksa incelemeci giriş yapamaz.
+**a) Ekran görüntüleri.** "iPhone 6.9 inç" sekmesine masaüstündeki
+`2-Apple-App-Store\Ekran-Goruntuleri` klasöründeki **6 dosyayı** sürükle.
+Hepsi 1290×2796; bu ölçü yüklendiğinde küçük ekranlar için ayrıca görsel
+istenmez. iPad sekmesi görünmez (iPad desteği kapalı).
 
-- Oturum açma gerekli: **Evet**
-- Kullanıcı adı / şifre: Play'e verdiğin demo Google hesabı
+**b) Metinler.** `Magaza-Metinleri.txt` dosyasından kopyala:
 
-**Notlar (Notes)** alanına şunu yaz:
+| Alan | Nereden |
+| --- | --- |
+| Tanıtım metni (170) | dosyanın 3. başlığı |
+| Açıklama (4000) | dosyanın 5. başlığı |
+| Anahtar kelimeler (100) | dosyanın 4. başlığı |
+| Destek URL'i | `https://niinova22-blip.github.io/plasebo/privacy.html` |
+| Pazarlama URL'i | boş |
 
-```
-Uygulama, hesapla giriş yapılmasını ister. iOS'ta iki yol vardır: "Apple ile
-Devam Et" (istediğiniz Apple Kimliği ile kullanılabilir) ya da yukarıdaki
-Google hesabı.
+"Bu Sürümdeki Yenilikler" alanı ilk sürümde çıkmaz; yalnızca
+güncellemelerde istenir.
 
-Sıra şöyledir: açılış ekranında "Başla" → altı ekranlık tanıtım (sağa
-kaydırarak ya da "Devam" düğmesiyle geçilir) → son ekranda bir ad yazılır ve
-"İlk protokolümü başlat" düğmesine basılır → giriş ekranı → kısa bir hazırlık
-animasyonu → şikâyet seçim ekranı. Bu noktadan sonra tüm özellikler
-kullanılabilir.
+**c) Derleme.** Sayfadaki **Derleme** bölümünde **+** işaretine bas ve
+**1.1.1 (2)** derlemesini seç. Listede yoksa Apple hâlâ işliyordur —
+yükleme sonrası 5–30 dakika sürebilir, biraz sonra tekrar bak.
 
-Hesap neden gerekli: uygulamanın kullanıcıya görünen tüm ilerlemesi (seri,
-ritüel geçmişi, ölçümler) hesaba bağlıdır ve bir sonraki sürümde hesaba bağlı
-üyelik gelecektir. Uygulamanın sunucusu yoktur; tüm veriler cihazda tutulur ve
-Ayarlar → Veri bölümünden tek dokunuşla kalıcı olarak silinebilir.
+**d) Uygulama İnceleme Bilgileri.**
 
-Bu sürümde satın alınabilir bir içerik yoktur: "Premium" ekranı yalnızca
-ileride gelecek özellikleri tanıtır, satın alma düğmesi bulunmaz ve hiçbir
-özellik ödemeyle açılmaz.
+| Alan | Değer |
+| --- | --- |
+| Oturum açma gerekli | **İşaretli** |
+| Kullanıcı adı / şifre | Play'e verdiğin demo Google hesabı |
+| İletişim bilgileri | Adın, soyadın, telefonun, e-postan |
+| Notlar | `Magaza-Metinleri.txt` içindeki "İnceleme notları" bölümü |
+| Ek dosya | gerekmiyor |
 
-Uygulama bilinçli olarak bir plasebo ritüelidir; hiçbir sağlık veya tedavi
-iddiası taşımaz ve bunu her ekranda açıkça yazar.
-```
+Demo hesabında **iki adımlı doğrulama kapalı** olmalı ve göndermeden önce
+o hesapla başka bir cihazdan giriş yapılabildiğini kendin dene. Bu
+uygulamanın en olası ret sebebi burasıdır.
 
-### Diğer alanlar
+**e) Sürüm Yayınlama.** "**İncelemeden sonra elle yayınla**" seçeneğini
+işaretle; onay geldiğini görmeden uygulama mağazada görünmesin.
 
-- **Fiyat:** Ücretsiz. Tüm ülkeler.
-- **İhracat uyumluluğu:** `usesNonExemptEncryption: false` derlemeye
-  gömüldüğü için soru sorulmaz. Sorulursa cevap: **Hayır** (yalnızca
-  standart HTTPS).
-- **İçerik hakları:** Üçüncü taraf içeriği yok.
-- **Reklam tanımlayıcısı (IDFA):** Kullanılmıyor.
-- **Sürüm yayınlama:** "İnceleme onaylandıktan sonra elle yayınla" —
-  onayın geldiği anı görmeden mağazada görünmesin.
+**f)** Sağ üstten **Kaydet**.
+
+### 6.6 İhracat uyumluluğu
+
+Derlemeye `ITSAppUsesNonExemptEncryption = false` gömülü olduğu için bu
+soru normalde hiç çıkmaz. Çıkarsa: uygulama yalnızca standart HTTPS
+kullanıyor → **"Hayır"**.
 
 ## 7. İncelemeye gönder
 
@@ -497,15 +449,27 @@ Sıra:
 
 ## Yayın öncesi son kontrol
 
-- [ ] Apple Developer Program üyeliği onaylandı
-- [ ] App Store Connect'te uygulama kaydı açıldı, paket kimliği `com.plasebo.app`
-- [ ] Google Cloud'da iOS OAuth istemcisi oluşturuldu
-- [ ] `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` hem `.env` hem EAS ortamında tanımlı
-- [ ] `npm run build:ios` başarılı, `npm run submit:ios` yüklendi
-- [ ] TestFlight'ta iPhone'da denendi: Apple girişi, Google girişi, bildirim,
+Bitenler:
+
+- [x] Apple Developer Program üyeliği onaylandı
+- [x] App Store Connect'te uygulama kaydı açıldı (`com.plasebo.app`, Apple kimliği 6802842875)
+- [x] Google Cloud'da iOS OAuth istemcisi oluşturuldu
+- [x] `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` hem `.env` hem EAS ortamında tanımlı
+- [x] `npm run build:ios` başarılı, `npm run submit:ios` yükledi (1.1.1 / derleme 2)
+- [x] TestFlight'ta iPhone'da denendi: Apple girişi, Google girişi, bildirim,
       sessiz moddayken ses, hesap silme
-- [ ] 6 ekran görüntüsü (`store/graphics/screenshots/ios/`) yüklendi
-- [ ] App Privacy formu bu dosyadaki tabloyla birebir aynı
+- [x] Gizlilik politikası sayfası yayında ve Apple girişini de anlatıyor
+
+Kalanlar:
+
+- [ ] Sürüm numarası App Store Connect'te **1.1.1** yapıldı (6.0)
+- [ ] Uygulama Bilgileri: ad, alt başlık, kategori, gizlilik URL'i, içerik hakları
+- [ ] Yaş sınırı anketi dolduruldu
+- [ ] Fiyat: ücretsiz, tüm ülkeler
+- [ ] App Privacy formu dolduruldu ve **Yayınla** dendi
+- [ ] 6 ekran görüntüsü yüklendi (iPhone 6.9")
+- [ ] Tanıtım metni, açıklama, anahtar kelimeler, destek URL'i girildi
+- [ ] Derleme **1.1.1 (2)** sürüme eklendi
 - [ ] Demo hesap bilgileri ve inceleme notları girildi
-- [ ] Gizlilik politikası URL'i tarayıcıda açılıyor
-- [ ] Sürüm numarası bir önceki yüklemeden büyük
+- [ ] "İncelemeden sonra elle yayınla" seçildi
+- [ ] İncelemeye gönderildi
