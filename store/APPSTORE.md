@@ -26,8 +26,8 @@ olduğu için Apple'a başka bir ödeme yapılmaz.
 | 3. Google Cloud iOS istemcisi | **Bitti** — kimlik `.env` ve EAS ortamında tanımlı |
 | 4. Derleme ve yükleme | **Bitti** — sürüm **1.1.1**, derleme no **2**, App Store Connect'e yüklendi |
 | 5. TestFlight'ta cihazda deneme | **Bitti** — Apple girişi, Google girişi, bildirim, ses, hesap silme çalışıyor |
-| 6. Mağaza formları | **Sırada** — aşağıdaki bölüm alan alan anlatıyor |
-| 7. İncelemeye gönderme | Formlar bitince |
+| 6. Mağaza formları | **Bitti** — metinler, görseller, gizlilik, yaş sınırı, fiyat, telif |
+| 7. İncelemeye gönderme | **Gönderildi** — 19 Ağustos 2026, durum "İnceleme Bekleniyor" |
 
 Yol boyunca çıkan ve düzeltilen iki iOS hatası (1.1.1 sürümünde):
 
@@ -485,14 +485,39 @@ Bitenler:
 
 Kalanlar:
 
-- [ ] Sürüm numarası App Store Connect'te **1.1.1** yapıldı (6.0)
-- [ ] Uygulama Bilgileri: ad, alt başlık, kategori, gizlilik URL'i, içerik hakları
-- [ ] Yaş sınırı anketi dolduruldu
-- [ ] Fiyat: ücretsiz, tüm ülkeler
-- [ ] App Privacy formu dolduruldu ve **Yayınla** dendi
-- [ ] 6 ekran görüntüsü yüklendi (iPhone 6.9")
-- [ ] Tanıtım metni, açıklama, anahtar kelimeler, destek URL'i girildi
-- [ ] Derleme **1.1.1 (2)** sürüme eklendi
-- [ ] Demo hesap bilgileri ve inceleme notları girildi
-- [ ] "İncelemeden sonra elle yayınla" seçildi
-- [ ] İncelemeye gönderildi
+- [x] Sürüm numarası App Store Connect'te **1.1.1** yapıldı (6.0)
+- [x] Uygulama Bilgileri: ad, alt başlık, kategori, gizlilik URL'i, içerik hakları
+- [x] Yaş sınırı anketi dolduruldu
+- [x] Fiyat: ücretsiz, tüm ülkeler
+- [x] App Privacy formu dolduruldu ve **Yayınla** dendi
+- [x] Ekran görüntüleri yüklendi
+- [x] Tanıtım metni, açıklama, anahtar kelimeler, destek URL'i, telif hakkı girildi
+- [x] Derleme **1.1.1 (2)** sürüme eklendi
+- [x] Demo hesap bilgileri ve inceleme notları girildi
+- [x] İncelemeye gönderildi
+
+Sırada:
+
+- [ ] İnceleme sonucu bekleniyor (genelde 24–48 saat)
+- [ ] Onay gelince sürüm **elle yayınlanacak**
+- [ ] Aynı düzeltmeleri taşıyan 1.1.1 sürümü Play'e de yüklenecek
+      (yerel `bundleRelease` ile — bkz. `store/RELEASE.md`)
+
+## İnceleme sürerken
+
+- **Metinlere ve görsellere dokunma.** Sürüm "İnceleme Bekleniyor" ya da
+  "İnceleniyor" durumundayken yapılan değişiklik, sürümü kuyruğun sonuna
+  atabilir. Tek istisna **tanıtım metni**: o, inceleme gerektirmeden
+  değiştirilebilir.
+- **Yeni derleme yükleme.** Yüklersen mevcut gönderim iptal olur.
+- Durum e-postayla bildirilir; App Store Connect'teki durum satırı da
+  değişir: İnceleme Bekleniyor → İnceleniyor → Yayına Hazır / Reddedildi.
+
+**Onay gelirse:** sürüm sayfasındaki **Bu Sürümü Yayınla** düğmesine
+basman gerekir ("onaydan sonra elle yayınla" seçtiğimiz için otomatik
+çıkmaz). Uygulama birkaç saat içinde App Store'da aranabilir hâle gelir.
+
+**Ret gelirse:** Çözüm Merkezi'nden gerekçe yazılır. Bu uygulamada en
+olası gerekçeler ve hazır cevaplar aşağıdaki "7. İncelemeye gönder"
+bölümündeki tabloda; kod değişikliği gerekirse söyle, düzeltip yeni
+derleme alırız.
