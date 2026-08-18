@@ -4,6 +4,18 @@ Depodaki teknik hazırlık tamam. Kalanlar hesap açma, URL yayınlama ve
 Play Console formları — yani ağırlıklı olarak senin yapman gerekenler.
 Sırayı bozmadan ilerle; her adım bir sonrakinin girdisini üretiyor.
 
+> **Android tarafı şu an dondurulmuş durumda (19 Ağustos 2026).** Kapalı
+> testin 2. günündeyiz; 12 test kullanıcısı / 14 gün şartı işlerken
+> Play'e yeni bir sürüm yüklenmemesine karar verildi. Depodaki 1.1.1
+> (Apple ile giriş, bildirim ve saat seçici düzeltmeleri, `versionCode` 8)
+> test bitip üretim erişimi alındıktan sonra yüklenecek — yerel
+> `bundleRelease` ile, çünkü EAS derlemesi farklı bir imzalama anahtarı
+> kullanır ve Play reddeder.
+>
+> Bilgi olsun diye: kapalı test kanalına yeni sürüm yüklemek 14 günlük
+> sayacı sıfırlamaz, şart "12 kişinin kesintisiz kayıtlı kalması"dır.
+> Yine de gereksiz risk almamak için bekleniyor.
+
 > Aynı uygulamanın **App Store** yayını ayrı bir dosyada: `store/APPSTORE.md`.
 > Orada anlatılan Apple ile giriş desteği Android derlemesini de
 > değiştirdiği için, iOS hazırlığından sonra Play'e de yeni bir sürüm
