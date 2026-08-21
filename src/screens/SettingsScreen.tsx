@@ -26,6 +26,7 @@ import { useUser } from '../context/UserContext';
 import { useSettings, useT, useTheme } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { usePremium } from '../context/PremiumContext';
+import { PREMIUM_ENABLED } from '../constants/plans';
 import {
   cancelNudges,
   cancelReminder,
@@ -283,18 +284,22 @@ export default function SettingsScreen() {
           />
         )}
 
-        <SettingRow
-          label={t('Plan')}
-          value={isPremium ? 'Premium' : 'Freemium'}
-          hint={
-            isPremium
-              ? packs.length
-                ? t('Tüm özellikler açık · {adet} içerik paketi', { adet: packs.length })
-                : t('Tüm özellikler açık.')
-              : t('Dört hedef, temel formül havuzu, 7 günlük geçmiş. Premium yakında.')
-          }
-          onPress={() => navigation.navigate('Plans')}
-        />
+        {/* Plan satırı yalnızca satın alma açıkken görünür. Kapalıyken
+            gösterilecek bir kademe yok: herkes tam sürümü kullanıyor. */}
+        {PREMIUM_ENABLED ? (
+          <SettingRow
+            label={t('Plan')}
+            value={isPremium ? 'Premium' : 'Freemium'}
+            hint={
+              isPremium
+                ? packs.length
+                  ? t('Tüm özellikler açık · {adet} içerik paketi', { adet: packs.length })
+                  : t('Tüm özellikler açık.')
+                : t('Dört hedef, temel formül havuzu, 7 günlük geçmiş. Premium yakında.')
+            }
+            onPress={() => navigation.navigate('Plans')}
+          />
+        ) : null}
 
         {/* ---------------- Profil ---------------- */}
         <Text style={[styles.section, { color: theme.sub }]}>{t('ADIN')}</Text>
@@ -356,7 +361,7 @@ export default function SettingsScreen() {
         />
 
         <View style={styles.spacer} />
-        {limits.customDose ? (
+        {limits.customDose || !PREMIUM_ENABLED ? (
           <>
             <Text style={[styles.miniLabel, { color: theme.sub }]}>{t('Doz')}</Text>
             <SegmentedControl

@@ -12,6 +12,7 @@ import { usePremium } from '../context/PremiumContext';
 import { GOAL_LABELS, generateDailyFormula } from '../utils/formulaEngine';
 import { daysBetween, toISODate } from '../utils/storage';
 import type { RootStackParamList } from '../navigation/types';
+import { PREMIUM_ENABLED } from '../constants/plans';
 import type { Goal, Session } from '../types';
 import { translateFormulaName, type Lang, type TranslateFn } from '../i18n';
 
@@ -109,7 +110,7 @@ export default function ArchiveScreen() {
                 adet: user.sessions.length,
               })}
             </Text>
-            {hiddenCount > 0 ? (
+            {PREMIUM_ENABLED && hiddenCount > 0 ? (
               <PressableScale
                 onPress={() => navigation.navigate('Plans')}
                 accessibilityRole="button"

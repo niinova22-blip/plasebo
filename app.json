@@ -3,7 +3,7 @@
     "name": "Plasebo",
     "slug": "plasebo",
     "owner": "ninovatech",
-    "version": "1.1.1",
+    "version": "1.1.2",
     "description": "Zihin Protokolü",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -28,7 +28,7 @@
     },
     "android": {
       "package": "com.plasebo.app",
-      "versionCode": 8,
+      "versionCode": 9,
       "allowBackup": false,
       "adaptiveIcon": {
         "backgroundColor": "#0E0E12",

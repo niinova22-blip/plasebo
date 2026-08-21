@@ -10,6 +10,7 @@ import PreparationScreen from '../screens/PreparationScreen';
 import HowItWorksScreen from '../screens/HowItWorksScreen';
 import LegalScreen from '../screens/LegalScreen';
 import PlansScreen from '../screens/PlansScreen';
+import { PREMIUM_ENABLED } from '../constants/plans';
 import HomeScreen from '../screens/HomeScreen';
 import StatsScreen from '../screens/StatsScreen';
 import ArchiveScreen from '../screens/ArchiveScreen';
@@ -100,11 +101,15 @@ export default function AppNavigator() {
         />
         <Stack.Screen name="HowItWorks" component={HowItWorksScreen} />
         <Stack.Screen name="Legal" component={LegalScreen} />
-        <Stack.Screen
-          name="Plans"
-          component={PlansScreen}
-          options={{ animation: 'slide_from_bottom' }}
-        />
+        {/* Plan ekranı yalnızca satın alma gerçekten açıkken var olur;
+            kapalıyken hiç kaydedilmez ki hiçbir yoldan açılamasın. */}
+        {PREMIUM_ENABLED ? (
+          <Stack.Screen
+            name="Plans"
+            component={PlansScreen}
+            options={{ animation: 'slide_from_bottom' }}
+          />
+        ) : null}
         <Stack.Screen name="Main" component={MainTabs} />
         {/* Şikayet → muayene → reçete → ölçüm → ritüel → ölçüm → özet */}
         <Stack.Screen

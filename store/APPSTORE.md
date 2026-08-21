@@ -415,7 +415,7 @@ Bu uygulamanın en olası ret sebepleri ve hazır cevapları:
 | --- | --- | --- |
 | **4.8 – Sign in with Apple** | Google girişi sunup Apple girişi sunmamak doğrudan rettir. | **Çözüldü** — Apple ile giriş eklendi ve Google düğmesiyle aynı boyutta, ondan önce gösteriliyor. |
 | **5.1.1(v) – Zorunlu hesap** | Apple, uygulamanın çekirdek işlevi hesap gerektirmiyorsa girişi zorunlu tutmayı yasaklar. Plasebo verileri cihazda tuttuğu için incelemeci "bu neden gerekli?" diyebilir. | Notlarda gerekçe yazılı. **Reddedilirse** en hızlı çözüm, iOS'ta girişi atlanabilir yapmaktır (hesapsız kullanım, üyelik gelince giriş istenir). Bu değişiklik yaklaşık yarım saatlik iştir; gerekirse söyle. |
-| **2.1 – Eksik uygulama** | "Premium · yakında" yazan kilitli özellikler, "tamamlanmamış uygulama" olarak yorumlanabilir. | Notlarda satın alma olmadığı yazılı. Reddedilirse plan ekranı iOS'ta gizlenebilir. |
+| **2.1 – Eksik uygulama** | "Premium · yakında" yazan kilitli özellikler, "tamamlanmamış uygulama" olarak yorumlanabilir. | **Gerçekleşti.** 1.1.1 tam bu sebeple reddedildi; Apple reddin ekine Plan ekranının üç görüntüsünü koydu. 1.1.2'de `PREMIUM_ENABLED` bayrağı kapatıldı: Plan ekranı gezinme ağacından çıkarıldı, Ayarlar'daki Plan satırı gizlendi ve ücretsiz kademe sınırları kaldırıldı. Artık uygulamada kilitli ya da "yakında" olan hiçbir şey yok. |
 | **1.4.1 / 2.5.x – Sağlık iddiaları** | Sağlık iddiası taşıyan uygulamalar sıkı incelenir. | Uygulama hiçbir fayda vaat etmiyor ve bunu her ekranda yazıyor; listeleme metni de aynı çizgide. Risk düşük. |
 | **2.1 – Demo hesap çalışmıyor** | Google, tanımadığı cihazdan girişte doğrulama isteyebilir. | Demo hesabında iki adımlı doğrulama kapalı olmalı; göndermeden önce başka bir cihazdan giriş yapıldığını kendin dene. |
 
@@ -439,8 +439,11 @@ npm run build:ios && npm run submit:ios
 > Bu bölümün ayrıntılı hâli — banka/vergi adımları, abonelik grubu,
 > Apple'ın arayüz şartları ve kod tarafı — `store/ABONELIK.md` içinde.
 
-Play'deki durumun aynısı: kademeler ve plan ekranı hazır, gerçek satın alma
-yok. iOS'ta dijital ürün satmanın tek yolu **StoreKit / App Store
+Play'deki durumun aynısı: kademeler ve plan ekranı kodda hazır, gerçek satın
+alma yok. **1.1.2'den itibaren plan ekranı kullanıcıya hiç gösterilmiyor**
+(`src/constants/plans.ts` → `PREMIUM_ENABLED = false`); aşağıdaki adımlar
+tamamlanıp satın alma gerçekten bağlandığında o bayrak `true` yapılır ve
+ekran, Ayarlar satırı ve kademe sınırları birlikte geri gelir. iOS'ta dijital ürün satmanın tek yolu **StoreKit / App Store
 Faturalandırması**dır; başka bir ödeme yöntemi uygulamanın kaldırılma
 sebebidir. Apple'ın payı ilk yıl %30, aboneliğin ikinci yılından itibaren
 %15'tir (Küçük İşletme Programı'na başvurursan %15).
@@ -461,7 +464,8 @@ Sıra:
 
 2. **Sözleşmeler, Vergi ve Bankacılık** bölümünü doldur (ücretli ürün için
    zorunlu; ücretsiz uygulamada gerekmiyordu).
-3. `src/utils/billing.ts` içindeki üç fonksiyonu gerçek çağrılarla değiştir.
+3. `src/constants/plans.ts` içindeki `PREMIUM_ENABLED` değerini `true` yap;
+   ardından `src/utils/billing.ts` içindeki üç fonksiyonu gerçek çağrılarla değiştir.
    İki mağazayı tek kodla yönetmek için RevenueCat ya da `react-native-iap`
    kullanılabilir; dosyanın dışında değişiklik gerekmez.
 4. **Fiyatı mağazadan oku** — `plans.ts` içindeki tutarlar yer tutucudur.

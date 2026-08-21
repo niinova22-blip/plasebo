@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { FREE_LIMITS, type PackId, type PlanId } from '../constants/plans';
+import { FREE_LIMITS, PREMIUM_ENABLED, type PackId, type PlanId } from '../constants/plans';
 import { purchasePack, purchasePlan, restorePurchases } from '../utils/billing';
 import type { PurchaseResult } from '../utils/billing';
 
@@ -122,7 +122,10 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
       packs: entitlement.packs,
       isPremium,
       ready,
-      limits: isPremium ? PREMIUM_LIMITS : { ...FREE_LIMITS },
+      // Premium kapalıyken kimseye sınır uygulanmaz: satın alınamayan bir
+      // özelliği kilitli göstermek hem kullanıcıyı çıkışsız bırakır hem de
+      // Apple'ın 2.1 (App Completeness) kuralına takılır.
+      limits: !PREMIUM_ENABLED || isPremium ? PREMIUM_LIMITS : { ...FREE_LIMITS },
       hasPack: (pack: PackId) => entitlement.packs.includes(pack),
       buyPlan,
       buyPack,

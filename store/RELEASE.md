@@ -6,9 +6,12 @@ Sırayı bozmadan ilerle; her adım bir sonrakinin girdisini üretiyor.
 
 > **Android tarafı şu an dondurulmuş durumda (19 Ağustos 2026).** Kapalı
 > testin 2. günündeyiz; 12 test kullanıcısı / 14 gün şartı işlerken
-> Play'e yeni bir sürüm yüklenmemesine karar verildi. Depodaki 1.1.1
-> (Apple ile giriş, bildirim ve saat seçici düzeltmeleri, `versionCode` 8)
-> test bitip üretim erişimi alındıktan sonra yüklenecek — yerel
+> Play'e yeni bir sürüm yüklenmemesine karar verildi. Depodaki sürüm artık
+> **1.1.2** (`versionCode` 9): Apple ile giriş, bildirim ve saat seçici
+> düzeltmeleri ve premium/plan arayüzünün tamamen kapatılması (bkz.
+> `store/RED-1.1.1-DUZELTME.md`). Bu, Play tarafında da geçerlidir —
+> yüklendiğinde orada da plan ekranı görünmeyecek, sınırlar kalkacaktır.
+> Test bitip üretim erişimi alındıktan sonra yüklenecek — yerel
 > `bundleRelease` ile, çünkü EAS derlemesi farklı bir imzalama anahtarı
 > kullanır ve Play reddeder.
 >

@@ -27,6 +27,7 @@ import {
 import { useToday } from '../hooks/useToday';
 import { CATEGORY_LABELS } from '../constants/complaints';
 import type { RootStackParamList } from '../navigation/types';
+import { PREMIUM_ENABLED } from '../constants/plans';
 
 /** Isı haritasının premium'da kapsadığı gün sayısı. */
 const FULL_HEATMAP_DAYS = 28;
@@ -93,7 +94,7 @@ export default function StatsScreen() {
 
         <View style={styles.block}>
           <Heatmap days={heatmapDays(user, heatmapWindow, today)} />
-          {heatmapWindow < FULL_HEATMAP_DAYS ? (
+          {PREMIUM_ENABLED && heatmapWindow < FULL_HEATMAP_DAYS ? (
             <PressableScale
               onPress={() => navigation.navigate('Plans')}
               accessibilityRole="button"
@@ -160,7 +161,7 @@ export default function StatsScreen() {
           />
         </View>
 
-        {!limits.prescriptionTracking ? (
+        {PREMIUM_ENABLED && !limits.prescriptionTracking ? (
           <View style={styles.block}>
             <Text style={[styles.sectionLabel, { color: theme.sub }]}>
               {t('ŞİKAYETE GÖRE')}

@@ -1,13 +1,24 @@
 # Abonelik ve içerik paketleri — nasıl açılır
 
-Bu dosya, uygulamadaki "yakında" yazan premium kademesini gerçek satışa
-çevirmenin yolunu anlatır. İki mağaza da anlatılıyor çünkü iş tek kod
+Bu dosya, kodda hazır duran premium kademesini gerçek satışa çevirmenin
+yolunu anlatır. İki mağaza da anlatılıyor çünkü iş tek kod
 yolundan geçiyor; ayrılan yerler ayrıca işaretli.
 
 > **Bu iş v1.0 yayınından sonra yapılır.** Sebebi teknik: ürün kimlikleri
 > mağaza panelinde tanımlanmadan faturalandırma kitaplığı bağlanamaz,
 > ürün tanımlamak içinse uygulamanın panelde kayıtlı olması gerekir.
 > Yani sıra zorunlu olarak "önce yayın, sonra abonelik"tir.
+
+> **Premium arayüzü şu an tamamen kapalı (1.1.2, Ağustos 2026).**
+> `src/constants/plans.ts` içindeki `PREMIUM_ENABLED` bayrağı `false`:
+> Plan ekranı gezinme ağacına hiç eklenmiyor, Ayarlar'daki Plan satırı
+> görünmüyor ve ücretsiz kademe sınırları uygulanmıyor — herkes tam
+> sürümü kullanıyor. Sebebi, Apple'ın 1.1.1'i Guideline 2.1 (App
+> Completeness) ile reddetmesi: satın alınamayan "yakında" özellikleri
+> tamamlanmamış uygulama sayılıyor. Aşağıdaki adımlar bitip satın alma
+> gerçekten çalışır hâle geldiğinde bayrağı `true` yapmak, ekranı,
+> Ayarlar satırını ve sınırları aynı anda geri getirir. Ayrıntı:
+> `store/RED-1.1.1-DUZELTME.md`.
 
 ---
 

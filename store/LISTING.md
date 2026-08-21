@@ -91,10 +91,13 @@ Sağlığınla ilgili bir endişen varsa bir sağlık profesyoneline başvur.
 
 ## Uygulama içi satın alma
 
-v1.0.0'da **yok**. Premium ve içerik paketleri arayüzde "yakında" olarak
-görünür, satın alınamaz. Play Console'daki "Uygulama içi satın alma" ve
-"Reklam" beyanlarının ikisi de **hayır** olmalıdır. Faturalandırma bir
-sonraki sürümde bağlanacak (bkz. `store/RELEASE.md` §7).
+**Yok.** 1.1.2'den itibaren arayüzde premium, içerik paketi ya da "yakında"
+diye bir şey de görünmüyor: plan ekranı `PREMIUM_ENABLED` bayrağıyla tamamen
+kapatıldı ve ücretsiz kademe sınırları kaldırıldı, çünkü Apple satın
+alınamayan kilitli özellikleri "tamamlanmamış uygulama" sayıp 1.1.1'i
+reddetti (bkz. `store/RED-1.1.1-DUZELTME.md`). Play Console'daki "Uygulama
+içi satın alma" ve "Reklam" beyanlarının ikisi de **hayır** olmalıdır.
+Faturalandırma ileride bağlanacak (bkz. `store/ABONELIK.md`).
 
 ## Diller
 
@@ -181,10 +184,11 @@ kullanılabilir.
 
 Uygulamanın sunucusu yoktur; tüm veriler cihazda tutulur.
 
-Bu sürümde satın alınabilir bir içerik yoktur: "Premium" ekranı yalnızca
-ileride gelecek özellikleri tanıtır, satın alma düğmesi bulunmaz ve hiçbir
-özellik ödemeyle açılmaz. Yukarıdaki hesap, uygulamadaki tüm içeriğe diğer
-tüm kullanıcılarla birebir aynı erişime sahiptir.
+Bu sürümde satın alınabilir bir içerik yoktur ve arayüzde buna dair bir iz
+de yoktur: ödeme ekranı, kilitli özellik ya da "yakında" rozeti bulunmaz.
+Uygulamadaki her özellik her kullanıcıya açıktır; geçmiş, günlük reçete
+sayısı ve ritüel süresi sınırsızdır. Yukarıdaki hesap, uygulamadaki tüm
+içeriğe diğer tüm kullanıcılarla birebir aynı erişime sahiptir.
 ```
 
 Bilinmesi gereken: Google, tanımadığı bir cihazdan yapılan girişte

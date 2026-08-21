@@ -10,6 +10,26 @@
  * Satın alma akışının kendisi `src/utils/billing.ts` içinde duruyor.
  */
 
+/**
+ * Premium arayüzü açık mı?
+ *
+ * Satın alma henüz hiçbir mağazada bağlı değil. Apple, App Store
+ * Review Guideline 2.1 (App Completeness) gereği yayımlanan bir
+ * uygulamada çalışmayan, "yakında" diye duran özellik gösterilmesine
+ * izin vermiyor — 1.1.1 sürümü tam da Plan ekranındaki "yakında"
+ * rozetleri yüzünden reddedildi.
+ *
+ * Bu bayrak `false` olduğu sürece:
+ *   - Plan ekranı gezinme ağacına hiç eklenmez, hiçbir yerden açılmaz,
+ *   - ücretsiz kademe sınırları uygulanmaz; herkes tam sürümü kullanır,
+ *     böylece kilitli ama açılamayan hiçbir özellik kalmaz.
+ *
+ * Satın alma gerçekten bağlandığında (bkz. `store/RELEASE.md`) tek
+ * yapılacak şey bunu `true` yapmak; altındaki plan tanımları, sınırlar
+ * ve `src/utils/billing.ts` o gün için olduğu gibi duruyor.
+ */
+export const PREMIUM_ENABLED = false;
+
 export type PlanId = 'free' | 'premium';
 export type PackId = 'exam' | 'sleep' | 'anxiety';
 
