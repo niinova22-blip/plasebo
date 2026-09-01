@@ -26,7 +26,7 @@
 <body>
 
 <h1>Gizlilik Politikası</h1>
-<p class="meta">Plasebo · Son güncelleme: 13 Ağustos 2026 · Paket adı: <code>com.plasebo.app</code></p>
+<p class="meta">Plasebo · Son güncelleme: 1 Eylül 2026 · Paket adı: <code>com.plasebo.app</code></p>
 
 <p>Plasebo, günlük bir plasebo ritüeli sunan bir uygulamadır. Bu politika,
 uygulamanın hangi verileri işlediğini açıklar. Kısa cevap: <strong>Plasebo'nun
@@ -52,7 +52,41 @@ sunucusu yoktur ve ritüel verilerin cihazından hiçbir yere gönderilmez.</str
     <td>Yalnızca cihazının yerel deposunda</td>
     <td>Uygulamanın çalışması (geçmiş, istatistik, hatırlatıcı)</td>
   </tr>
+  <tr>
+    <td>Ruh hali skoru (yüz ifadesinden çıkarılan sayı)</td>
+    <td>Sen "kamerayla ölç" düğmesine bastığında, cihazda çekilen üç kareden
+    hesaplanır. <strong>Fotoğrafın kaydedilmez</strong>; ölçüm biter bitmez
+    silinir ve yalnızca sayı kalır.</td>
+    <td>Yalnızca cihazının yerel deposunda</td>
+    <td>Ritüel öncesi ve sonrasını karşılaştırmak</td>
+  </tr>
+  <tr>
+    <td>Nefes düzenliliği, dakikadaki nefes sayısı, nefes derinliği</td>
+    <td>Ritüelin nefes adımında, sen izin verirsen mikrofondan.
+    <strong>Ses kaydedilmez</strong>; yalnızca bu sayılar hesaplanır.</td>
+    <td>Yalnızca cihazının yerel deposunda</td>
+    <td>Ritüel sırasındaki nefesini göstermek</td>
+  </tr>
+  <tr>
+    <td>Tepki süresi (milisaniye)</td>
+    <td>Uygulama içindeki dokunma testinden</td>
+    <td>Yalnızca cihazının yerel deposunda</td>
+    <td>Ritüel öncesi ve sonrasını karşılaştırmak</td>
+  </tr>
+  <tr>
+    <td>Uyku süresi, dinlenme nabzı, kalp atış hızı değişkenliği (yalnızca iPhone)</td>
+    <td>Yalnızca sen Ayarlar'dan <em>Sağlık verisi</em>ni açarsan Apple Sağlık
+    uygulamasından <strong>okunur</strong>. Varsayılan olarak kapalıdır.</td>
+    <td>Yalnızca cihazının yerel deposunda</td>
+    <td>Az uyunmuş bir günde reçeteye bir sakinleştirme turu eklemek</td>
+  </tr>
 </table>
+
+<div class="box">
+  <strong>Apple Sağlık'a hiçbir veri yazılmaz.</strong> Sağlık verisi yalnızca
+  okunur, yalnızca cihazında kullanılır ve hiçbir zaman reklam, profilleme ya da
+  paylaşım için kullanılmaz. Ayarlar'dan kapatabilirsin.
+</div>
 
 <div class="box">
   <strong>Sunucuya gönderilen hiçbir veri yoktur.</strong> Plasebo'nun arka uç
@@ -79,6 +113,14 @@ sunucusu yoktur ve ritüel verilerin cihazından hiçbir yere gönderilmez.</str
 </ul>
 <p>Bunun dışında uygulama hiçbir sunucuya istek göndermez.</p>
 
+<div class="box">
+  <strong>Yapay zekâ metinleri cihazda üretilir.</strong> Bazı iPhone'larda
+  reçetenin kısa açıklaması Apple'ın telefonun içinde çalışan sistem modeliyle
+  yazılır. Bunun için ağ bağlantısı kurulmaz, hiçbir dış yapay zekâ servisi
+  kullanılmaz ve yazdıkların cihazından çıkmaz. Model yoksa uygulama önceden
+  yazılmış sabit metinleri gösterir.
+</div>
+
 <h2>4. Analitik, reklam ve izleme yoktur</h2>
 <p>Plasebo'da analiz aracı (analytics), reklam ağı, çökme raporlama servisi veya
 üçüncü taraf izleme kiti (SDK) bulunmaz. Reklam kimliği okunmaz. Verilerin
@@ -93,8 +135,20 @@ kimseye satılmaz veya paylaşılmaz.</p>
   Apple ile oturum açma için.</li>
   <li><strong>Titreşim (<code>VIBRATE</code>)</strong> — dokunsal geri bildirim için,
   Ayarlar'dan kapatılabilir.</li>
+  <li><strong>Mikrofon</strong> — yalnızca ritüelin nefes adımında, sen o ölçümü
+  başlatırsan istenir. Ses <em>kaydedilmez</em> ve hiçbir yere gönderilmez;
+  kayıttan yalnızca nefes ritmine ait sayılar çıkarılır. İzin vermezsen ritüel
+  eskisi gibi çalışır.</li>
+  <li><strong>Kamera</strong> — yalnızca sen ruh halini yüz ifadenden ölçmeyi
+  seçersen istenir. Çekilen kareler cihazda işlenir, kaydedilmez ve cihazından
+  çıkmaz; geriye yalnızca bir sayı kalır.</li>
+  <li><strong>Apple Sağlık (yalnızca okuma, yalnızca iPhone)</strong> — yalnızca
+  sen Ayarlar'dan açarsan istenir. Uyku süresi, dinlenme nabzı ve kalp atış hızı
+  değişkenliği okunur; Sağlık uygulamasına hiçbir şey yazılmaz.</li>
 </ul>
-<p>Uygulama mikrofona, kameraya, konuma, kişilere veya dosyalarına erişmez.</p>
+<p>Uygulama konuma, kişilere veya dosyalarına erişmez. Mikrofon, kamera ve Sağlık
+erişimlerinin üçü de isteğe bağlıdır: hiçbirine izin vermeden uygulamanın tamamı
+kullanılabilir.</p>
 
 <h2>6. Verilerini silmek</h2>
 <p>Uygulama içinde <em>Ayarlar → Veri → Tüm verileri sil</em> adımı; adını,
