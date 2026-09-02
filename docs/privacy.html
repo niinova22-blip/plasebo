@@ -111,7 +111,8 @@ sunucusu yoktur ve ritüel verilerin cihazından hiçbir yere gönderilmez.</str
   <code>googleapis.com</code> adresinden adın, e-postan ve profil fotoğrafı
   bağlantın bir kez okunur ve cihazına yazılır. Erişim anahtarı saklanmaz.</li>
 </ul>
-<p>Bunun dışında uygulama hiçbir sunucuya istek göndermez.</p>
+<p>Bunun dışında uygulama, aşağıdaki 4. bölümde anlatılan reklam istekleri
+dışında hiçbir sunucuya istek göndermez.</p>
 
 <div class="box">
   <strong>Yapay zekâ metinleri cihazda üretilir.</strong> Bazı iPhone'larda
@@ -121,10 +122,30 @@ sunucusu yoktur ve ritüel verilerin cihazından hiçbir yere gönderilmez.</str
   yazılmış sabit metinleri gösterir.
 </div>
 
-<h2>4. Analitik, reklam ve izleme yoktur</h2>
-<p>Plasebo'da analiz aracı (analytics), reklam ağı, çökme raporlama servisi veya
-üçüncü taraf izleme kiti (SDK) bulunmaz. Reklam kimliği okunmaz. Verilerin
-kimseye satılmaz veya paylaşılmaz.</p>
+<h2>4. Reklamlar</h2>
+<p>Ücretsiz sürümde <strong>Google AdMob</strong> üzerinden reklam gösterilir.
+Reklam tek bir yerde çıkar: bir seansı bitirip ana sayfaya dönerken, tam ekran
+olarak. Ritüelin, ölçümün ya da nefes adımının ortasında hiçbir zaman reklam
+gösterilmez. Günde en çok üç reklam gösterilir.</p>
+<p>Reklamları getirmek için AdMob, cihazının <strong>reklam tanımlayıcısını
+(IDFA/AAID)</strong> ve cihaz ile yaklaşık konum bilgisi gibi standart reklam
+verilerini kendi gizlilik politikası kapsamında işler. Bu veriler
+<em>uygulamadaki kayıtlarınla ilişkilendirilmez</em>: şikâyetlerin, ölçümlerin,
+ritüel geçmişin, Sağlık verilerin ve kamera ya da mikrofonla yapılan ölçümler
+reklam ağına gönderilmez, gönderilemez.</p>
+<p>iPhone'da oturum açtıktan sonra iOS'un <strong>izleme izni</strong>
+penceresi bir kez çıkar. <em>İzin verme</em> dersen uygulama aynen çalışır, yalnızca
+reklamlar ilgi alanlarına göre değil genel olarak seçilir. Avrupa Ekonomik
+Alanı, Birleşik Krallık ve İsviçre'deki kullanıcılara ayrıca bir rıza ekranı
+gösterilir; verilen rıza sonradan <em>Ayarlar → Reklam gizlilik tercihleri</em>
+adımından değiştirilebilir.</p>
+<p>Google'ın reklam verilerini nasıl işlediği:
+<a href="https://policies.google.com/technologies/partner-sites">Google iş
+ortağı sitelerinde veri kullanımı</a>.</p>
+
+<p>Reklam dışında Plasebo'da analiz aracı (analytics), çökme raporlama servisi
+veya başka bir üçüncü taraf izleme kiti bulunmaz. Verilerin kimseye satılmaz
+veya paylaşılmaz.</p>
 
 <h2>5. İzinler</h2>
 <ul>
@@ -145,6 +166,9 @@ kimseye satılmaz veya paylaşılmaz.</p>
   <li><strong>Apple Sağlık (yalnızca okuma, yalnızca iPhone)</strong> — yalnızca
   sen Ayarlar'dan açarsan istenir. Uyku süresi, dinlenme nabzı ve kalp atış hızı
   değişkenliği okunur; Sağlık uygulamasına hiçbir şey yazılmaz.</li>
+  <li><strong>İzleme izni (yalnızca iPhone)</strong> — reklam tanımlayıcısının
+  reklam kişiselleştirmesi için kullanılmasına izin verip vermediğini sorar.
+  Reddedilebilir; bkz. 4. bölüm.</li>
 </ul>
 <p>Uygulama konuma, kişilere veya dosyalarına erişmez. Mikrofon, kamera ve Sağlık
 erişimlerinin üçü de isteğe bağlıdır: hiçbirine izin vermeden uygulamanın tamamı
