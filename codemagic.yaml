@@ -28,7 +28,7 @@
 # Codemagic panelinde yapılması gerekenler (tıklama düzeyinde anlatımı
 # `store/CODEMAGIC.md` içinde):
 #
-#   1. `plasebo-asc` adında bir App Store Connect API anahtarı bağlantısı
+#   1. App Store Connect API anahtarı bağlantısı (panelde adı: Codemagic)
 #   2. `plasebo-ios` adında bir ortam değişkeni grubu; içinde:
 #        EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
 #        EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
@@ -47,7 +47,11 @@ workflows:
     # de TestFlight'a yüklemek için kullanılıyor; parola ya da iki adımlı
     # doğrulama gerekmiyor.
     integrations:
-      app_store_connect: plasebo-asc
+      # Codemagic panelindeki API anahtarının adı. Panelde anahtar
+      # "Codemagic" adıyla kayıtlı; buradaki metin onunla birebir aynı
+      # olmak zorunda, yoksa derleme "integration not found" diyerek ilk
+      # saniyede durur.
+      app_store_connect: Codemagic
 
     environment:
       groups:

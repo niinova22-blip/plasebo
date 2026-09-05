@@ -8,21 +8,13 @@ tek tek yazılı.
 Kurulum bir kez yapılıyor. Bittiğinde her yeni sürüm, Codemagic'te tek bir
 "Start new build" düğmesiyle derlenip TestFlight'a düşüyor.
 
-> **Durum:** Codemagic hesabı `akokdogan59@gmail.com` ile açıldı, App
-> Store Connect API anahtarı bağlandı ve GitHub yetkisi zaten verilmiş
-> durumda (Gelişim Takip aynı hesapta duruyor).
+> **Durum: kurulum tamam (5 Eylül 2026).** Codemagic hesabı
+> `akokdogan59@gmail.com` ile açık, App Store Connect API anahtarı bağlı,
+> GitHub yetkisi verilmiş, `plasebo` uygulaması eklendi (React Native) ve
+> `plasebo-ios` grubuna iki Google giriş kimliği girildi.
 >
-> **Takıldığımız yer — Adım 2a:** Codemagic'in GitHub uygulamasına
-> yalnızca `forge` deposu için erişim verilmiş. Depo listesinde `plasebo`
-> hiç görünmüyor, dolayısıyla uygulama eklenemiyor. Bunu senin açman
-> gerekiyor; GitHub parolası isteyebileceği için ben yapamıyorum.
->
-> Sonrasında kalanlar: uygulamayı ekle (Adım 2b) ve ortam değişkenlerini
-> gir (Adım 4).
->
-> Ayrıca Adım 3'te anahtara verdiğin adın **`plasebo-asc`** olduğunu bir
-> kez doğrula — `codemagic.yaml` anahtarı bu adla arıyor ve ad tutmazsa
-> derleme "integration not found" diyerek ilk saniyede durur.
+> Aşağıdaki adımlar bir daha yapılmayacak; ne kurulduğunu hatırlamak ve
+> bir gün sıfırdan kurmak gerekirse diye duruyor.
 
 ---
 
@@ -134,14 +126,15 @@ türü yalnızca varsayılan şablonu etkiler.
 
    | Alan | Ne yazılacak |
    | --- | --- |
-   | **API key name** | `plasebo-asc` |
+   | **API key name** | `Codemagic` |
    | **Issuer ID** | Adım 1'de kopyaladığın Issuer ID |
    | **Key ID** | Adım 1'deki 10 karakterlik Key ID |
    | **API key** | İndirdiğin `.p8` dosyasını buraya yükle ya da içeriğini yapıştır |
 
-   > ⚠️ **`plasebo-asc` adını birebir böyle yaz.** Depodaki
-   > `codemagic.yaml` dosyası anahtarı bu adla arıyor; farklı bir ad
-   > verirsen derleme "integration not found" diyerek durur.
+   > ⚠️ **Ad, `codemagic.yaml` içindeki `app_store_connect:` değeriyle
+   > birebir aynı olmalı.** Bu hesapta anahtar `Codemagic` adıyla kayıtlı
+   > ve yaml da onu arıyor. Adı değiştirirsen yaml'ı da değiştir; yoksa
+   > derleme "integration not found" diyerek ilk saniyede durur.
 
 4. **Save** de.
 
@@ -208,7 +201,7 @@ görünmesi Apple tarafındaki işleme yüzünden 5–15 dakika daha sürer.
 | Hata metni | Anlamı ve çözümü |
 | --- | --- |
 | Depo listesinde `plasebo` çıkmıyor | GitHub'da Codemagic'e o depo için erişim verilmemiş. Adım 2a. |
-| `integration 'plasebo-asc' not found` | Adım 3'teki anahtar adı farklı yazılmış. Codemagic → Integrations → App Store Connect'te adı `plasebo-asc` yap. |
+| `integration '...' not found` | `codemagic.yaml` içindeki `app_store_connect:` değeri panelde kayıtlı anahtar adıyla tutmuyor. Codemagic → Settings → Integrations → Developer Portal → Manage keys altındaki adı yaml'a yaz. |
 | `EKSİK: EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Adım 4 yapılmamış ya da grup adı `plasebo-ios` değil. |
 | `No matching provisioning profile` | Apple tarafında kimlik ya da yetenek eksik. Genelde widget uzantısının (`com.plasebo.app.PlaseboWidget`) kimliği Apple'da yok demektir; Certificates, Identifiers & Profiles → Identifiers altında var mı bak. |
 | `Signing for "PlaseboWidget" requires a development team` | `APPLE_TEAM_ID` değeri yanlış. `codemagic.yaml` içinde `ML3UZXMU3D` yazıyor; App Store Connect'teki ekip kimliğiyle aynı olmalı. |
