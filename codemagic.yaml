@@ -56,13 +56,24 @@ workflows:
     environment:
       groups:
         - plasebo-ios
-      # Otomatik imzalama: dağıtım sertifikası ve profil Apple tarafında
-      # yoksa Codemagic kendisi oluşturuyor. Widget uzantısı
-      # (com.plasebo.app.PlaseboWidget) ana kimliğin altında olduğu için
-      # onun profili de aynı adımda çekiliyor.
+      # Elle imzalama: sertifika ve profiller Codemagic'in kendi deposunda
+      # duruyor, buradaki adlar oradaki referans adları.
+      #
+      # `distribution_type` + `bundle_identifier` biçimi (otomatik imzalama)
+      # bu projede çalışmadı: beş denemede de "No matching profiles found"
+      # dedi. O biçim profilleri Apple'dan eşleştirmeye çalışıyor ve
+      # eşleşmeyi Codemagic'in özel anahtarını tuttuğu sertifikaya göre
+      # yapıyor; profiller Codemagic'in deposuna alınmadan bunu bulamıyor.
+      #
+      # Kurulum: Settings → Code signing identities → iOS certificates'ta
+      # "Generate certificate" ile `plasebo-distribution`, ardından iOS
+      # provisioning profiles'ta "Fetch profiles" ile aşağıdaki iki profil.
       ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.plasebo.app
+        provisioning_profiles:
+          - plasebo-appstore
+          - plasebo-widget-appstore
+        certificates:
+          - plasebo-distribution
       vars:
         XCODE_WORKSPACE: "ios/Plasebo.xcworkspace"
         XCODE_SCHEME: "Plasebo"
