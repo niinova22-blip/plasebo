@@ -59,12 +59,66 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+/**
+ * Sağlayıcı ad vermediğinde yazılan yer tutucular.
+ *
+ * Dışa açık, çünkü "bu gerçek bir ad mı yoksa doldurma mı" sorusunu
+ * yalnızca burası bilebilir; profil adını hesaptan tohumlayan taraf da
+ * aynı listeye bakıyor.
+ */
+export const PLACEHOLDER_NAMES: readonly string[] = [
+  'Apple kullanıcısı',
+  'Google kullanıcısı',
+];
+
+/** Verilen ad gerçek bir ad mı, yoksa doldurma mı? */
+export function isPlaceholderName(name?: string): boolean {
+  const clean = name?.trim();
+  return !clean || PLACEHOLDER_NAMES.includes(clean);
+}
+
+/**
+ * E-posta adresinden okunabilir bir ad üretir.
+ *
+ * Sağlayıcı ad vermediğinde kullanılıyor: `ayse.yilmaz@ornek.com` →
+ * "Ayşe Yılmaz" değil ama "Ayse Yilmaz" — noktalar ve alt çizgiler
+ * boşluğa çevrilip her kelime büyük harfle başlatılıyor. Gerçek adın
+ * yerini tutmaz, ama "Apple kullanıcısı"ndan kişiseldir.
+ *
+ * Apple'ın gizleme adresleri (`...@privaterelay.appleid.com`) atlanıyor:
+ * onların kullanıcı adı kısmı rastgele bir dizi ve isim yerine geçmez.
+ */
+function nameFromEmail(email?: string): string | null {
+  if (!email) return null;
+  const at = email.indexOf('@');
+  if (at <= 0) return null;
+  if (email.slice(at + 1).toLowerCase().includes('privaterelay.appleid.com')) return null;
+  const words = email
+    .slice(0, at)
+    .split(/[._+-]+/)
+    .map((w) => w.trim())
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toLocaleUpperCase('tr-TR') + w.slice(1));
+  const name = words.join(' ').trim();
+  return name.length >= 2 ? name : null;
+}
+
+/** Cihazda saklı hesabı okur; ad kurtarmak için kullanılıyor. */
+async function readStoredAccount(): Promise<Account | null> {
+  try {
+    const raw = await AsyncStorage.getItem(ACCOUNT_KEY);
+    return raw ? (JSON.parse(raw) as Account) : null;
+  } catch {
+    return null;
+  }
+}
+
 /** Google'ın döndürdüğü profili uygulamanın hesap kaydına çevirir. */
 function toAccount(user: User): Account {
   return {
     mode: 'google',
     id: user.user.id,
-    name: user.user.name ?? 'Google kullanıcısı',
+    name: user.user.name ?? nameFromEmail(user.user.email) ?? 'Google kullanıcısı',
     email: user.user.email,
     photo: user.user.photo ?? undefined,
   };
@@ -202,11 +256,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const given = credential.fullName?.givenName?.trim();
       const family = credential.fullName?.familyName?.trim();
       const fullName = [given, family].filter(Boolean).join(' ');
+
+      // Ad ve e-posta yalnızca ilk yetkilendirmede geliyor. İkinci
+      // girişte ikisi de boş dönüyor ve kayıt "Apple kullanıcısı" diye
+      // güncelleniyordu: yani ilk seferde alınan gerçek ad, kullanıcı her
+      // yeniden giriş yaptığında siliniyordu. Bu yüzden boş gelen alanlar
+      // artık üzerine yazmıyor, cihazdaki kayıttan tamamlanıyor.
+      const stored = await readStoredAccount();
+      const sameUser = stored?.id === credential.user ? stored : null;
+      const email = credential.email ?? sameUser?.email;
+      const previous = sameUser?.name?.trim();
+
       persist({
         mode: 'apple',
         id: credential.user,
-        name: fullName || 'Apple kullanıcısı',
-        email: credential.email ?? undefined,
+        // Sıra: Apple'ın verdiği ad → daha önce saklanmış ad →
+        // e-postadan türetilen ad → son çare sabit metin.
+        name:
+          fullName ||
+          (isPlaceholderName(previous) ? '' : (previous as string)) ||
+          nameFromEmail(email) ||
+          'Apple kullanıcısı',
+        email,
       });
     } catch (e) {
       // Kullanıcı vazgeçtiğinde kod ERR_REQUEST_CANCELED olur; bu hata

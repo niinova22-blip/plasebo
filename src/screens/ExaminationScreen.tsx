@@ -31,6 +31,21 @@ const STAGES: { text: string; at: number }[] = [
   { text: 'Karışım demleniyor...', at: 5300 },
   { text: 'Formülün mühürleniyor...', at: 7000 },
 ];
+
+/**
+ * Fotoğraftan gelindiğinde gösterilen aşamalar.
+ *
+ * Burada tören daha az "uydurma": ilk üç adım gerçekten olmuş bir işi
+ * anlatıyor (yüz bulundu, ifade sınıflandırıldı, sonuç hedefe bağlandı).
+ * Kalan adımlar yine karışımın hazırlanması.
+ */
+const STAGES_WITH_FACE: { text: string; at: number }[] = [
+  { text: 'Yüz ifaden analiz ediliyor...', at: 0 },
+  { text: 'İfade örüntüsü duygu haritasına oturtuluyor...', at: 1700 },
+  { text: 'Analiz reçeteye çevriliyor...', at: 3400 },
+  { text: 'Karışım demleniyor...', at: 5300 },
+  { text: 'Formülün mühürleniyor...', at: 7000 },
+];
 const TOTAL_MS = 8500;
 
 /**
@@ -46,13 +61,16 @@ export default function ExaminationScreen({ navigation, route }: Props) {
   const motion = useMotion();
   const complaint = resolveComplaint(route.params.complaintId, route.params.customText);
   const [stage, setStage] = useState(0);
+  /** Fotoğraftan gelindiyse aşamalar da analizi anlatan sürümü kullanır. */
+  const fromFace = route.params.faceMoodScore != null;
+  const stages = fromFace ? STAGES_WITH_FACE : STAGES;
 
   const fade = useSharedValue(1);
 
   useEffect(() => {
     const timers: ReturnType<typeof setTimeout>[] = [];
 
-    STAGES.slice(1).forEach((s, i) => {
+    stages.slice(1).forEach((s, i) => {
       timers.push(
         setTimeout(() => {
           setStage(i + 1);
@@ -74,6 +92,7 @@ export default function ExaminationScreen({ navigation, route }: Props) {
         navigation.replace('Prescription', {
           complaintId: route.params.complaintId,
           customText: route.params.customText,
+          faceMoodScore: route.params.faceMoodScore,
         });
       }, TOTAL_MS)
     );
@@ -83,6 +102,8 @@ export default function ExaminationScreen({ navigation, route }: Props) {
     navigation,
     route.params.complaintId,
     route.params.customText,
+    route.params.faceMoodScore,
+    stages,
     motion.reduced,
     fade,
   ]);
@@ -99,13 +120,21 @@ export default function ExaminationScreen({ navigation, route }: Props) {
       <Animated.View style={[styles.center, screenStyle]}>
         <PotionVessel totalMs={TOTAL_MS} reduced={motion.reduced} />
 
-        <Text style={styles.stage}>{t(STAGES[stage].text)}</Text>
+        <Text style={styles.stage}>{t(stages[stage].text)}</Text>
         {complaint ? <Text style={styles.complaint}>{t(complaint.label)}</Text> : null}
       </Animated.View>
 
-      <Text style={styles.footnote}>
-        {t('⚗️ Bu analiz de plasebo. Burada hesaplanan hiçbir şey yok — yalnızca beklemek var.')}
-      </Text>
+      {/* Dipnot yalnızca gerçekten bir hesap yapıldığında var: fotoğraftan
+          gelindiğinde cihazda bir model çalıştı ve bunu söylemek dürüstlük
+          gereği. Diğer hâlde söyleyeceği tek şey "bu bir plasebo" olurdu ve
+          o cümle bir ekran önce, Hazırlık ekranında zaten yazıyor. */}
+      {fromFace ? (
+        <Text style={styles.footnote}>
+          {t(
+            '🤖 Yüz analizi gerçek: cihazında çalışan bir model. Karışımın kendisi ise plasebo — etkiyi beklenti kuruyor.'
+          )}
+        </Text>
+      ) : null}
     </Screen>
   );
 }

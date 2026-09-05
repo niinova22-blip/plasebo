@@ -18,11 +18,17 @@ import { useT, useTheme } from '../context/SettingsContext';
 import { useMotion } from '../hooks/useMotion';
 import { translateFormulaName } from '../i18n';
 import { shareReceiptImage } from '../utils/receipt';
+import {
+  REACTION_MEANINGFUL_PERCENT,
+  reactionChangePercent,
+} from '../utils/reaction';
 import ReceiptCard, {
   RECEIPT_CARD_HEIGHT,
   RECEIPT_CARD_WIDTH,
 } from '../components/ReceiptCard';
 import { useUser } from '../context/UserContext';
+import { usePremium } from '../context/PremiumContext';
+import { showSessionEndAd } from '../utils/ads';
 import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SessionSummary'>;
@@ -39,14 +45,50 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
   const t = useT();
   const motion = useMotion();
   const { user } = useUser();
-  const { complaintId, customText, formula, scoreBefore, scoreAfter, durationSeconds } =
-    route.params;
+  const { limits } = usePremium();
+  const {
+    complaintId,
+    customText,
+    formula,
+    scoreBefore,
+    scoreAfter,
+    durationSeconds,
+    faceMoodScore,
+    faceMoodAfter,
+    scoreAfterFromCamera,
+    breathRegularity,
+    breathsPerMinute,
+    reactionBeforeMs,
+    reactionAfterMs,
+  } = route.params;
   const complaint = resolveComplaint(complaintId, customText);
 
   const diff = scoreBefore - scoreAfter;
   const percent = scoreBefore > 0 ? Math.round((diff / scoreBefore) * 100) : 0;
   const minutes = Math.floor(durationSeconds / 60);
   const seconds = durationSeconds % 60;
+
+  /**
+   * Ek ölçümler.
+   *
+   * Burada bir zamanlar iki satırlık bir tablo vardı: "kendi puanın" ve
+   * "kameranın ölçtüğü". O tablo artık çizilemez, çünkü iki satır da aynı
+   * sayıyı gösterirdi — önce/sonra puanlarının ikisi de kameradan
+   * geliyor. Yukarıdaki büyük "önce → sonra" zaten o bilgiyi veriyor.
+   *
+   * Geriye gerçekten ayrı şeyler ölçen iki kayıt kalıyor: nefes
+   * düzenliliği (yüzde) ve tepki süresi (milisaniye). İkisi de puan
+   * ölçeğinde olmadığı için kendi satırlarında ve kendi birimlerinde
+   * duruyor.
+   */
+  const breathPercent = breathRegularity != null ? Math.round(breathRegularity * 100) : null;
+  const hasReactionRow = reactionBeforeMs != null || reactionAfterMs != null;
+  /** Refleks farkı ancak iki ölçüm de varsa ve fark anlamlıysa yorumlanıyor. */
+  const reactionChange =
+    reactionBeforeMs != null && reactionAfterMs != null
+      ? reactionChangePercent(reactionBeforeMs, reactionAfterMs)
+      : null;
+  const showLedger = breathPercent != null || hasReactionRow;
 
   const title =
     diff > 0 ? 'Etki Gözlemlendi ⚗️' : diff === 0 ? 'Veri Toplandı 📊' : 'Yarın Tekrar 🔄';
@@ -82,6 +124,24 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
 
   /** Ekran dışında duran belge — paylaşımda görüntüsü alınıyor. */
   const cardRef = useRef<View>(null);
+
+  /**
+   * Akışın çıkışı. Geçiş reklamı varsa önce o gösteriliyor, kapanınca ana
+   * ekrana dönülüyor; reklam yoksa dönüş anında oluyor.
+   *
+   * Reklam gösterilecek tek yer burası: kullanıcı seansı bitirdi, iki iş
+   * arasındaki doğal boşlukta. Sıra da bu yüzden böyle — önce ana ekrana
+   * dönüp reklamı üstüne açmak, kullanıcıyı vardığı yerden geri iterdi.
+   *
+   * `showSessionEndAd` geri çağrıyı her yolda tam bir kez çalıştırıyor
+   * (reklam yok, reklam kapandı, gösterim hata verdi); aksi hâlde ya bu
+   * ekranda kilitlenirdik ya yığını iki kez sıfırlardık.
+   */
+  const goHome = () => {
+    showSessionEndAd(limits.adFree, () =>
+      navigation.reset({ index: 0, routes: [{ name: 'Main' }] })
+    );
+  };
 
   const share = () => {
     void shareReceiptImage(
@@ -141,6 +201,12 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
             </View>
           </View>
 
+          {/* Sayıların kaynağı ekranda yazmalı; ikisi de aynı yöntemle
+              ölçüldüğü için karşılaştırmanın anlamı buradan geliyor. */}
+          <Text style={[styles.scoreSource, { color: theme.faint }]}>
+            {t('İkisi de fotoğraf analiziyle ölçüldü')}
+          </Text>
+
           <View style={[styles.barTrack, { backgroundColor: theme.border }]}>
             <Animated.View style={[styles.barFill, barStyle]} />
           </View>
@@ -151,6 +217,85 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
                 ? t('Değişim yok — bu da veri')
                 : t('Bugün zordu. Yarın yeniden dene.')}
           </Text>
+
+          {showLedger ? (
+            <>
+              <Divider />
+              <Text style={[styles.compareLabel, { color: theme.faint }]}>
+                {t('EK ÖLÇÜMLER')}
+              </Text>
+              <Text style={[styles.compareIntro, { color: theme.sub }]}>
+                {t('Puan ölçeğine girmeyen, kendi birimleriyle duran kayıtlar.')}
+              </Text>
+
+              <View style={styles.ledgerHead}>
+                <Text style={[styles.ledgerName, { color: theme.faint }]} />
+                <Text style={[styles.ledgerHeadCell, { color: theme.faint }]}>
+                  {t('Önce')}
+                </Text>
+                <Text style={[styles.ledgerHeadCell, { color: theme.faint }]}>
+                  {t('Sonra')}
+                </Text>
+              </View>
+
+              {/* Refleks ayrı bir ölçek (milisaniye) — tabloya karışmasın
+                  diye kendi satırında ve kendi biriminde duruyor. */}
+              {hasReactionRow ? (
+                <>
+                  <View style={styles.ledgerRow}>
+                    <Text style={[styles.ledgerName, { color: theme.sub }]}>
+                      {t('Tepki süren (ms)')}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.ledgerCellSmall,
+                        { color: reactionBeforeMs == null ? theme.faint : theme.text },
+                      ]}
+                    >
+                      {reactionBeforeMs ?? '—'}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.ledgerCellSmall,
+                        { color: reactionAfterMs == null ? theme.faint : theme.pulse },
+                      ]}
+                    >
+                      {reactionAfterMs ?? '—'}
+                    </Text>
+                  </View>
+                  {reactionChange != null ? (
+                    <Text style={[styles.compareNote, { color: theme.faint }]}>
+                      {Math.abs(reactionChange) < REACTION_MEANINGFUL_PERCENT
+                        ? t(
+                            '⚡ Tepki süren neredeyse aynı kaldı. Bu ölçüm gün içinde kendiliğinden oynar; %{esik} altındaki farkı değişim saymıyoruz.',
+                            { esik: REACTION_MEANINGFUL_PERCENT }
+                          )
+                        : reactionChange > 0
+                          ? t('⚡ Tepki süren %{yuzde} hızlandı.', { yuzde: reactionChange })
+                          : t('⚡ Tepki süren %{yuzde} yavaşladı.', {
+                              yuzde: Math.abs(reactionChange),
+                            })}
+                    </Text>
+                  ) : null}
+                </>
+              ) : null}
+
+              {breathPercent != null ? (
+                <Text style={[styles.compareNote, { color: theme.faint }]}>
+                  {breathsPerMinute != null
+                    ? t(
+                        '🎙️ Nefesin ritüel sırasında %{yuzde} düzenliydi, dakikada {adet} nefes — bu ayrı bir ölçek, puanlarla toplanmaz.',
+                        { yuzde: breathPercent, adet: breathsPerMinute.toFixed(1) }
+                      )
+                    : t(
+                        '🎙️ Nefesin ritüel sırasında %{yuzde} düzenliydi — bu ayrı bir ölçek, puanlarla toplanmaz.',
+                        { yuzde: breathPercent }
+                      )}
+                </Text>
+              ) : null}
+
+            </>
+          ) : null}
 
           <Divider />
           <Text style={[styles.note, { color: theme.sub }]}>
@@ -167,7 +312,7 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
         />
 
         <PressableScale
-          onPress={() => navigation.reset({ index: 0, routes: [{ name: 'Main' }] })}
+          onPress={goHome}
           accessibilityRole="button"
           style={styles.primary}
         >
@@ -191,6 +336,8 @@ export default function SessionSummaryScreen({ navigation, route }: Props) {
               date={formula.generatedAt}
               name={user.name}
               t={t}
+              scoreBefore={scoreBefore}
+              scoreAfter={scoreAfter}
             />
           </View>
         </View>
@@ -212,6 +359,38 @@ function Field({ label, value }: { label: string; value: string }) {
 function Divider() {
   const theme = useTheme();
   return <View style={[styles.divider, { backgroundColor: theme.border }]} />;
+}
+
+/**
+ * Ölçüm defterinin bir satırı: ölçümün adı, öncesi ve sonrası.
+ * O ana ait bir değer yoksa hücre "—" kalıyor — boş bırakmak yerine
+ * ölçülmediğini açıkça söylüyor.
+ */
+function LedgerRow({
+  name,
+  before,
+  after,
+  tint,
+}: {
+  name: string;
+  before: number | null;
+  after: number | null;
+  tint: string;
+}) {
+  const theme = useTheme();
+  return (
+    <View style={styles.ledgerRow}>
+      <Text style={[styles.ledgerName, { color: theme.sub }]}>{name}</Text>
+      <Text
+        style={[styles.ledgerCell, { color: before == null ? theme.faint : theme.text }]}
+      >
+        {before ?? '—'}
+      </Text>
+      <Text style={[styles.ledgerCell, { color: after == null ? theme.faint : tint }]}>
+        {after ?? '—'}
+      </Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -257,6 +436,73 @@ const styles = StyleSheet.create({
   scoreValue: { fontFamily: fonts.mono, fontSize: 38, includeFontPadding: false },
   scoreLabel: { fontFamily: fonts.sans, fontSize: 11, marginTop: 2 },
   arrow: { fontFamily: fonts.sans, fontSize: 20, marginHorizontal: 10 },
+  compareLabel: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    textAlign: 'center',
+  },
+  compareIntro: {
+    fontFamily: fonts.sans,
+    fontSize: 11,
+    lineHeight: 17,
+    textAlign: 'center',
+    marginTop: 8,
+  },
+  ledgerHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 14,
+    marginBottom: 2,
+  },
+  ledgerHeadCell: {
+    width: 58,
+    textAlign: 'center',
+    fontFamily: fonts.sansMedium,
+    fontSize: 10,
+    letterSpacing: 1,
+  },
+  ledgerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 7,
+  },
+  ledgerName: { flex: 1, fontFamily: fonts.sans, fontSize: 12 },
+  ledgerCell: {
+    width: 58,
+    textAlign: 'center',
+    fontFamily: fonts.mono,
+    fontSize: 20,
+    includeFontPadding: false,
+  },
+  ledgerCellSmall: {
+    width: 58,
+    textAlign: 'center',
+    fontFamily: fonts.mono,
+    fontSize: 15,
+    includeFontPadding: false,
+  },
+  ledgerScale: {
+    fontFamily: fonts.sans,
+    fontSize: 10,
+    lineHeight: 15,
+    textAlign: 'center',
+    marginTop: 6,
+  },
+  scoreSource: {
+    fontFamily: fonts.sans,
+    fontSize: 10,
+    lineHeight: 15,
+    textAlign: 'center',
+    marginTop: 6,
+  },
+  compareNote: {
+    fontFamily: fonts.sans,
+    fontSize: 10,
+    lineHeight: 15,
+    textAlign: 'center',
+    marginTop: 8,
+  },
   barTrack: {
     height: 8,
     borderRadius: 4,

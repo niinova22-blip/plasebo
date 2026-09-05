@@ -22,6 +22,56 @@ export const EN: Record<string, string> = {
   'Atla': 'Skip',
   'Başla': 'Start',
   'Kaydet': 'Save',
+  /* Fotograf tabanli olcum akisinin metinleri. */
+  '🎙️ NEFES ÖLÇÜMÜ':
+    '🎙️ BREATH MEASUREMENT',
+  'Mikrofon hiç veri göndermedi — ritüeli yeniden başlatmayı dene.':
+    'The microphone sent no data at all — try starting the ritual again.',
+  'Koyuluk günün puanı, alttaki şerit kamera/nefes/refleks ölçümü · çerçeveli kutular dondurulmuş günler':
+    'Darkness is the day’s score, the strip below is the camera/breath/reaction measurement · framed boxes are frozen days',
+  'Ritüel öncesi':
+    'Before the ritual',
+  'Ritüel sonrası':
+    'After the ritual',
+  '{gun}: öncesi {once}, sonrası {sonra}':
+    '{gun}: before {once}, after {sonra}',
+  '{tarih} · öncesi {once} · sonrası {sonra}':
+    '{tarih} · before {once} · after {sonra}',
+  'Ölçülen puan':
+    'Measured score',
+  '🎙️ Mikrofon izni verilmedi — nefes ölçümü olmadan devam edeceksin':
+    '🎙️ Microphone permission denied — you will continue without the breath measurement',
+  'Bu bir duygu teşhisi değil — mikrofonla ölçülen nefes ritmi, puanların yanına konan ayrı bir veri.':
+    'This is not an emotional diagnosis — it is the breathing rhythm measured by the microphone, a separate figure placed beside your scores.',
+  'İkisi de fotoğraf analiziyle ölçüldü':
+    'Both were measured by photo analysis',
+  'EK ÖLÇÜMLER':
+    'ADDITIONAL MEASUREMENTS',
+  'Puan ölçeğine girmeyen, kendi birimleriyle duran kayıtlar.':
+    'Records that stay in their own units rather than the score scale.',
+  'İstatistik ekranı her ritüelin öncesini ve sonrasını yan yana koyuyor.':
+    'The stats screen puts the before and after of every ritual side by side.',
+  'Bu bir zeka ya da sağlık testi değil. Yalnızca dikkatini ne kadar hızlı topladığının kaydı — puanların yanına konacak, ayrı bir ölçü.':
+    'This is not an intelligence or health test. It is only a record of how quickly you gather your attention — a separate measure placed beside your scores.',
+  'Bir fotoğraf çekiyorsun; yüz ifaden okunuyor, reçeten ona göre yazılıyor ve o okuma günün başlangıç puanı oluyor.\n\n4 dakika uyguluyorsun. Nefes adımında mikrofon ritmini dinliyor.\n\nRitüel bitince bir fotoğraf daha: öncesi ve sonrası aynı yöntemle ölçülmüş oluyor.\n\nHepsi bu — ve hepsi telefonunun içinde kalıyor.':
+    'You take a photo; your expression is read, your prescription is written from it, and that reading becomes the day’s starting score.\n\nYou run it for 4 minutes. During the breathing step the microphone listens to your rhythm.\n\nWhen the ritual ends, one more photo: before and after are measured the same way.\n\nThat is all — and all of it stays inside your phone.',
+  /* Fotograf tabanli olcum akisi. */
+  'Fotoğraf analiziyle otomatik reçete':
+    'Automatic prescription from photo analysis',
+  'YA DA':
+    'OR',
+  '📷 Bu sayıyı kamera ölçtü':
+    '📷 The camera measured this number',
+  '📷 Ölçüm için bir fotoğraf gerekiyor':
+    '📷 A photo is needed for the measurement',
+  '📷 Fotoğrafı çek':
+    '📷 Take the photo',
+  'Fotoğrafı çektiğinde önce/sonra farkı burada çıkacak':
+    'Once you take the photo, the before/after difference appears here',
+  'Ölçmeden bitir':
+    'Finish without measuring',
+  'Her ritüelin öncesi ve sonrası, aynı yöntemle ölçülmüş hâliyle.':
+    'The before and after of every ritual, measured the same way.',
   'Vazgeç': 'Cancel',
   'Kapat': 'Sign out',
   'Sil': 'Delete',
@@ -130,11 +180,6 @@ export const EN: Record<string, string> = {
   '{sure} sn': '{sure} s',
   '{tur} tur': '{tur} rounds',
   '{ad} · ~{sure} sn': '{ad} · ~{sure} s',
-  '🔒 Yakında': '🔒 Coming soon',
-  'yakında': 'coming soon',
-  'Premium henüz açık değil': 'Premium is not open yet',
-  'Aşağıdakiler ilerideki bir güncellemede açılacak. Şimdilik satın alınacak bir şey yok; ücretsiz kademe bugün tam çalışıyor — dört hedefin günlük formülü ve sınırsız tekrar dahil.':
-    'The features below will be unlocked in a future update. There is nothing to buy for now; the free tier is fully working today — including a daily formula for all four goals and unlimited replays.',
 
   /* ---------------------------------------------------------------- */
   /* Ritüel                                                            */
@@ -191,6 +236,8 @@ export const EN: Record<string, string> = {
   'Tarih:    {tarih}': 'Date:     {tarih}',
   'Formül:   {formul}': 'Formula:  {formul}',
   'İçerik:   — (sahte ritüel, kör test)': 'Contents: — (sham ritual, blind test)',
+  // Belge kartındaki satır etiketi (metin sürümündeki uzun anahtardan ayrı).
+  'İçerik': 'Contents',
   'Renk:     {ad} · {sure} sn': 'Colour:   {ad} · {sure} s',
   'Ses:      {ad} · {sure} sn': 'Sound:    {ad} · {sure} s',
   'Nefes:    {ad} · {tur} tur': 'Breath:   {ad} · {tur} rounds',
@@ -221,8 +268,8 @@ export const EN: Record<string, string> = {
   'DEVAMLILIK': 'CONSISTENCY',
   'Koyuluk o günün puanı · çerçeveli kutular dondurulmuş günler':
     'Darkness is that day’s score · outlined cells are frozen days',
-  '🔒 Ücretsiz kademe son {gun} günü gösterir. Tüm geçmiş yakında açılacak.':
-    '🔒 The free tier shows the last {gun} days. Full history is coming soon.',
+  'Koyuluk kendi puanın, alttaki şerit kamera/nefes ile ölçülen objektif sinyal · çerçeveli kutular dondurulmuş günler':
+    'Darkness is your own score, the strip below is the camera/breath objective signal · outlined cells are frozen days',
   '🔬 Kör test karşılaştırması': '🔬 Blind test comparison',
   'Gerçek ritüel ortalaman {gercek}/10 ({gercekAdet} kez), sahte ritüel ortalaman {sahte}/10 ({sahteAdet} kez). ':
     'Your real ritual average is {gercek}/10 ({gercekAdet} times), your sham ritual average is {sahte}/10 ({sahteAdet} times). ',
@@ -288,8 +335,8 @@ export const EN: Record<string, string> = {
   /* ---------------------------------------------------------------- */
   '{adet} ritüel · hepsi telefonunda': '{adet} rituals · all on your phone',
   ' · kriz': ' · crisis',
-  '🔒 {gizli} eski kayıt gizli. Ücretsiz kademe son {gun} günü gösterir — kayıtlar silinmedi, ileride hepsi geri gelecek.':
-    '🔒 {gizli} older records are hidden. The free tier shows the last {gun} days — nothing was deleted, they will all come back later.',
+  '🔒 {gizli} eski kayıt gizli. Ücretsiz kademe son {gun} günü gösterir — kayıtlar silinmedi, {plan} ile hepsi geri gelir.':
+    '🔒 {gizli} older records are hidden. The free tier shows the last {gun} days — nothing was deleted, {plan} brings them all back.',
   'Henüz kayıt yok. İlk ritüelini tamamladığında burada birikmeye başlayacak.':
     'No records yet. They start piling up here once you finish your first ritual.',
 
@@ -311,18 +358,22 @@ export const EN: Record<string, string> = {
   'Tüm özellikler açık · {adet} içerik paketi':
     'Everything unlocked · {adet} content packs',
   'Tüm özellikler açık.': 'Everything unlocked.',
-  'Dört hedef, temel formül havuzu, 7 günlük geçmiş. Premium yakında.':
-    'Four goals, the basic formula pool, 7 days of history. Premium coming soon.',
+  'Dört hedef, temel formül havuzu, 7 günlük geçmiş.':
+    'Four goals, the basic formula pool, 7 days of history.',
+  'Ücretsiz': 'Free',
   'ADIN': 'YOUR NAME',
   'Adın': 'Your name',
   'Dört hedefin de günlük formülü açık. Günün formülü yalnızca seçtiğin hedeften ve tarihten üretilir; hedefi ana ekrandan da değiştirebilirsin.':
     'The daily formula for all four goals is open. Today’s formula is generated only from the goal you pick and the date; you can also switch goals from the home screen.',
   'Formülü belirleyen hedef': 'Goal that decides the formula',
+  'Hesabından alındı; dilediğin gibi değiştirebilirsin.':
+    'Taken from your account; change it however you like.',
   'GÖRÜNÜM': 'APPEARANCE',
+  'Şafak': 'Dawn',
+  'Sis': 'Mist',
   'Açık': 'Light',
-  'Koyu': 'Dark',
-  'Renk paleti aynı kalır; yalnızca zemin ve metin rolleri yer değiştirir.':
-    'The palette stays the same; only the background and text roles swap.',
+  'Vurgu rengi üç temada da aynı; değişen zemin, yüzey ve metin tonları.':
+    'The accent colour is the same in all three; the background, surface and text tones are what change.',
   'Dil': 'Language',
   'Sistem': 'System',
   '“Sistem” seçiliyken uygulama telefonunun dilini izler; Türkçe değilse İngilizce açılır.':
@@ -338,8 +389,6 @@ export const EN: Record<string, string> = {
   'Çift doz': 'Double dose',
   'Çift doz adım sürelerini ikiye katlar. Dozu artırmanın ölçülmüş bir etkisi yok — sadece daha uzun sürüyor.':
     'A double dose doubles each step’s length. Raising the dose has no measured effect — it just takes longer.',
-  'Ritüel süresini kendin ayarlamak yakında açılacak.':
-    'Setting the ritual length yourself is coming soon.',
   'Kör test': 'Blind test',
   "Bazı günler ritüel yerine eşit süreli bir bekleme gelir. Hangi gün olduğu ancak bittikten sonra söylenir; puanlar İstatistik'te karşılaştırılır.":
     'On some days you get an equally long wait instead of the ritual. Which day it was is revealed only afterwards; the scores are compared under Stats.',
@@ -400,8 +449,6 @@ export const EN: Record<string, string> = {
   'Bekle…': 'Wait…',
   'Tamam': 'Done',
   'Şu an değil': 'Not right now',
-  'Satın alma henüz açılmadı. Abonelikler Google Play üzerinden yakında etkinleşecek.':
-    'Purchases are not open yet. Subscriptions will go live through Google Play soon.',
   'Geri yüklenecek satın alma bulunamadı.': 'No purchases found to restore.',
   'İÇERİK PAKETLERİ': 'CONTENT PACKS',
   'Tek seferlik, aboneliğe gerek yok. Bir paket, günün formülünün seçildiği havuza yeni renk, ses, nefes tekniği, kelime ve bulgu ekler — mevcut içeriğin yerine geçmez, üstüne biner. Yani paket alınca ritüel değişmez; formüllerde çıkabilecek seçenek sayısı artar. Formülünde paketten bir öğe çıktığında ana ekrandaki kartta adının yanında paketin adı yazar.':
@@ -459,6 +506,17 @@ export const EN: Record<string, string> = {
   'Verilerim nerede?': 'Where is my data?',
   'Her şey telefonunda, yerel depolamada duruyor. Sunucu yok, hesap yok, paylaşım yok.':
     'Everything sits in local storage on your phone. No server, no database, no sharing.',
+  'Ritüel geçmişin, puanların ve ölçümlerin telefonunda, yerel depolamada duruyor — sunucuya gönderilmiyor. Uygulamaya giriş için bir Google ya da Apple hesabı kullanılıyor; bu hesap yalnızca kimliğini doğrulamak için, ritüel verilerin oraya yüklenmiyor.':
+    'Your ritual history, ratings and measurements sit in local storage on your phone — they are not sent to a server. A Google or Apple account is used to sign in; that account only verifies who you are, your ritual data is not uploaded to it.',
+  'Yüz ve nefes analizi ne yapıyor?': 'What do the face and breath analyses do?',
+  'İki isteğe bağlı ölçüm var. Birincisi: durum bilgisi ekranında bir fotoğraf çekersen, telefonunda çalışan bir yapay zeka modeli yüz ifadeni yedi duyguya dağıtıyor ve reçeten buna göre yazılıyor. İkincisi: nefes adımında mikrofon, nefes verişlerinin ritmini dinleyip ne kadar düzenli olduğunu ölçüyor. İkisi de tamamen isteğe bağlı; kullanmazsan akış aynı şekilde işler.':
+    'There are two optional measurements. First: if you take a photo on the check-in screen, an AI model running on your phone distributes your expression across seven emotions and your prescription is written from that. Second: during the breathing step the microphone listens to the rhythm of your exhales and measures how regular it is. Both are entirely optional; the flow works the same if you skip them.',
+  'Bu analizler ne kadar güvenilir?': 'How reliable are these analyses?',
+  'Yüz modeli AffectNet adlı bir veri kümesiyle eğitildi ve tek bir kareden tahmin yapıyor — ışık, açı ve ifadenin belirginliği sonucu ciddi biçimde değiştirir; klinik bir teşhis değil. Nefes ölçümü ise ses seviyesinin ritmine bakar, nefes duyulmayacak kadar sessizse ya da ortamda başka ses varsa sayı uydurmak yerine "sinyal yakalanamadı" der. İkisi de kendi puanının yerine geçmez, yanına konur.':
+    'The face model was trained on a dataset called AffectNet and predicts from a single frame — lighting, angle and how pronounced the expression is change the result considerably; it is not a clinical diagnosis. The breath measurement looks at the rhythm of the sound level, and when breathing is too quiet to hear or other sounds are present it says "no signal captured" instead of inventing a number. Neither replaces your own rating; they sit next to it.',
+  'Fotoğrafım ve sesim nereye gidiyor?': 'Where do my photo and audio go?',
+  'Hiçbir yere. Fotoğraf ve ses telefonun içinde işlenir, buluta gönderilmez ve saklanmaz; yalnızca çıkan sayı seansın kaydına yazılır. Model de uygulamanın içinde gömülü, çalışmak için internet gerekmiyor.':
+    'Nowhere. The photo and audio are processed inside your phone, never uploaded to a cloud and never stored; only the resulting number is written to the session record. The model is embedded in the app itself, so no internet is needed for it to work.',
   'Gerçek çalışmalar': 'Real studies',
   'Uygulamanın içindeki "bulgular" uydurma. Aşağıdakiler değil — açık etiketli plasebo literatüründen gerçek çalışmalar. Her birinin altında neyi göstermediği de yazıyor; bir çalışmayı olduğundan güçlü anlatmak, bu uygulamanın tüm iddiasını çürütürdü.':
     'The “findings” inside the app are invented. These are not — they are real studies from the open-label placebo literature. Under each one you will also find what it does not show; overstating a study would undo the app’s entire point.',
@@ -1014,6 +1072,511 @@ export const EN: Record<string, string> = {
     'Night is coming',
   'Uyku formülünde sesler yavaşlar. Ekranı kapatmadan önce bir tur.':
     'In the sleep formula the sounds slow down. One round before the screen goes off.',
+  /* 24 saatlik döngü: gün içi ölçüm ve sabah raporu. */
+  'Mikrofon izni yok':
+    'Microphone permission missing',
+  'Nefes ölçümü için mikrofon gerekiyor. İzin vermeden de uygulamayı kullanabilirsin.':
+    'Breath measurement needs the microphone. You can keep using the app without granting it.',
+  'Ölçüm kaydedildi':
+    'Measurement saved',
+  'Nefesin %{yuzde} düzenliydi. Yarın sabah günün raporunda görünecek.':
+    "Your breathing was {yuzde}% steady. It will appear in tomorrow morning's report.",
+  'Sinyal yakalanamadı — çok sessiz ya da çok kısa bir kayıt olabilir.':
+    'No signal was caught — the recording may have been too quiet or too short.',
+  'Nefesin dinleniyor':
+    'Listening to your breathing',
+  'Doğal nefes al. Sayıları tutturmak zorunda değilsin.':
+    "Breathe naturally. You don't have to hit any numbers.",
+  '45 saniyelik ölçüm':
+    'A 45-second measurement',
+  'Mikrofon yalnızca bu ekran açıkken çalışır. Ses kaydedilmez, cihazdan çıkmaz.':
+    'The microphone runs only while this screen is open. No audio is recorded and nothing leaves your device.',
+  'Sadece nefes al.':
+    'Just breathe.',
+  'Gün içindeki ölçümler yalnızca cihazında saklanır; hiçbir yere gönderilmez.':
+    'Your check-ins are stored only on your device and are never sent anywhere.',
+  'Ölçümü başlat':
+    'Start the measurement',
+  'SON 24 SAAT':
+    'LAST 24 HOURS',
+  'Henüz yeterli ölçüm yok':
+    'Not enough measurements yet',
+  'Günlük rapor için en az {adet} kısa ölçüm gerekiyor. Bildirim geldiğinde 45 saniyeni ayırman yeterli.':
+    'A daily report needs at least {adet} short measurements. When the reminder arrives, 45 seconds is enough.',
+  '{adet} ölçümün ortalaması: %{yuzde} düzen.':
+    'Average of {adet} measurements: {yuzde}% steadiness.',
+  'En düzenli an':
+    'Steadiest moment',
+  '{saat} · %{yuzde}':
+    '{saat} · {yuzde}%',
+  'En gergin an':
+    'Tensest moment',
+  'Dün gece uyku':
+    "Last night's sleep",
+  '{saat} sa {dakika} dk':
+    '{saat} h {dakika} m',
+  'Dinlenme nabzı':
+    'Resting heart rate',
+  '{nabiz} atım/dk':
+    '{nabiz} bpm',
+  'Bu rapor bir teşhis değil: yalnızca senin yaptığın ölçümlerin ve Sağlık verinin yan yana konmuş hâli.':
+    'This report is not a diagnosis: it is only your own measurements and Health data placed side by side.',
+  'Ölçüm davetleri bildirimle geliyor; izin vermeden bu döngü çalışmaz.':
+    'Measurement invitations arrive as notifications; without permission this cycle cannot run.',
+  '24 saatlik döngü':
+    '24-hour cycle',
+  'Gün içinde üç kez 45 saniyelik nefes ölçümü önerilir; ertesi sabah hepsi tek bir raporda toplanır. Mikrofon yalnızca ölçüm ekranı açıkken çalışır, arka planda hiçbir şey dinlenmez.':
+    'Three times a day you are invited to a 45-second breath measurement; the next morning they are gathered into one report. The microphone runs only while the measurement screen is open — nothing is listened to in the background.',
+  '📊 Son 24 saatin raporunu aç':
+    '📊 Open the last 24 hours report',
+  'Nefesini ölçelim mi? Günün raporu bu ölçümlerden kuruluyor.':
+    'Shall we measure your breathing? The daily report is built from these.',
+  'Günün raporu hazır':
+    'Your daily report is ready',
+  'Son 24 saatte ölçülenler bir arada.':
+    'Everything measured in the last 24 hours, together.',
+  'Gün ilerledikçe nefesin düzene girdi.':
+    'Your breathing settled as the day went on.',
+  'Gün ilerledikçe nefesin dağıldı.':
+    'Your breathing scattered as the day went on.',
+  'Gün boyunca nefesin benzer bir düzende kaldı.':
+    'Your breathing stayed at a similar steadiness all day.',
+  'Kısa bir geceydi; bugünkü reçetene fazladan bir sakinleştirme turu eklendi.':
+    "It was a short night; an extra calming round was added to today's prescription.",
+  'Uykun ortalama bir gecedeydi.':
+    'Your sleep was an average night.',
+  'Uykun yeterliydi.':
+    'Your sleep was sufficient.',
+  'Bu özellik bu cihazda kullanılamıyor.':
+    'This feature is not available on this device.',
+  /* Widget özeti. */
+  'GÜN':
+    'DAYS',
+  'son seansta {fark} puan azaldı':
+    'down {fark} points last session',
+  /* Ritüelde akan sakinleştirici metin (constants/calmingStories.ts). */
+  /* — uzaklaş */
+  'Bugün seni yoran bir şey var.':
+    'Something wore you out today.',
+  'Ona şimdilik bir isim verme.':
+    "Don't name it just yet.",
+  'Sadece orada olduğunu bil.':
+    'Just know that it is there.',
+  'Omuzların yerini bulsun.':
+    'Let your shoulders settle.',
+  'Şimdi biraz geriye çekil.':
+    'Now step back a little.',
+  'Sanki iki adım geriye.':
+    'As if two steps back.',
+  'O düşünce hâlâ orada.':
+    'That thought is still there.',
+  'Ama artık biraz uzakta.':
+    'But a little farther away now.',
+  'Bulunduğun odaya bak.':
+    'Look at the room you are in.',
+  'Duvarlar sessizce duruyor.':
+    'The walls stand quietly.',
+  'Oda, o düşünceden büyük.':
+    'The room is bigger than that thought.',
+  'Şimdi biraz daha geriye.':
+    'Now a little farther back.',
+  'Çatının üstünden bak.':
+    'Look down from above the roof.',
+  'Çatılar sıralanmış.':
+    'Rooftops line up below.',
+  'Sokak lambaları yanıyor.':
+    'The street lamps are on.',
+  'Şehir, odandan büyük.':
+    'The city is bigger than your room.',
+  'Biraz daha yukarı.':
+    'A little higher.',
+  'Bulutlar altında kaldı.':
+    'The clouds are beneath you now.',
+  'Işıklar noktalara döndü.':
+    'The lights have turned into dots.',
+  'Ülke, şehirden büyük.':
+    'The country is bigger than the city.',
+  'Daha da yukarıda.':
+    'Higher still.',
+  'Şimdi denizler görünüyor.':
+    'Now the seas come into view.',
+  'Mavi, hepsini çevreliyor.':
+    'Blue surrounds all of it.',
+  'Dünya, ülkeden büyük.':
+    'The earth is bigger than the country.',
+  'Dünya bu sabah da döndü.':
+    'The earth turned again this morning.',
+  'Kimseden izin istemedi.':
+    'It asked no one for permission.',
+  'Gökyüzü hepsinin üstünde.':
+    'The sky is above all of it.',
+  'Yıldızlar yerlerinde duruyor.':
+    'The stars are where they have always been.',
+  'Işıkları yıllar önce yola çıktı.':
+    'Their light set out years ago.',
+  'Buradan bakınca sessizler.':
+    'From here they are silent.',
+  'Şimdi yavaşça geri dön.':
+    'Now come slowly back.',
+  'Deniz, ülke, şehir.':
+    'Sea, country, city.',
+  'Sokak, bina, oda.':
+    'Street, building, room.',
+  'Ve oturduğun yer.':
+    'And the place where you sit.',
+  'Ve senin nefesin.':
+    'And your breath.',
+  'O düşünce hâlâ burada.':
+    'That thought is still here.',
+  'Kaybolmasını istemiyoruz.':
+    'We are not asking it to leave.',
+  'Yalnızca boyutunu görüyoruz.':
+    'We are only seeing its size.',
+  'Bir yer kaplıyor.':
+    'It takes up a place.',
+  'Ama hepsini değil.':
+    'But not the whole of it.',
+  'Sen ondan geniş bir yerdesin.':
+    'You are in a wider place than it is.',
+  'Acele edecek bir şey yok.':
+    'There is nothing to hurry for.',
+  'Nefesin yerinde.':
+    'Your breath is here.',
+  'Omuzların yerinde.':
+    'Your shoulders are here.',
+  'Sen de buradasın.':
+    'And so are you.',
+  /* — beden */
+  'Şimdi bedenine dön.':
+    'Now come back to your body.',
+  'Hiçbir şeyi değiştirme.':
+    'Change nothing.',
+  'Sadece nerede olduğunu fark et.':
+    'Just notice where it is.',
+  'Ayaklarından başla.':
+    'Start with your feet.',
+  'Zemin onları tutuyor.':
+    'The floor is holding them.',
+  'Tutmak için çabalamıyorlar.':
+    'They are not working to stay there.',
+  'Bacakların ağırlığını bırakıyor.':
+    'Your legs let their weight go.',
+  'Altındaki şey seni taşıyor.':
+    'Whatever is under you carries you.',
+  'Ona güvenebilirsin.':
+    'You can trust it.',
+  'Karnın yumuşasın.':
+    'Let your belly soften.',
+  'Nefes oraya kadar insin.':
+    'Let the breath reach down that far.',
+  'Zorlamadan, kendiliğinden.':
+    'Without forcing, on its own.',
+  'Göğsün yavaşça açılıyor.':
+    'Your chest opens slowly.',
+  'Sonra yavaşça kapanıyor.':
+    'Then it closes slowly.',
+  'Bunu sen yapmıyorsun.':
+    'You are not doing this.',
+  'Yalnızca izin veriyorsun.':
+    'You are only allowing it.',
+  'Şimdi omuzlarına gel.':
+    'Now come to your shoulders.',
+  'Gün boyu yukarıdaydılar.':
+    'They were up all day.',
+  'Bıraksınlar biraz.':
+    'Let them come down a little.',
+  'Bir parmak kadar aşağı.':
+    "A finger's width lower.",
+  'Sonra bir parmak daha.':
+    'Then one more.',
+  'Ellerin nerede?':
+    'Where are your hands?',
+  'Belki sıkılmışlardır.':
+    'They may be clenched.',
+  'Parmakların açılsın.':
+    'Let your fingers open.',
+  'Avuçların yukarı baksın.':
+    'Let your palms face up.',
+  'Tutacak bir şey yok.':
+    'There is nothing to hold.',
+  'Çeneni fark et.':
+    'Notice your jaw.',
+  'Dişlerin birbirine değiyor mu?':
+    'Are your teeth touching?',
+  'Aralarına boşluk bırak.':
+    'Leave a little space between them.',
+  'Dilin damağından ayrılsın.':
+    'Let your tongue fall from the roof of your mouth.',
+  'Şimdi alnını düşün.':
+    'Now think of your forehead.',
+  'Kaşlarının arasındaki çizgi.':
+    'The line between your brows.',
+  'O çizgi gevşesin.':
+    'Let that line loosen.',
+  'Gözlerin ağırlaşsın.':
+    'Let your eyes grow heavy.',
+  'Onları kimse izlemiyor.':
+    'No one is watching them.',
+  'Şimdi hepsini birden hisset.':
+    'Now feel all of it at once.',
+  'Baştan ayağa tek parça.':
+    'One whole piece, head to foot.',
+  'Nefes içinden geçiyor.':
+    'The breath moves through it.',
+  'Girerken serin.':
+    'Cool on the way in.',
+  'Çıkarken ılık.':
+    'Warm on the way out.',
+  'Hiçbir şeyi tutmuyorsun.':
+    'You are holding nothing.',
+  'Hiçbir yere yetişmiyorsun.':
+    'You are racing toward nothing.',
+  'Beden zaten biliyordu.':
+    'The body already knew.',
+  'Sen yalnızca yerini aldın.':
+    'You have only taken your place.',
+  'Burası, şu an, yeterli.':
+    'Here, now, is enough.',
+  /* — su */
+  'Bir göl hayal et.':
+    'Picture a lake.',
+  'Sabahın erken saati.':
+    'Early in the morning.',
+  'Yüzeyi düz duruyor.':
+    'Its surface lies flat.',
+  'Kıyıda taşlar var.':
+    'There are stones along the shore.',
+  'Sen kıyıdasın.':
+    'You are on the shore.',
+  'Şimdi bir düşünce geliyor.':
+    'Now a thought arrives.',
+  'Suya bir taş düşüyor.':
+    'A stone falls into the water.',
+  'Halkalar dışarı açılıyor.':
+    'Rings open outward.',
+  'Bir, iki, üç.':
+    'One, two, three.',
+  'Sonra giderek zayıflıyor.':
+    'Then they slowly fade.',
+  'Su yine düzleşiyor.':
+    'The water goes flat again.',
+  'Taşı sen atmadın.':
+    'You did not throw the stone.',
+  'Halkaları da durduramazsın.':
+    'And you cannot stop the rings.',
+  'Ama beklemeyi bilirsin.':
+    'But you know how to wait.',
+  'Başka bir düşünce.':
+    'Another thought.',
+  'Başka bir taş.':
+    'Another stone.',
+  'Yine halkalar.':
+    'Rings again.',
+  'Yine sessizlik.':
+    'Quiet again.',
+  'Düşünceler suya benziyor.':
+    'Thoughts are like water.',
+  'Gelirler ve geçerler.':
+    'They come and they pass.',
+  'Hepsini durdurman gerekmiyor.':
+    'You do not have to stop them all.',
+  'Bir dalga yükseliyor.':
+    'A wave rises.',
+  'Sonra kendiliğinden alçalıyor.':
+    'Then it falls on its own.',
+  'Onu ittirmedin.':
+    'You did not push it.',
+  'Onu çekmedin de.':
+    'You did not pull it either.',
+  'Sen dalga değilsin.':
+    'You are not the wave.',
+  'Sen kıyısın.':
+    'You are the shore.',
+  'Kıyı dalgayla tartışmaz.':
+    'The shore does not argue with the wave.',
+  'Yalnızca orada durur.':
+    'It simply stays there.',
+  'Su bazen yükselir.':
+    'The water sometimes rises.',
+  'Bazen geri çekilir.':
+    'Sometimes it draws back.',
+  'Kıyı ikisini de tanır.':
+    'The shore knows both.',
+  'Şimdi suyun altına bak.':
+    'Now look beneath the water.',
+  'Yüzey kıpırdasa bile.':
+    'Even when the surface stirs.',
+  'Derinde hiçbir şey sallanmıyor.':
+    'Nothing sways down in the deep.',
+  'Orada taşlar duruyor.':
+    'Stones rest down there.',
+  'Işık yavaşça iniyor.':
+    'Light comes down slowly.',
+  'Ses oraya ulaşmıyor.':
+    'Sound does not reach that far.',
+  'Sende de böyle bir yer var.':
+    'You have a place like that too.',
+  'Yüzeyin altında, sakin.':
+    'Below the surface, still.',
+  'Bugün onu bulman gerekmiyor.':
+    'You do not have to find it today.',
+  'Var olduğunu bilmek yeter.':
+    'Knowing it is there is enough.',
+  'Su çekilince kum düzleşir.':
+    'When the water draws back, the sand goes smooth.',
+  'Şimdi sessiz bir yer var.':
+    'Now there is a quiet place.',
+  'O yer hep buradaydı.':
+    'That place was always here.',
+  /* — gün */
+  'Gün bugün de eskisi gibi başladı.':
+    'The day began the way it always does.',
+  'Bir alarm çaldı.':
+    'An alarm went off.',
+  'Bir liste vardı.':
+    'There was a list.',
+  'Liste hâlâ duruyor.':
+    'The list is still there.',
+  'Yapılmamış işler yerinde.':
+    'The undone things are where they were.',
+  'Hiçbiri kaçmadı.':
+    'None of them ran away.',
+  'Hiçbiri de büyümedi.':
+    'None of them grew either.',
+  'Şimdi onlara bakma.':
+    'Do not look at them now.',
+  'Hiçbiri bu iki dakikaya sığmaz.':
+    'None of them fit into these two minutes.',
+  'O yüzden şimdi burada değiller.':
+    'So they are not here right now.',
+  'Bu süre sana ait.':
+    'This time belongs to you.',
+  'Kimse kapıyı çalmayacak.':
+    'No one is going to knock.',
+  'Kimseye bir şey ispat etmiyorsun.':
+    'You are proving nothing to anyone.',
+  'İyi hissetmek zorunda değilsin.':
+    'You do not have to feel good.',
+  'Rahatlamak zorunda da değilsin.':
+    'You do not have to relax either.',
+  'Yalnızca duruyorsun.':
+    'You are simply stopping.',
+  'Durmak da bir şey yapmaktır.':
+    'Stopping is also doing something.',
+  'Bugün olanları düşün.':
+    'Think of what happened today.',
+  'Bir şey iyi gitmedi belki.':
+    'Maybe something went badly.',
+  'Bir cümle aklında kaldı.':
+    'A sentence stayed with you.',
+  'Bir bakış, bir sessizlik.':
+    'A look, a silence.',
+  'Onu şimdi çözmeyeceğiz.':
+    'We are not going to solve it now.',
+  'Yalnızca yerini gösteriyoruz.':
+    'We are only pointing to where it sits.',
+  'Aklın bugün çok çalıştı.':
+    'Your mind worked hard today.',
+  'Sabahtan beri hiç durmadı.':
+    'It has not stopped since morning.',
+  'Şimdi ona ara veriyorsun.':
+    'Now you are giving it a break.',
+  'Bunu hak etti.':
+    'It has earned one.',
+  'Dışarıda gün sürüyor.':
+    'Outside, the day goes on.',
+  'Arabalar geçiyor.':
+    'Cars are passing.',
+  'Biri yemek pişiriyor.':
+    'Someone is cooking.',
+  'Biri eve dönüyor.':
+    'Someone is heading home.',
+  'Dünya seni beklemiyor.':
+    'The world is not waiting for you.',
+  'Ama seni zorlamıyor da.':
+    'But it is not pushing you either.',
+  'Akşam yine gelecek.':
+    'Evening will come again.',
+  'Yarın yine sabah olacak.':
+    'Tomorrow it will be morning again.',
+  'Bu düzen senden önce vardı.':
+    'This order was here before you.',
+  'Senden sonra da olacak.':
+    'It will be here after you.',
+  'İçinde küçük bir yer kapladın.':
+    'You take up a small place inside it.',
+  'O yer yeterince büyük.':
+    'That place is big enough.',
+  'Şimdi nefesine dön.':
+    'Now come back to your breath.',
+  'Bir kere içeri.':
+    'Once in.',
+  'Bir kere dışarı.':
+    'Once out.',
+  'Liste hâlâ yerinde duruyor.':
+    'The list is still where it was.',
+  'Ama sen biraz daha buradasın.':
+    'But you are a little more here.',
+  'Bitince gün seni bekliyor olacak.':
+    'When it ends, the day will still be waiting.',
+  /* Bildirim havuzu — özellik ipuçları ve kısa motivasyon. */
+  'Nefesini ölçebiliyoruz':
+    'We can measure your breathing',
+  'Ritüel sırasında mikrofon nefes ritmini ölçüyor. Ses kaydedilmiyor, cihazdan çıkmıyor.':
+    'During the ritual the microphone measures your breathing rhythm. No audio is recorded and nothing leaves your device.',
+  'Kamerayla ölçmeyi denedin mi?':
+    'Have you tried measuring with the camera?',
+  'Ölçüm ekranındaki kamera düğmesi yüz ifadenden bir puan öneriyor. Katılmazsan kaydırıp değiştirirsin.':
+    'The camera button on the measurement screen suggests a score from your expression. Disagree? Just slide it.',
+  'Refleksin de bir veri':
+    'Your reflex is data too',
+  'Ritüelden önce ve sonra tepki süreni ölçüp farkı görebilirsin.':
+    'Measure your reaction time before and after the ritual and see the difference.',
+  'Apple Sağlık bağlanabilir':
+    'Apple Health can be connected',
+  'Ayarlar’dan açarsan dün geceki uykun reçeteni etkiler. Sağlık’a hiçbir şey yazılmaz.':
+    'Turn it on in Settings and last night’s sleep shapes your prescription. Nothing is written back to Health.',
+  'Ana ekrana widget ekle':
+    'Add the widget to your home screen',
+  'Serini ve günün formülünü telefonun ana ekranından görebilirsin.':
+    'See your streak and today’s formula straight from your home screen.',
+  'Seri dondurma hakkın var':
+    'You have a streak freeze',
+  'Bir günü kaçırdıysan haftada bir kez dünü dondurup seriyi koruyabilirsin.':
+    'Missed a day? Once a week you can freeze yesterday and keep the streak.',
+  'Ölçüm defterine bak':
+    'Check the measurement ledger',
+  'İstatistik ekranı kendi puanınla cihazın ölçtüğünü yan yana koyuyor.':
+    'The Stats screen puts your own score next to what the device measured.',
+  'Nokta atışı reçete':
+    'Targeted prescription',
+  'Şikayetini anlatırsan sana özel bir reçete hazırlanıyor. Ana ekranda en üstte duruyor.':
+    'Describe what is bothering you and a prescription is prepared for you. It sits at the top of the home screen.',
+  'Kör testi açabilirsin':
+    'You can turn on the blind test',
+  'Ayarlar’dan açarsan bazı günler sahte ritüel gelir; farkı istatistikte görürsün.':
+    'Turn it on in Settings and some days bring a sham ritual; you see the difference in Stats.',
+  'Seansın fişini paylaş':
+    'Share your session receipt',
+  'Bitişte üretilen fişi görsel olarak kaydedip paylaşabilirsin.':
+    'You can save and share the receipt produced at the end as an image.',
+  'Bugün de buradasın':
+    'You are here today too',
+  'Ölçülen tek şey bu: devam etmen.':
+    'This is the only thing measured: that you kept going.',
+  'İki dakika az değil':
+    'Two minutes is not nothing',
+  'Günün geri kalanıyla değil, hiç durmamakla kıyasla.':
+    'Compare it with never stopping, not with the rest of your day.',
+  'Küçük ve tekrarlı':
+    'Small and repeated',
+  'Uzun bir seans aramıyoruz; kısa ve tekrar eden bir şey arıyoruz.':
+    'We are not after a long session; we are after something short that repeats.',
+  'Yarım yapmak da sayılır':
+    'Half of it counts too',
+  'Tek bir adım bile bugünü işaretler.':
+    'Even a single step marks today.',
+
   'Hiçbir şey yapmıyoruz':
     'We are doing nothing',
   'Ama beraber yapıyoruz. İki dakika.':
@@ -1204,30 +1767,173 @@ export const EN: Record<string, string> = {
     'MEASUREMENT BEFORE THE RITUAL',
   'RİTÜEL SONRASI ÖLÇÜM':
     'MEASUREMENT AFTER THE RITUAL',
-  'Şu an nasılsın?':
-    'How are you right now?',
   'Şimdi nasılsın?':
-    'And now?',
+    'How are you now?',
   '1 = hiç yok  ·  10 = dayanılmaz':
     '1 = none at all  ·  10 = unbearable',
-  'Zihnindeki dağınıklığı şu an puanla':
-    'Rate the scatter in your mind right now',
-  'İçindeki sıkışıklığı şu an puanla':
-    'Rate the tightness inside you right now',
-  'Enerji eksikliğini şu an puanla':
-    'Rate your lack of energy right now',
-  'Kafandaki kalabalığı şu an puanla':
-    'Rate the crowd in your head right now',
-  'Bedenindeki gerilimi şu an puanla':
-    'Rate the tension in your body right now',
-  'Hareketsizlik hissini şu an puanla':
-    'Rate the stuckness right now',
   '⚗️ Bu ölçüm senin izlenimin — plasebo araştırmalarının ölçtüğü de bu.':
     '⚗️ This measurement is your impression — which is what placebo research measures too.',
   'Ölçüm Tamam':
     'Measurement done',
   'Kaydırarak şu anki hâlini işaretle':
     'Slide to mark how you are now',
+  '📷 Kamerayla ölç':
+    '📷 Measure with camera',
+  'Kamerayla ölç':
+    'Measure with camera',
+  'Yüzünü çerçeveye al, doğal ifadenle bekle. Fotoğraf cihazından çıkmaz.':
+    'Frame your face and hold your natural expression. The photo never leaves your device.',
+  'Kamera izni gerekiyor.':
+    'Camera permission is needed.',
+  'İzin ver':
+    'Grant permission',
+  'Yüz ifaden okunuyor…':
+    'Reading your expression…',
+  'Yüz bulunamadı. Işığı ve kadrajı kontrol edip tekrar dene.':
+    'No face found. Check the light and framing, then try again.',
+  'Tekrar dene':
+    'Try again',
+  'Fotoğraf alınamadı.':
+    'Could not take the photo.',
+  'Yüz tanıma motoru başlatılamadı.':
+    'The face recognition engine could not start.',
+  'Yüz bulundu ama ifade okunamadı.':
+    'A face was found but the expression could not be read.',
+  'Bu özellik şu an yalnızca iPhone’da kullanılabiliyor.':
+    'This feature is currently only available on iPhone.',
+  'Fotoğrafla otomatik reçete':
+    'Automatic prescription from photo',
+  'Yüzün sakin görünüyor — listeden seç ya da kendi cümlenle anlat.':
+    'Your face looks calm — pick from the list or describe it in your own words.',
+  'Yüzün sakin görünüyor (ölçülen: {skor}/10) — listeden seç ya da kendi cümlenle anlat.':
+    'Your face looks calm (measured: {skor}/10) — pick from the list or describe it in your own words.',
+  'Yüzümden anlaşılan: çok gergin ve bunalmış görünüyorum':
+    'What my face shows: I look very tense and overwhelmed',
+  'Yüzümden anlaşılan: gergin ve huzursuz görünüyorum':
+    'What my face shows: I look tense and uneasy',
+  'Yüzümden anlaşılan: enerjik ve keyifli görünüyorum':
+    'What my face shows: I look energetic and upbeat',
+  'Yüzümden anlaşılan: sakin görünüyorum ama zihnim biraz dağınık':
+    'What my face shows: I look calm but my mind feels a bit scattered',
+  'Yüzümden anlaşılan: üzgün ve yorgun görünüyorum':
+    'What my face shows: I look sad and tired',
+  'Yüzümden anlaşılan: kaygılı ve gergin görünüyorum':
+    'What my face shows: I look anxious and tense',
+  '🤖 Analiz sonucu':
+    '🤖 Analysis result',
+  'Bu bir klinik teşhis değil — FER-2013 veri setinde eğitilmiş bir model, tek kareden kaba bir tahmin yapıyor.':
+    'This is not a clinical diagnosis — a model trained on the FER-2013 dataset makes a rough estimate from a single frame.',
+  'Kullan':
+    'Use',
+  'Kızgın': 'Angry',
+  'Tiksinmiş': 'Disgusted',
+  'Kaygılı': 'Anxious',
+  'Mutlu': 'Happy',
+  'Nötr': 'Neutral',
+  'Üzgün': 'Sad',
+  'Şaşkın': 'Surprised',
+  'Yüz ifaden analiz ediliyor...':
+    'Analyzing your expression...',
+  'İfade örüntüsü duygu haritasına oturtuluyor...':
+    'Mapping the expression pattern onto the emotion map...',
+  'Analiz reçeteye çevriliyor...':
+    'Turning the analysis into a prescription...',
+  '🤖 Yüz analizi gerçek: cihazında çalışan bir model. Karışımın kendisi ise plasebo — etkiyi beklenti kuruyor.':
+    '🤖 The face analysis is real: a model running on your device. The mixture itself is placebo — the effect comes from expectation.',
+  '🤖  Yüzünü okuyup reçeteni yazıyor':
+    '🤖  Reads your face, writes your prescription',
+  '🎙️  Nefes ritmini dinliyor':
+    '🎙️  Listens to your breathing rhythm',
+  'Önce bugün ne hissettiğini söylüyorsun — istersen tek bir fotoğraf çekiyorsun ve yüz ifaden okunup reçeten ona göre yazılıyor.\n\n4 dakika uyguluyorsun. Nefes adımında mikrofon ritmini dinliyor.\n\nSonunda kendi puanınla ölçülen sinyal yan yana duruyor.\n\nHepsi bu — ve hepsi telefonunun içinde kalıyor.':
+    'First you say how you feel today — or take a single photo and your expression is read, then your prescription is written from it.\n\nYou practise for 4 minutes. During the breathing step the microphone listens to your rhythm.\n\nAt the end your own rating sits next to the measured signal.\n\nThat is all — and all of it stays inside your phone.',
+  '🤖 Yüz ifadenden {tespit} algılandı, buna göre {hedef} odaklı bir reçete hazırlandı.':
+    '🤖 {tespit} was detected from your expression, so a prescription focused on {hedef} was prepared.',
+  'Gerginliğe karşı ekstra bir sakinleştirme turu da eklendi.':
+    'An extra calming round was also added against the tension.',
+  'pozitif ve enerjik bir ifade':
+    'a positive, energetic expression',
+  'nötr, hafif dağınık bir ifade':
+    'a neutral, slightly scattered expression',
+  'gergin bir ifade':
+    'a tense expression',
+  'çok gergin, bunalmış bir ifade':
+    'a very tense, overwhelmed expression',
+  'SÜBJEKTİF · OBJEKTİF':
+    'SUBJECTIVE · OBJECTIVE',
+  'ÖLÇÜM DEFTERİ':
+    'MEASUREMENT LOG',
+  'Bu seansta iki ayrı ölçüm var: senin kendi verdiğin puan ve cihazın ölçtüğü. Aynı olmak zorunda değiller.':
+    'This session holds two separate measurements: the rating you gave and what the device measured. They do not have to agree.',
+  'Kameranın ölçtüğü':
+    'Measured by the camera',
+  'Her iki satır da aynı ölçekte: 1 = hiç yok, 10 = dayanılmaz.':
+    'Both rows use the same scale: 1 = none at all, 10 = unbearable.',
+  '🎙️ Nefesin ritüel sırasında %{yuzde} düzenliydi — bu ayrı bir ölçek, puanlarla toplanmaz.':
+    '🎙️ Your breathing was {yuzde}% regular during the ritual — a separate scale, not added to the ratings.',
+  'Ritüel öncesinde algın ile ölçülen örtüşüyordu.':
+    'Before the ritual your sense and the measurement lined up.',
+  'Ritüel öncesinde algın ile ölçülen ayrışmıştı — bu bir hata değil, ikisi farklı şeyler ölçüyor.':
+    'Before the ritual your sense and the measurement diverged — not an error, they measure different things.',
+  'Önce: senin puanın  ·  Sonra: kameranın ölçtüğü':
+    'Before: your rating  ·  After: measured by the camera',
+  'İkisi de senin verdiğin puan':
+    'Both are ratings you gave yourself',
+  '📷 Bu sayıyı kamera ölçtü — katılmıyorsan kaydırarak değiştir':
+    '📷 The camera measured this number — slide to change it if you disagree',
+  'Bir fotoğraf çek, reçeteni yüz ifaden belirlesin.':
+    'Take one photo and let your expression write your prescription.',
+  'YA DA KENDİN SEÇ':
+    'OR CHOOSE YOURSELF',
+  'Isı haritasındaki kutuların altında gördüğün ince şerit, kamera veya nefesle ölçülen ayrı bir sinyal. Burada {adet} seansın ortalaması:':
+    'The thin strip under the heatmap cells is a separate signal measured by camera or breath. Here is the average of {adet} sessions:',
+  'Ölçülen sinyal':
+    'Measured signal',
+  'Ortalamada birbirine yakın — algın ile ölçülen genelde örtüşüyor.':
+    'Close on average — your sense and the measurement generally line up.',
+  'Kendini ölçülenden daha kötü puanlama eğilimindesin.':
+    'You tend to rate yourself worse than what is measured.',
+  'Kendini ölçülenden daha iyi puanlama eğilimindesin.':
+    'You tend to rate yourself better than what is measured.',
+  'Kendi puanın':
+    'Your own rating',
+  'Kendi puanın (önce)':
+    'Your rating (before)',
+  'Kendi puanın (sonra)':
+    'Your rating (after)',
+  'Nefesinden ölçülen':
+    'Measured from your breath',
+  'Yüzünden ölçülen':
+    'Measured from your face',
+  'İkisi birbirine yakın — kendi algın ile ölçülen örtüşüyor.':
+    'The two are close — your own sense matches what was measured.',
+  'Aralarında fark var — bu bir hata değil, algın ile ölçülen bazen ayrışabilir.':
+    "There's a gap between them — that's not an error, your sense and the measurement can diverge sometimes.",
+  '🎙️ Mikrofon izni isteniyor…':
+    '🎙️ Requesting microphone permission…',
+  '🎙️ Nefesin dinleniyor':
+    '🎙️ Listening to your breathing',
+  '🎙️ Mikrofon izni verilmedi — yalnızca kendi puanınla devam edeceksin':
+    "🎙️ Microphone permission denied — you'll continue with just your own rating",
+  '🎙️ Mikrofon kullanılamadı':
+    '🎙️ Microphone unavailable',
+  'Mikrofon izni verilmediği için nefes değerlendirmesi yapılamadı.':
+    'Breathing could not be assessed because microphone permission was denied.',
+  'Nefes sinyali yakalanamadı — çok kısa ya da çok sessiz bir nefes olabilir.':
+    'No breathing signal could be captured — it may have been too short or too quiet.',
+  'Vazgeç, slider ile devam et':
+    'Cancel, continue with the slider',
+  'Çek':
+    'Capture',
+  '🤖 Yapay zeka duygularını anladı: bugünkü ritüele ekstra bir sakinleştirme turu eklendi.':
+    "🤖 The AI read your mood: an extra calming round was added to today's ritual.",
+  '🤖 Yapay zeka duygularını anladı: bugün sakin görünüyorsun, ritüel olduğu gibi sürüyor.':
+    "🤖 The AI read your mood: you look calm today, the ritual continues as usual.",
+  '🎙️ OBJEKTİF DEĞERLENDİRME':
+    '🎙️ OBJECTIVE ASSESSMENT',
+  'Nefesin ritüel sırasında %{yuzde} düzenliydi.':
+    'Your breathing was %{yuzde} regular during the ritual.',
+  'Bu bir duygu teşhisi değil — mikrofonla ölçülen nefes ritmi, kendi puanının yanına konan ayrı bir veri.':
+    'This is not an emotion diagnosis — it is breathing rhythm measured by the microphone, a separate data point next to your own rating.',
   '↓ {fark} puan azaldı':
     '↓ down {fark} points',
   '%{yuzde} fark':
@@ -1298,8 +2004,6 @@ export const EN: Record<string, string> = {
     'Your own words decide the prescription’s name and the formula’s goal. {kalan} characters left.',
   'Kendi cümlen':
     'Your own words',
-  'Anlattığın şeyin şiddetini şu an puanla':
-    'Rate the intensity of what you described right now',
   'Kişiye Özel Karışım':
     'Bespoke Mixture',
   'Tarif Dışı Formül':
@@ -1324,8 +2028,8 @@ export const EN: Record<string, string> = {
     'The mixture is steeping...',
   'Formülün mühürleniyor...':
     'Sealing your formula...',
-  '🩺 Nokta atışı reçete al':
-    '🩺 Get a targeted prescription',
+  'Nokta atışı reçete al':
+    'Get a targeted prescription',
   'Şikayetini anlat, sana özel bir reçete hazırlansın. Günde bir kez.':
     'Describe your complaint and get a prescription of your own. Once a day.',
   'Dört formülün hazır':
@@ -1340,8 +2044,8 @@ export const EN: Record<string, string> = {
     'Unlimited targeted prescriptions (the daily limit is lifted)',
   '▶ Başlat':
     '▶ Start',
-  '▶ {recete} · tekrar uygula':
-    '▶ {recete} · apply again',
+  '{recete} · tekrar uygula':
+    '{recete} · apply again',
   'Bugünkü reçeten hazır; istediğin kadar tekrar uygulayabilirsin. Yeni reçete yarın.':
     'Today’s prescription is ready; apply it as often as you like. A new one tomorrow.',
   'Bugünkü sonucu gör':
@@ -1364,10 +2068,8 @@ export const EN: Record<string, string> = {
     'Being prepared personally for you',
   '⚗️ Hazırlanan şey bir ilaç değil, bir ritüel. Etkiyi kuran beklenti.':
     '⚗️ What is being prepared is a ritual, not a drug. Expectation is what builds the effect.',
-  '🔒 Reçete takibi · yakında':
-    '🔒 Prescription tracking · coming soon',
-  'Hangi şikayette ne kadar iyileştiğini gösteren takip, ilerideki bir güncellemede premium ile açılacak.':
-    'Tracking that shows how much you improve per complaint will be unlocked with premium in a future update.',
+  'Hangi şikayette ne kadar iyileştiğini gösteren takip {plan} ile açılır.':
+    'Tracking that shows how much you improve per complaint is unlocked with {plan}.',
   'Reçete takibi — hangi şikayette ne kadar iyileştiğini izle':
     'Prescription tracking — follow how much you improve per complaint',
 
@@ -1455,6 +2157,17 @@ export const EN: Record<string, string> = {
 
   /* ---- Hikâye slaytları (yeniden yazım) ---- */
   '1955. Boston, Amerika.': '1955. Boston, America.',
+  /* Kisaltilmis giris slayti — iki calisma tek ekranda. */
+  'Ağrısı geçmeyen bir hastaya enjeksiyon yapıldı.':
+    'A patient whose pain would not lift was given an injection.',
+  'Ağrısı geçti.':
+    'The pain lifted.',
+  '2010. Harvard.':
+    '2010. Harvard.',
+  'Hastalara sahte hap verildi — sahte olduğu söylenerek.':
+    'Patients were given a fake pill, and told it was fake.',
+  'Bu uygulamanın çıkış\nnoktası o iki çalışma.':
+    'Those two studies are where\nthis app comes from.',
   'Bir hasta hastaneye geldi.': 'A patient came to the hospital.',
   'Aylardır süren ağrısı vardı.': 'He had been in pain for months.',
   'Hiçbir ilaç işe yaramamıştı.': 'No drug had worked.',
@@ -1534,6 +2247,19 @@ export const EN: Record<string, string> = {
     'Sends a short reminder at changing times through the day, with a different line each time. Separate from the fixed daily reminder.',
   'Dokunarak istediğin saati seç.': 'Tap to pick the time you want.',
   'Silme adımları ve kapsamı.': 'What deletion covers, step by step.',
+  'Reklam gizlilik tercihleri': 'Ad privacy settings',
+  'Ücretsiz sürümde Google AdMob üzerinden reklam gösterilir. Reklam tek bir yerde çıkar: bir seansı bitirip ana sayfaya dönerken. Ritüelin, ölçümün ya da nefes adımının ortasında hiçbir zaman reklam gösterilmez; günde en çok üç reklam çıkar.': 'The free version shows ads through Google AdMob. Ads appear in one place only: when you finish a session and return to the home screen. An ad is never shown in the middle of a ritual, a measurement or a breathing step, and you will see at most three a day.',
+  'Reklamları getirmek için AdMob, cihazının reklam tanımlayıcısını ve cihaz bilgisi gibi standart reklam verilerini kendi gizlilik politikası kapsamında işler. Bu veriler uygulamadaki kayıtlarınla ilişkilendirilmez: şikâyetlerin, ölçümlerin, ritüel geçmişin, Sağlık verilerin ve kamera ya da mikrofonla yapılan ölçümler reklam ağına gönderilmez.': 'To serve those ads, AdMob processes the advertising identifier of your device and standard advertising data such as device information, under its own privacy policy. None of it is linked to what you record in the app: your complaints, your measurements, your ritual history, your Health data and anything measured with the camera or microphone are never sent to the ad network.',
+  'iPhone’da izleme izni penceresine “izin verme” dersen uygulama aynen çalışır, yalnızca reklamlar ilgi alanlarına göre değil genel olarak seçilir.': 'If you decline the tracking prompt on iPhone, the app works exactly the same; the ads are simply chosen generally rather than by your interests.',
+  'Reklam dışında analiz aracı, çökme raporlama servisi veya başka bir üçüncü taraf izleme kiti bulunmaz. Verilerin kimseye satılmaz veya paylaşılmaz.': 'Apart from ads there is no analytics tool, no crash reporting service and no other third-party tracking kit. Your data is never sold or shared.',
+  'İnternet — oturum açma ve reklam için.': 'Internet — for signing in and for ads.',
+  'Mikrofon — yalnızca ritüelin nefes adımında, sen o ölçümü başlatırsan istenir. Ses kaydedilmez ve hiçbir yere gönderilmez; kayıttan yalnızca nefes ritmine ait sayılar çıkarılır.': 'Microphone — asked for only during the breathing step of the ritual, and only if you start that measurement. Audio is not recorded and never leaves the device; only numbers describing your breathing rhythm are derived from it.',
+  'Kamera — yalnızca sen ruh halini yüz ifadenden ölçmeyi seçersen istenir. Çekilen kareler cihazda işlenir, kaydedilmez ve cihazından çıkmaz; geriye yalnızca bir sayı kalır.': 'Camera — asked for only if you choose to measure your mood from your facial expression. Frames are processed on the device, never saved and never sent anywhere; all that remains is a single number.',
+  'Apple Sağlık (yalnızca okuma, yalnızca iPhone) — yalnızca sen Ayarlar’dan açarsan istenir. Uyku süresi, dinlenme nabzı ve kalp atış hızı değişkenliği okunur; Sağlık uygulamasına hiçbir şey yazılmaz.': 'Apple Health (read only, iPhone only) — asked for only if you turn it on in Settings. Sleep duration, resting heart rate and heart rate variability are read; nothing is ever written back to the Health app.',
+  'İzleme izni (yalnızca iPhone) — reklam tanımlayıcısının reklam kişiselleştirmesi için kullanılmasına izin verip vermediğini sorar; reddedilebilir.': 'Tracking permission (iPhone only) — asks whether the advertising identifier may be used to personalise ads. You can decline.',
+  'Uygulama konuma, kişilere veya dosyalarına erişmez. Mikrofon, kamera ve Sağlık erişimlerinin üçü de isteğe bağlıdır: hiçbirine izin vermeden uygulamanın tamamı kullanılabilir.': 'The app does not access your location, your contacts or your files. Microphone, camera and Health access are all optional: the whole app can be used without granting any of them.',
+  '4. Reklamlar': '4. Ads',
+  'Reklamlar için verdiğin rızayı değiştir.': 'Change the consent you gave for ads.',
 
   '⚗️ Bu ölçüm senin izlenimin. Araştırmalarda ölçülen de tam olarak bu.':
     '⚗️ This measure is your own impression — exactly what the studies measure.',
@@ -1567,4 +2293,284 @@ export const EN: Record<string, string> = {
 
   'İçeriğinin özel olduğunu ve ağrısını mutlaka dindireceğini söyledi.':
     'He told him the contents were special and would certainly stop the pain.',
+
+  /* ---------------------------------------------------------------- */
+  /* Satın alma ekranı                                                 */
+  /* ---------------------------------------------------------------- */
+  'Aylık': 'Monthly',
+  'Yıllık': 'Yearly',
+  'Ömür boyu': 'Lifetime',
+  '/ay': '/mo',
+  '/yıl': '/yr',
+  ' tek seferlik': ' one-time',
+  'En avantajlı': 'Best value',
+  'İstediğin an durdur': 'Cancel any time',
+  'Aylık plana göre çok daha ucuz': 'Much cheaper than the monthly plan',
+  'Bir kez öde, hep senin': 'Pay once, yours for good',
+  'Bekleniyor…': 'Working…',
+  'gün': 'days',
+  'hafta': 'weeks',
+  'ay': 'months',
+  'yıl': 'years',
+  '{sure} {birim} ücretsiz, sonra {fiyat}': '{sure} {birim} free, then {fiyat}',
+  'ücretlendirilir.': 'will be charged.',
+  'Ücretsiz denemeyi başlat': 'Start free trial',
+  "Premium'a geç": 'Go Premium',
+  'Aboneliği yönet': 'Manage subscription',
+  'Kullanım koşulları': 'Terms of use',
+  'Abonelikler': 'Subscriptions',
+  'PREMİUM İLE AÇILANLAR': 'WHAT PREMIUM UNLOCKS',
+  'ÜCRETSİZ KADEMEDE NE VAR': "WHAT'S IN THE FREE TIER",
+  'Premium üyeliğin etkin': 'Your Premium membership is active',
+  'Ömür boyu üyesin': 'You have lifetime access',
+  'Tek seferlik satın alındı. Yenileme yok, hep açık.':
+    'Bought once. No renewal, always on.',
+  '{tarih} tarihinde yenilenecek.': 'Renews on {tarih}.',
+
+  /* Uyarı başlıkları ve satın alma katmanının mesajları */
+  'Premium açıldı': 'Premium unlocked',
+  'Satın alma': 'Purchase',
+  'Satın alımlar': 'Purchases',
+  'Premium açıldı.': 'Premium is now on.',
+  'Mağazaya bağlanılamadı. Bağlantını kontrol et.':
+    'Could not reach the store. Check your connection.',
+  'Satın alma onay bekliyor. Onaylandığında premium açılacak.':
+    'The purchase is awaiting approval. Premium opens once it is approved.',
+  'Satın alma tamamlanamadı. Tekrar dene.': 'The purchase could not be completed. Try again.',
+  'Satın alma başlatılamadı.': 'The purchase could not be started.',
+  'Satın alımlar okunamadı. Tekrar dene.': 'Your purchases could not be read. Try again.',
+  'Premium üyeliğin geri yüklendi.': 'Your Premium membership has been restored.',
+  'Bu hesapta etkin bir üyelik bulunamadı.': 'No active membership was found on this account.',
+
+  /* Abonelik koşulları — App Store'un satın alma noktasında zorunlu tuttuğu metin */
+  '{plan} — {fiyat}, tek seferlik. Bu bir abonelik değildir: bir kez ödenir, yenilenmez, iptal edilecek bir şey yoktur.':
+    '{plan} — {fiyat}, one-time. This is not a subscription: it is paid once, never renews, and there is nothing to cancel.',
+  '{plan} — {fiyat}{donem}. {deneme}Bu bir aboneliktir ve dönem sonunda kendiliğinden yenilenir. Ödeme, satın almayı onayladığında hesabından tahsil edilir. Yenilemeyi durdurmak için dönem bitmeden en az 24 saat önce hesabının abonelik ayarlarına gitmen gerekir; uygulamayı silmek aboneliği iptal etmez.':
+    '{plan} — {fiyat}{donem}. {deneme}This is a subscription and renews automatically at the end of each period. Payment is charged to your account when you confirm the purchase. To stop renewal, go to the subscription settings in your account at least 24 hours before the period ends; deleting the app does not cancel the subscription.',
+  '{gun}: kendi puanın {kendi}, ölçülen {olculen}':
+    '{gun}: your rating {kendi}, measured {olculen}',
+  'yok':
+    'none',
+  '{tarih} · ölçüm yok':
+    '{tarih} · no measurement',
+  '{tarih} · kendi puanın {kendi} · ölçülen {olculen}':
+    '{tarih} · your rating {kendi} · measured {olculen}',
+  'Bir güne dokun — o günün iki ölçümünü göster. Ölçek: 1 = hiç yok, 10 = dayanılmaz.':
+    'Tap a day to see both of its measurements. Scale: 1 = none at all, 10 = unbearable.',
+  'Kendi verdiğin puan ile kameranın ölçtüğü, aynı ana ait {adet} kez yan yana kondu. İkisinin aynı olması gerekmiyor — aradaki kayma senin kendine bakışın.':
+    "Your own rating and the camera's measurement were placed side by side {adet} times, from the same moment. They need not agree — the gap is how you see yourself.",
+  'Kendini ölçülenden ortalama {fark} puan daha kötü görüyorsun. Bu bir hata değil; iç deneyim yüz ifadesinden ağır olabilir.':
+    'On average you rate yourself {fark} points worse than the measurement. That is not an error; inner experience can weigh more than an expression.',
+  'Kendini ölçülenden ortalama {fark} puan daha iyi görüyorsun. Yüzün, senin fark ettiğinden daha yorgun görünüyor olabilir.':
+    'On average you rate yourself {fark} points better than the measurement. Your face may look more tired than you notice.',
+  'Aradaki fark zamanla küçülüyor — kendini giderek daha yakın okuyorsun.':
+    'The gap is shrinking over time — you are reading yourself more closely.',
+  'Aradaki fark zamanla büyüyor — algın ile ölçülen ayrışıyor.':
+    'The gap is widening over time — your sense and the measurement are diverging.',
+  'Dakikada {adet} nefes — {yorum}':
+    '{adet} breaths per minute — {yorum}',
+  'yavaş ve sakin bir tempo':
+    'a slow, calm pace',
+  'dinlenme temposuna yakın':
+    'close to a resting pace',
+  'hızlı bir tempo':
+    'a fast pace',
+  'Derinlik: {yorum}':
+    'Depth: {yorum}',
+  'derin':
+    'deep',
+  'orta':
+    'medium',
+  'yüzeysel':
+    'shallow',
+  '🎙️ Nefesin ritüel sırasında %{yuzde} düzenliydi, dakikada {adet} nefes — bu ayrı bir ölçek, puanlarla toplanmaz.':
+    '🎙️ Your breathing was {yuzde}% regular during the ritual, {adet} breaths per minute — a separate scale, not added to the ratings.',
+  '⚡ REFLEKS ÖLÇÜMÜ':
+    '⚡ REFLEX MEASUREMENT',
+  'Ne kadar çabuk toparlanıyorsun?':
+    'How quickly do you gather yourself?',
+  'Ekran mora döndüğü anda dokun. {tur} tur sürer. Erken dokunursan o tur baştan başlar — tahmin etmenin bir faydası yok.':
+    'Tap the moment the screen turns purple. It takes {tur} rounds. Tapping early restarts that round — guessing gains you nothing.',
+  'Bu bir zeka ya da sağlık testi değil. Yalnızca dikkatini ne kadar hızlı topladığının kaydı — kendi puanının yanına konacak, senden bağımsız bir sayı.':
+    'This is not an intelligence or health test. It only records how fast you gather your attention — a number independent of you, placed next to your own rating.',
+  '{ms} ms':
+    '{ms} ms',
+  '{tur} geçerli turun ortanca tepki süresi.':
+    'Median reaction time across {tur} valid rounds.',
+  'Turların tutarlılığı: %{yuzde}':
+    'Consistency across rounds: {yuzde}%',
+  'Ölçüm çıkmadı':
+    'No measurement',
+  'Yeterince geçerli tur toplanamadı — çok erken ya da çok geç dokunulmuş olabilir. İstersen tekrar dene.':
+    'Not enough valid rounds were collected — taps may have been too early or too late. Try again if you like.',
+  'Tur {simdi}/{toplam}':
+    'Round {simdi}/{toplam}',
+  'Ekran mora döndüğünde dokun':
+    'Tap when the screen turns purple',
+  'Çok erken — bu tur baştan':
+    'Too early — this round restarts',
+  'Bu turda dokunulmadı':
+    'No tap in this round',
+  'Önceki tur: {ms} ms':
+    'Previous round: {ms} ms',
+  'Renk değişince dokun. Erken dokunma — {ms} ms altındaki dokunuşlar sayılmaz.':
+    'Tap when the colour changes. Do not tap early — taps under {ms} ms do not count.',
+  'Refleks: {ms} ms — yeniden ölç':
+    'Reflex: {ms} ms — measure again',
+  // Simgeli ikizi ritüel sonrası ölçüm ekranında kullanılıyor; o ekranın
+  // bütün bağlantıları simgeyle başlıyor (📷, ⚡), reçete ekranında ise
+  // simge ayrı bir öge.
+  '⚡ Refleks: {ms} ms — yeniden ölç':
+    '⚡ Reflex: {ms} ms — measure again',
+  'Refleksini de ölç':
+    'Measure your reflex too',
+  'İsteğe bağlı. Ritüelden önce ve sonra tepki süreni ölçüp farkı görebilirsin.':
+    'Optional. Measure your reaction time before and after the ritual and see the difference.',
+  '⚡ Refleksini yeniden ölç (önce {ms} ms idi)':
+    '⚡ Measure your reflex again (it was {ms} ms before)',
+  'Tepki süren (ms)':
+    'Your reaction time (ms)',
+  'Yukarıdaki satırlar aynı ölçekte: 1 = hiç yok, 10 = dayanılmaz.':
+    'The rows above share one scale: 1 = none at all, 10 = unbearable.',
+  '⚡ Tepki süren neredeyse aynı kaldı. Bu ölçüm gün içinde kendiliğinden oynar; %{esik} altındaki farkı değişim saymıyoruz.':
+    '⚡ Your reaction time barely moved. This measurement drifts on its own during the day; we do not count a change under {esik}%.',
+  '⚡ Tepki süren %{yuzde} hızlandı.':
+    '⚡ Your reaction time got {yuzde}% faster.',
+  '⚡ Tepki süren %{yuzde} yavaşladı.':
+    '⚡ Your reaction time got {yuzde}% slower.',
+  '🛏️ Dün gece {saat} saat {dakika} dakika uyumuşsun.':
+    '🛏️ You slept {saat}h {dakika}m last night.',
+  'Kısa bir geceydi; bugünün reçetesine fazladan bir sakinleştirme turu eklendi.':
+    "It was a short night; an extra calming round was added to today's prescription.",
+  'Orta bir geceydi; reçete olduğu gibi bırakıldı.':
+    'It was a middling night; the prescription was left as is.',
+  'İyi bir geceydi; reçete olduğu gibi bırakıldı.':
+    'It was a good night; the prescription was left as is.',
+  'Son dinlenme nabzın {nabiz}.':
+    'Your latest resting heart rate is {nabiz}.',
+  'Sağlık verisi (Apple Sağlık)':
+    'Health data (Apple Health)',
+  'Sağlık verisi kullanılamıyor':
+    'Health data unavailable',
+  'Bu cihazda Sağlık verisi okunamıyor.':
+    'Health data cannot be read on this device.',
+  'Şimdilik okunacak veri yok':
+    'No data to read yet',
+  'Bağlantı açıldı ama Sağlık uygulamasında dün geceye ait uyku ya da dinlenme nabzı kaydı bulunamadı. Bu genelde saat/uyku takibi olmadığında olur. Kayıt oluştuğunda reçeten kendiliğinden ona göre ayarlanır.':
+    'The connection is on, but Health has no sleep or resting heart rate entry for last night. This usually means no watch or sleep tracking. Once an entry exists, your prescription adjusts to it automatically.',
+  'Dün geceki uyku süren ve dinlenme nabzın okunuyor; az uyunmuş bir gecede reçeteye fazladan bir sakinleştirme turu ekleniyor. Sağlık uygulamasına hiçbir şey yazılmaz.':
+    'Your sleep duration and resting heart rate are read; after a short night an extra calming round is added to the prescription. Nothing is ever written back to Health.',
+  'Kapalı. Açarsan dün geceki uyku süren okunup reçeteni etkiler. Veri cihazından çıkmaz, hiçbir şey geri yazılmaz.':
+    "Off. Turn it on and last night's sleep will shape your prescription. The data never leaves your device and nothing is written back.",
+  'Okunuyor…':
+    'Reading…',
+  '📅 Bu haftanın özeti':
+    "📅 This week's summary",
+  'Son 7 günde {adet} ritüel yaptın; ortalama etki {etki} puan.':
+    'You did {adet} rituals in the last 7 days; average effect {etki} points.',
+  'En iyi geçen gün {gun}, ortalamanın %{yuzde} üstünde.':
+    'Your best day was {gun}, {yuzde}% above your average.',
+  'Kendi puanınla ölçülen arasındaki ortalama fark {fark} puan.':
+    'The average gap between your own rating and the measurement is {fark} points.',
+  'Az uyuduğun gecelerin ortalama etkisi {az}, diğer gecelerin {cok}. Bu bir neden-sonuç değil, yalnızca bir eşlik.':
+    'Nights you slept little average {az} effect, other nights {cok}. That is a co-occurrence, not a cause.',
+  '{adet} karenin ortancası alındı — tek karelik sapmalar elendi.':
+    'Median of {adet} frames — single-frame outliers were dropped.',
+  'Yalnızca tek kare okunabildi; sonuç daha oynak olabilir.':
+    'Only one frame could be read; the result may be less stable.',
+  'ÖLÇÜM DEFTERİ · SON 7 GÜN':
+    'MEASUREMENT LOG · LAST 7 DAYS',
+  'Algın ile ölçülen örtüşüyor. Ayrıntı için dokun.':
+    'Your sense and the measurement line up. Tap for detail.',
+  'Kendini ölçülenden {fark} puan daha kötü görüyorsun. Ayrıntı için dokun.':
+    'You rate yourself {fark} points worse than the measurement. Tap for detail.',
+  'Kendini ölçülenden {fark} puan daha iyi görüyorsun. Ayrıntı için dokun.':
+    'You rate yourself {fark} points better than the measurement. Tap for detail.',
+  'Ölçülen':
+    'Measured',
+  'etki':
+    'effect',
+  'KÖR TEST':
+    'BLIND TEST',
+  'Ölçülen şey ritüelin etkisi: o günün öncesi eksi sonrası. Sahte günlerde renk, ses ve nefes verilmiyor — yalnızca aynı süre bekleniyor.':
+    "What is measured is the ritual's effect: that day's before minus after. On sham days no colour, sound or breathing is given — only the same wait.",
+  'Eski kayıtlarda önce/sonra ölçümü olmadığı için gün sonu puanı karşılaştırılıyor; bu ölçü ritüel dışındaki her şeyden de etkilenir.':
+    'Older records have no before/after measurement, so the end-of-day rating is compared; that measure is also affected by everything outside the ritual.',
+  'Gerçek ({adet})':
+    'Real ({adet})',
+  'Sahte ({adet})':
+    'Sham ({adet})',
+  'Aradaki fark {fark} puan. Yorumlamak için her iki tarafta en az {gereken} kayıt ve en az {esik} puan fark gerekiyor — şu an bu bir sonuç değil, biriken bir kayıt.':
+    'The gap is {fark} points. Interpreting it needs at least {gereken} records on each side and a gap of at least {esik} points — for now this is a record being built, not a result.',
+  'Gerçek ritüel günlerin sahte günlerden {fark} puan iyi geçmiş. Fark sende; ritüel bir çerçeve kuruyor.':
+    'Your real ritual days went {fark} points better than sham days. The difference is in you; the ritual builds a frame.',
+  'Sahte günlerin {fark} puan daha iyi geçmiş. Bu da mümkün ve bir hata değil — beklentinin ritüele ihtiyacı olmayabilir.':
+    'Your sham days went {fark} points better. That is possible and not an error — expectation may not need the ritual.',
+  'PUAN NASIL OKUNUR':
+    'HOW TO READ THE SCORE',
+  '1 = hiç yok':
+    '1 = none at all',
+  '10 = dayanılmaz':
+    '10 = unbearable',
+  'Ölçek ters: düşen sayı iyiye gidiyor demek.':
+    'The scale is inverted: a falling number means things are improving.',
+  '1 = hiç yok  ·  10 = dayanılmaz  ·  düşük puan iyi':
+    '1 = none at all  ·  10 = unbearable  ·  lower is better',
+
+  /* ------------------------------------------------------------------
+   * Plasebo Plus — abonelik modeli.
+   *
+   * Ayrım ilkesi: ritüel herkese açık, ölçüm Plus'ta. Aşağıdaki
+   * metinler plan ekranını, kilit satırlarını ve yüz taraması
+   * yapılamadığında devreye giren elle puanlama yolunu kapsıyor.
+   * ---------------------------------------------------------------- */
+  'Ritüel ücretsiz ve öyle kalacak. Plus, ritüelin sende işe yarayıp yaramadığını sana ölçerek söyler.':
+    'The ritual is free and will stay free. Plus tells you whether it is working for you — by measuring.',
+  '{plan} üyeliğin etkin': 'Your {plan} membership is active',
+  '{plan} açıldı': '{plan} is now active',
+  'Plus\'a geç': 'Get Plus',
+  '%{yuzde} indirim · ayda {aylik}': '{yuzde}% off · {aylik} per month',
+  'PLUS İLE AÇILANLAR': 'WHAT PLUS UNLOCKS',
+  'Yüz taramasıyla ölçüm': 'Measurement by face scan',
+  'Önce ve sonra puanını sen tahmin etme — kamera ölçsün. Cihaz üstündeki duygu modeli yüz ifadeni okur, fotoğraf telefonundan çıkmaz.':
+    'Stop guessing your before and after scores — let the camera measure them. The on-device emotion model reads your expression, and the photo never leaves your phone.',
+  'Nefes analizi': 'Breath analysis',
+  'Ritüel sırasında nefesinin düzenliliğini, derinliğini ve dakikadaki sayısını ölçer. Sakinleştiğini hissetmekle ölçmek ayrı şeyler.':
+    'Measures how regular and how deep your breathing is during the ritual, and how many breaths you take per minute. Feeling calmer and measuring it are two different things.',
+  'Gün içi ölçüm ve sabah raporu': 'Daytime check-ins and a morning report',
+  'Gün içinde üç kısa nefes ölçümü, ertesi sabah uyku ve nabzınla birleşen tek bir rapor. Günün hangi saatinde en sakin olduğunu gösterir.':
+    'Three short breathing check-ins during the day, then one report the next morning that folds in your sleep and heart rate. It shows which hour of the day you are calmest.',
+  'Sınırsız yüz taramalı ölçüm (günde 1 sınırı kalkar)':
+    'Unlimited face-scan measurement (the 1-per-day limit is lifted)',
+  'Nefes analizi — düzenlilik, derinlik, dakikadaki nefes':
+    'Breath analysis — regularity, depth, breaths per minute',
+  'Gün içi ölçüm daveti ve ertesi sabah günlük rapor':
+    'Daytime check-in invitations and a daily report the next morning',
+  'Tüm geçmiş ve gelişmiş formül havuzu': 'Full history and the advanced formula pool',
+  'Reklamsız': 'No ads',
+  'Dört günlük formül — her gün yenilenir, sınırsız tekrar':
+    'Four daily formulas — refreshed every day, repeat as often as you like',
+  'Günde 1 yüz taramalı ölçüm, sonrası kendi puanın':
+    'One face-scan measurement a day; after that, your own score',
+  'Refleks testi — önce/sonra tepki süresi': 'Reflex test — before/after reaction time',
+  '7 günlük geçmiş, günlük hatırlatıcı, kör test':
+    '7 days of history, the daily reminder and the blind test',
+  'Kamera olmadan elle puanla': 'Score it yourself without the camera',
+  'Şu an nasılsın?': 'How are you right now?',
+  'Ölçüm tamam': 'Measurement done',
+  'Bu puan senin izlenimin — başlangıç puanı da öyleydi':
+    'This score is your own impression — so was the starting one',
+  'Puanı seçtiğinde önce/sonra farkı burada çıkacak':
+    'Pick a score and the before/after difference will appear here',
+  'Bugünkü ölçüm hakkın doldu. {plan} ile sınırsız.':
+    'You have used today\'s measurement. {plan} makes it unlimited.',
+  'Ritüel süresini kendin ayarlamak {plan} ile açılır.':
+    'Setting the ritual length yourself is unlocked with {plan}.',
+  'Gün içinde üç kısa nefes ölçümü ve ertesi sabah tek bir rapor. {plan} ile açılır.':
+    'Three short breathing check-ins during the day and one report the next morning. Unlocked with {plan}.',
+  '⚗️ Ücretsiz kademe de tam bir ritüel çalıştırır. Plus ölçüm ekler, etki eklemez — çünkü eklenecek bir etki yok.':
+    '⚗️ The free tier runs a complete ritual too. Plus adds measurement, not effect — because there is no effect to add.',
+  '🔒 Ücretsiz kademe son {gun} günü gösterir. Tüm geçmiş {plan} ile açılır.':
+    '🔒 The free tier shows the last {gun} days. Your full history is unlocked with {plan}.',
+  '🔒 Reçete takibi · {plan}': '🔒 Prescription tracking · {plan}',
 };

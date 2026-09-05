@@ -34,28 +34,68 @@ export type RootStackParamList = {
    * doluyor ve akışın sonuna kadar taşınıyor — şikayet nesnesi her
    * ekranda bu metinden yeniden kuruluyor (bkz. `resolveComplaint`).
    */
-  Examination: { complaintId: string; customText?: string };
+  Examination: {
+    complaintId: string;
+    customText?: string;
+    /** Durum bilgisi ekranında kamera kullanıldıysa çıkan kaba ruh hali skoru. */
+    faceMoodScore?: number;
+  };
   /** Reçete kartı — kabul edilirse ölçüme geçilir. */
-  Prescription: { complaintId: string; customText?: string };
-  /** Ritüel öncesi ölçüm. */
+  Prescription: { complaintId: string; customText?: string; faceMoodScore?: number };
+  /**
+   * Ritüel öncesi **elle** ölçüm.
+   *
+   * Ölçümün asıl yolu yüz taraması; bu ekran onun yerine geçen yol.
+   * Üç durumda açılıyor: ücretsiz kademede günlük tarama hakkı bittiğinde,
+   * kamera izni verilmediğinde ve yüz okunamadığında. Olmadığı sürüm
+   * kısa bir süre yayındaydı ve orada izni reddeden kullanıcı ritüele hiç
+   * giremiyordu — akışın çıkışsız kalmaması bu ekrana bağlı.
+   */
   ScoreBefore: { complaintId: string; customText?: string; formula: Formula };
   /** Ritüel sonrası ölçüm; kaydı da bu ekran yazar. */
   ScoreAfter: {
+    /** Ritüel öncesi refleks ölçümünün ortanca tepki süresi (ms). */
+    reactionBeforeMs?: number;
     complaintId: string;
     customText?: string;
     formula: Formula;
     scoreBefore: number;
     durationSeconds: number;
     steps: StepKind[];
+    /** Ritüel öncesi kameradan çıkan kaba ruh hali skoru (kullanıldıysa). */
+    faceMoodScore?: number;
+    /** Nefes adımında mikrofondan çıkan düzenlilik skoru (0-1, ölçülebildiyse). */
+    breathRegularity?: number;
+    /** Aynı kayıttan çıkan dakikadaki nefes sayısı. */
+    breathsPerMinute?: number;
+    /** Aynı kayıttan çıkan kaba derinlik ölçüsü (0-1). */
+    breathDepth?: number;
+    /** Ölçüm çıkmadıysa nedeni — kullanıcıya açık bir mesaj göstermek için. */
+    breathMicOutcome?: 'denied' | 'no-mic-data' | 'no-signal';
   };
   /** Seans özeti — akışın sonu. */
   SessionSummary: {
+    /** Ritüel öncesi/sonrası refleks ölçümleri (ms) — yapıldıysa. */
+    reactionBeforeMs?: number;
+    reactionAfterMs?: number;
     complaintId: string;
     customText?: string;
     formula: Formula;
     scoreBefore: number;
     scoreAfter: number;
     durationSeconds: number;
+    /** Ritüel öncesi kameradan çıkan kaba ruh hali skoru (kullanıldıysa). */
+    faceMoodScore?: number;
+    /** Ritüel sonrası kameradan çıkan kaba ruh hali skoru (kullanıldıysa). */
+    faceMoodAfter?: number;
+    /** `scoreAfter` kameradan mı geldi? Özet ekranı sayıyı öyle etiketliyor. */
+    scoreAfterFromCamera?: boolean;
+    /** Nefes adımında mikrofondan çıkan düzenlilik skoru (0-1, ölçülebildiyse). */
+    breathRegularity?: number;
+    /** Aynı kayıttan çıkan dakikadaki nefes sayısı. */
+    breathsPerMinute?: number;
+    /** Aynı kayıttan çıkan kaba derinlik ölçüsü (0-1). */
+    breathDepth?: number;
   };
 
   /**
@@ -64,10 +104,18 @@ export type RootStackParamList = {
    */
   Ritual: {
     formula: Formula;
+    /** Ritüel öncesi refleks ölçümü (ms) — ölçüm ekranından taşınır. */
+    reactionBeforeMs?: number;
     complaintId?: string;
     customText?: string;
     scoreBefore?: number;
+    /** Ölçüm ekranında kamera kullanıldıysa çıkan kaba ruh hali skoru. */
+    faceMoodScore?: number;
   };
+  /** Gün içi 45 saniyelik nefes ölçümü — bildirimden ya da ana ekrandan. */
+  Checkin: undefined;
+  /** Son 24 saatin raporu. */
+  DailyReport: undefined;
 };
 
 declare global {

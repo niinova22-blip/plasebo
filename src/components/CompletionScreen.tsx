@@ -27,7 +27,6 @@ import { haptics } from '../utils/haptics';
 import type { Formula } from '../types';
 import ScoreSlider from './ScoreSlider';
 import PressableScale from './PressableScale';
-import TransparencyPill from './TransparencyPill';
 
 const SIZE = 132;
 const RADIUS = 58;
@@ -50,6 +49,10 @@ export interface CompletionScreenProps {
   note: string;
   onNoteChange: (note: string) => void;
   onSave: () => void;
+  /** Nefes adımında mikrofondan ölçülen düzenlilik (0-1); ölçülemediyse yok. */
+  breathRegularity?: number;
+  /** Ölçüm çıkmadıysa nedeni — kullanıcıya sessiz kalmamak için. */
+  breathMicOutcome?: 'denied' | 'no-mic-data' | 'no-signal';
 }
 
 function BurstParticle({
@@ -89,6 +92,8 @@ export default function CompletionScreen({
   note,
   onNoteChange,
   onSave,
+  breathRegularity,
+  breathMicOutcome,
 }: CompletionScreenProps) {
   const motion = useMotion();
   const { user } = useUser();
@@ -262,10 +267,33 @@ export default function CompletionScreen({
           multiline
         />
 
-        <TransparencyPill
-          style={styles.pill}
-          text={t('⚗️ Doğru cevabı yok. Verdiğin puan, o anki hâlinin kaydı.')}
-        />
+        {/* Nefes ölçümü burada da görünüyor: bu, şikayet akışından
+            geçmeyen (ana ekrandan doğrudan başlatılan) ritüelin son
+            ekranı — ölçüm yapıldıysa sonucu burada söylenmezse hiç
+            söylenmemiş oluyordu. */}
+        {breathRegularity != null ? (
+          <View style={styles.objectiveBox}>
+            <Text style={styles.objectiveLabel}>{t('🎙️ NEFES ÖLÇÜMÜ')}</Text>
+            <Text style={styles.objectiveText}>
+              {t('Nefesin ritüel sırasında %{yuzde} düzenliydi.', {
+                yuzde: Math.round(breathRegularity * 100),
+              })}
+            </Text>
+          </View>
+        ) : breathMicOutcome ? (
+          <View style={[styles.objectiveBox, styles.objectiveBoxMuted]}>
+            <Text style={styles.objectiveLabel}>{t('🎙️ NEFES ÖLÇÜMÜ')}</Text>
+            <Text style={styles.objectiveMuted}>
+              {breathMicOutcome === 'no-mic-data'
+                ? t('Mikrofon hiç veri göndermedi — ritüeli yeniden başlatmayı dene.')
+                : breathMicOutcome === 'denied'
+                ? t('Mikrofon izni verilmediği için nefes değerlendirmesi yapılamadı.')
+                : t(
+                    'Nefes sinyali yakalanamadı — çok kısa ya da çok sessiz bir nefes olabilir.'
+                  )}
+            </Text>
+          </View>
+        ) : null}
 
         <PressableScale onPress={onSave} accessibilityRole="button" style={styles.button}>
           <Text style={styles.buttonText}>{t('Kaydet')}</Text>
@@ -408,6 +436,33 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   pill: { marginTop: 24 },
+  objectiveBox: {
+    borderWidth: 1,
+    borderColor: 'rgba(168,255,120,0.35)',
+    borderRadius: 16,
+    padding: 14,
+    marginTop: 18,
+  },
+  objectiveBoxMuted: { borderColor: 'rgba(255,255,255,0.12)' },
+  objectiveLabel: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    color: colors.glow,
+  },
+  objectiveText: {
+    fontFamily: fonts.sansBold,
+    fontSize: 14,
+    color: colors.white,
+    marginTop: 6,
+  },
+  objectiveMuted: {
+    fontFamily: fonts.sans,
+    fontSize: 11,
+    lineHeight: 16,
+    color: colors.haze,
+    marginTop: 6,
+  },
   button: {
     backgroundColor: colors.pulse,
     borderRadius: 14,

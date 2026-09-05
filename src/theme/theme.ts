@@ -1,16 +1,24 @@
 import { colors } from '../constants/colors';
 
 /**
- * Tema seçimi yalnızca iki durumdan biri.
+ * Üç tema: Şafak (varsayılan), Sis, Açık.
  *
  * Önceden bir de `system` vardı ve varsayılan oydu; uygulama cihaz açık
- * temadaysa açık başlıyordu. Plasebo'nun ritüel ekranları koyu zemin
- * üzerine kurulu (neon çekirdek, ışıma, parçacıklar), o yüzden varsayılan
- * koyuya sabitlendi ve sistem seçeneği kaldırıldı — kullanıcı iki temadan
- * birini açıkça seçiyor.
+ * temadaysa açık başlıyordu. Sistem seçeneği kaldırıldı, varsayılan önce
+ * koyuya sonra Sis'e taşındı.
+ *
+ * "Koyu" 2026 Eylül'ünde kaldırıldı ve yerine Şafak geldi. Koyu, Sis'in
+ * sertleştirilmiş hâliydi — saf siyah zemin, saf beyaz metin — ve Sis
+ * dururken kendine ait bir işi kalmamıştı: iki koyu tema arasındaki fark
+ * yalnızca sertlikti. Şafak ise eksik olanı veriyor, aydınlık ve sıcak
+ * bir seçenek. Varsayılan da o.
+ *
+ * Ritüel ekranları (RitualScreen, ScoreAfterScreen) temadan bağımsız
+ * olarak koyu kalmaya devam ediyor; ritüelin kendisi karanlıkta yapılan
+ * bir şey. Tema yalnızca ritüel dışındaki ekranları değiştiriyor.
  */
-export type ThemeMode = 'light' | 'dark';
-export type ThemeName = 'light' | 'dark';
+export type ThemeMode = 'dawn' | 'mist' | 'light';
+export type ThemeName = 'dawn' | 'mist' | 'light';
 
 /**
  * Semantik renk token'ları.
@@ -78,25 +86,62 @@ export const lightTheme: ThemeColors = {
   ...accents,
 };
 
-export const darkTheme: ThemeColors = {
+/**
+ * Şafak — varsayılan tema.
+ *
+ * Sis'in aydınlık karşılığı: aynı beş rollük kuruluş (zemin, yüzey,
+ * metin, ikincil, vurgu), yalnızca değerler sıcak tarafa alınmış. Açık
+ * temadan farkı da bu sıcaklık — Açık nötr gri-bej bir kâğıt, Şafak
+ * krem ve kayısı.
+ *
+ * Koyu vurgu kartı burada siyah değil, yumuşak bir alacakaranlık moru:
+ * aydınlık bir zeminde saf siyah bir kart delik gibi duruyordu.
+ */
+export const dawnTheme: ThemeColors = {
+  bg: colors.safakBg,
+  surface: colors.safakSurface,
+  inkCard: colors.safakCard,
+  onInk: colors.safakOnCard,
+  onInkSub: colors.safakOnCardSub,
+  text: colors.safakText,
+  sub: colors.safakSub,
+  faint: colors.safakFaint,
+  border: colors.safakBorder,
+  accentSoft: colors.safakAccentSoft,
+  tabBar: 'rgba(251,244,238,0.95)',
+  blurTint: 'light',
+  statusBar: 'dark',
+  ...accents,
+};
+
+/**
+ * Sis — koyu tema.
+ *
+ * "Koyu"dan farkı sertliğin alınması: zemin saf siyaha yakın değil,
+ * metin saf beyaz değil, kenarlıklar zeminden yalnızca bir tık ayrı.
+ * Kaldırılan koyu tema bir kontrast temasıydı; Sis bir okuma teması.
+ *
+ * Beş renkten kuruluyor (zemin, yüzey, metin, ikincil, vurgu); aşağıdaki
+ * bütün token'lar bu beşinin ya kendisi ya tonu.
+ */
+export const mistTheme: ThemeColors = {
   bg: colors.ink,
-  // Koyu temada yüzeyler zeminden bir tık açık olsun diye ink üzerine
-  // ghost'un düşük opaklıklı katmanı kullanılıyor.
-  surface: '#191922',
-  inkCard: '#12121A',
-  onInk: colors.white,
-  onInkSub: colors.haze,
-  text: colors.ghost,
-  sub: colors.haze,
-  faint: '#6B6B7A',
-  border: '#262632',
-  accentSoft: '#211F3A',
-  tabBar: 'rgba(14,14,18,0.95)',
+  surface: colors.sisSurface,
+  inkCard: colors.sisCard,
+  onInk: colors.sisText,
+  onInkSub: colors.sisSub,
+  text: colors.sisText,
+  sub: colors.sisSub,
+  faint: colors.sisFaint,
+  border: colors.sisBorder,
+  accentSoft: colors.sisAccentSoft,
+  tabBar: 'rgba(21,22,26,0.95)',
   blurTint: 'dark',
   statusBar: 'light',
   ...accents,
 };
 
 export function themeFor(name: ThemeName): ThemeColors {
-  return name === 'dark' ? darkTheme : lightTheme;
+  if (name === 'mist') return mistTheme;
+  return name === 'light' ? lightTheme : dawnTheme;
 }

@@ -22,10 +22,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import SlideOne from '../components/onboarding/SlideOne';
-import SlideTwo from '../components/onboarding/SlideTwo';
-import SlideThree from '../components/onboarding/SlideThree';
 import SlideFour from '../components/onboarding/SlideFour';
-import SlideFive from '../components/onboarding/SlideFive';
 import SlideSix from '../components/onboarding/SlideSix';
 import ProgressDots from '../components/onboarding/ProgressDots';
 import OnboardingButton from '../components/onboarding/OnboardingButton';
@@ -43,7 +40,20 @@ import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Onboarding'>;
 
-const TOTAL = 6;
+/**
+ * Slayt sayısı: üç.
+ *
+ * Altıydı ve ikisi birer bilimsel vaka anlatıyordu (1955 Beecher, 2010
+ * Kaptchuk) — uygulamayı ilk açan kişi, hiçbir şey yapmadan önce yirmi
+ * dört cümle okumak zorunda kalıyordu. İki çalışma tek slaytta iki cümle
+ * ve iki sayıya indi; ayrıntısını merak eden *Nasıl Çalışır* ekranında
+ * bulabiliyor. Kaldırılan diğer ikisi ("Endorfin. Dopamin. Serotonin."
+ * ve temsili kullanıcı hikâyeleri) hiçbir kararı değiştirmiyordu.
+ *
+ * Kalan üçü, girişte gerçekten gereken üç şey: neden var olduğu, puanın
+ * nasıl okunacağı ve kullanıcının adı.
+ */
+const TOTAL = 3;
 const LAST = TOTAL - 1;
 
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
@@ -179,21 +189,12 @@ export default function OnboardingScreen({ navigation }: Props) {
             <SlideOne width={width} active={current === 0} onNext={goNext} />
           </Page>
           <Page index={1} width={width} scrollX={scrollX} reduced={motion.reduced} paddingTop={pageTop} paddingBottom={pageBottom}>
-            <SlideTwo width={width} active={current === 1} />
+            <SlideFour width={width} active={current === 1} />
           </Page>
           <Page index={2} width={width} scrollX={scrollX} reduced={motion.reduced} paddingTop={pageTop} paddingBottom={pageBottom}>
-            <SlideThree width={width} active={current === 2} />
-          </Page>
-          <Page index={3} width={width} scrollX={scrollX} reduced={motion.reduced} paddingTop={pageTop} paddingBottom={pageBottom}>
-            <SlideFour width={width} active={current === 3} />
-          </Page>
-          <Page index={4} width={width} scrollX={scrollX} reduced={motion.reduced} paddingTop={pageTop} paddingBottom={pageBottom}>
-            <SlideFive width={width} active={current === 4} />
-          </Page>
-          <Page index={5} width={width} scrollX={scrollX} reduced={motion.reduced} paddingTop={pageTop} paddingBottom={pageBottom}>
             <SlideSix
               width={width}
-              active={current === 5}
+              active={current === 2}
               name={name}
               onNameChange={setName}
               onComplete={() => void finish(name)}
@@ -203,9 +204,9 @@ export default function OnboardingScreen({ navigation }: Props) {
         </AnimatedScrollView>
       </KeyboardAvoidingView>
 
-      {/* Atla — ilk dört slaytta. Son iki slaytta zaten bitişe bir adım
-          kaldığı için gösterilmiyor. */}
-      {current < 4 ? (
+      {/* Atla — son slayt dışında her yerde. Son slaytta zaten ad
+          isteniyor ve bitiş düğmesi orada. */}
+      {current < LAST ? (
         <Pressable
           onPress={() => void finish(name)}
           disabled={finishing}

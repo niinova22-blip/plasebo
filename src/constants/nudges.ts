@@ -37,6 +37,29 @@ export const NUDGES: Nudge[] = [
   { title: 'Ölçtüğümüz tek şey', body: 'Devam ettiğin. Puanın değil, geldiğin sayılıyor.' },
   { title: 'Etkin madde: yok', body: 'Dozaj: iki dakika. Yan etki: bir ara vermiş olmak.' },
 
+  /* --- Özellik ipuçları -------------------------------------------
+   * Uygulamanın yarısı keşfedilmeden kalıyordu: kamera, mikrofon,
+   * refleks ve sağlık verisi ekranların içine gömülü. Bu dürtmeler o
+   * özellikleri, tam da kullanılabilecekleri saatte tanıtıyor — hepsi
+   * ne yaptığını olduğu gibi söylüyor, hiçbiri bir sonuç vaat etmiyor.
+   * ---------------------------------------------------------------- */
+  { title: 'Nefesini ölçebiliyoruz', body: 'Ritüel sırasında mikrofon nefes ritmini ölçüyor. Ses kaydedilmiyor, cihazdan çıkmıyor.' },
+  { title: 'Kamerayla ölçmeyi denedin mi?', body: 'Ölçüm ekranındaki kamera düğmesi yüz ifadenden bir puan öneriyor. Katılmazsan kaydırıp değiştirirsin.' },
+  { title: 'Refleksin de bir veri', body: 'Ritüelden önce ve sonra tepki süreni ölçüp farkı görebilirsin.' },
+  { title: 'Apple Sağlık bağlanabilir', body: 'Ayarlar’dan açarsan dün geceki uykun reçeteni etkiler. Sağlık’a hiçbir şey yazılmaz.' },
+  { title: 'Ana ekrana widget ekle', body: 'Serini ve günün formülünü telefonun ana ekranından görebilirsin.' },
+  { title: 'Seri dondurma hakkın var', body: 'Bir günü kaçırdıysan haftada bir kez dünü dondurup seriyi koruyabilirsin.' },
+  { title: 'Ölçüm defterine bak', body: 'İstatistik ekranı her ritüelin öncesini ve sonrasını yan yana koyuyor.' },
+  { title: 'Nokta atışı reçete', body: 'Şikayetini anlatırsan sana özel bir reçete hazırlanıyor. Ana ekranda en üstte duruyor.' },
+  { title: 'Kör testi açabilirsin', body: 'Ayarlar’dan açarsan bazı günler sahte ritüel gelir; farkı istatistikte görürsün.' },
+  { title: 'Seansın fişini paylaş', body: 'Bitişte üretilen fişi görsel olarak kaydedip paylaşabilirsin.' },
+
+  /* --- Kısa motivasyon --------------------------------------------- */
+  { title: 'Bugün de buradasın', body: 'Ölçülen tek şey bu: devam etmen.' },
+  { title: 'İki dakika az değil', body: 'Günün geri kalanıyla değil, hiç durmamakla kıyasla.' },
+  { title: 'Küçük ve tekrarlı', body: 'Uzun bir seans aramıyoruz; kısa ve tekrar eden bir şey arıyoruz.' },
+  { title: 'Yarım yapmak da sayılır', body: 'Tek bir adım bile bugünü işaretler.' },
+
   /* --- Süreklilik -------------------------------------------------- */
   { title: 'Serini hatırlıyor musun?', body: 'Bugünü de eklemek için geç değil.' },
   { title: 'Kaçırdıysan sorun değil', body: 'Bugünden devam et. Uygulama not tutmuyor, sadece sayıyor.' },

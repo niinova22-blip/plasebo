@@ -8,8 +8,9 @@ import { useT } from '../../context/SettingsContext';
 
 const ROWS = [
   '😰  Bugün ne hissediyorsun?',
-  '⚗️  Reçeten hazırlanıyor...',
+  '🤖  Yüzünü okuyup reçeteni yazıyor',
   '🌀  Renk · Ses · Nefes · 4dk',
+  '🎙️  Nefes ritmini dinliyor',
   '📊  Önce: 8/10 → Sonra: 3/10',
 ];
 
@@ -27,33 +28,99 @@ export default function SlideFour({ width, active }: { width: number; active: bo
       active={active}
       width={width}
       art={
-        <View style={styles.phone}>
-          <View style={styles.notch} />
-          {ROWS.map((row, i) => (
-            <View key={row}>
-              {i > 0 ? (
-                <Reveal active={active} delay={i * 600 - 250} offsetY={-6}>
-                  <Text style={styles.arrow}>↓</Text>
+        <View style={styles.art}>
+          <View style={styles.phone}>
+            <View style={styles.notch} />
+            {ROWS.map((row, i) => (
+              <View key={row}>
+                {i > 0 ? (
+                  <Reveal active={active} delay={i * 600 - 250} offsetY={-6}>
+                    <Text style={styles.arrow}>↓</Text>
+                  </Reveal>
+                ) : null}
+                <Reveal active={active} delay={i * 600} offsetY={14}>
+                  <View style={styles.row}>
+                    <Text style={styles.rowText}>{t(row)}</Text>
+                  </View>
                 </Reveal>
-              ) : null}
-              <Reveal active={active} delay={i * 600} offsetY={14}>
-                <View style={styles.row}>
-                  <Text style={styles.rowText}>{t(row)}</Text>
+              </View>
+            ))}
+          </View>
+
+          {/* Ölçek yönü burada bir kez, görsel olarak öğretiliyor.
+              Uygulamanın her ölçüm ekranında "1 = hiç yok, 10 =
+              dayanılmaz" yazıyor ama ters çalışan bir ölçek yazıyla
+              anlaşılmıyordu: düşen sayının "iyi" olduğunu görmek
+              gerekiyor. */}
+          <Reveal active={active} delay={ROWS.length * 600} offsetY={14}>
+            <View style={styles.scale}>
+              <Text style={styles.scaleTitle}>{t('PUAN NASIL OKUNUR')}</Text>
+              <View style={styles.scaleBarWrap}>
+                <Text style={styles.scaleEnd}>1</Text>
+                <View style={styles.scaleBar}>
+                  <View style={[styles.scaleFill, styles.scaleGood]} />
+                  <View style={[styles.scaleFill, styles.scaleBad]} />
                 </View>
-              </Reveal>
+                <Text style={styles.scaleEnd}>10</Text>
+              </View>
+              <View style={styles.scaleLegend}>
+                <Text style={styles.scaleGoodText}>{t('1 = hiç yok')}</Text>
+                <Text style={styles.scaleBadText}>{t('10 = dayanılmaz')}</Text>
+              </View>
+              <Text style={styles.scaleNote}>
+                {t('Ölçek ters: düşen sayı iyiye gidiyor demek.')}
+              </Text>
             </View>
-          ))}
+          </Reveal>
         </View>
       }
       title={t('Günde 4 dakika.')}
       body={t(
-        'Önce bugün ne hissettiğini söylüyorsun.\n\nSonra sana özel bir protokol hazırlanıyor.\n\n4 dakika uyguluyorsun.\n\nÖncesi ve sonrasını ölçüyoruz.\n\nHepsi bu.'
+        'Bir fotoğraf çekiyorsun; yüz ifaden okunuyor, reçeten ona göre yazılıyor ve o okuma günün başlangıç puanı oluyor.\n\n4 dakika uyguluyorsun. Nefes adımında mikrofon ritmini dinliyor.\n\nRitüel bitince bir fotoğraf daha: öncesi ve sonrası aynı yöntemle ölçülmüş oluyor.\n\nHepsi bu — ve hepsi telefonunun içinde kalıyor.'
       )}
     />
   );
 }
 
 const styles = StyleSheet.create({
+  art: { alignSelf: 'stretch' },
+  scale: {
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.14)',
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+  },
+  scaleTitle: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 9,
+    letterSpacing: 2,
+    color: colors.haze,
+    textAlign: 'center',
+  },
+  scaleBarWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 10,
+  },
+  scaleBar: { flex: 1, flexDirection: 'row', height: 8, borderRadius: 4, overflow: 'hidden' },
+  scaleFill: { flex: 1, height: '100%' },
+  scaleGood: { backgroundColor: colors.glow },
+  scaleBad: { backgroundColor: colors.warn },
+  scaleEnd: { fontFamily: fonts.mono, fontSize: 11, color: colors.white },
+  scaleLegend: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 6 },
+  scaleGoodText: { fontFamily: fonts.sans, fontSize: 10, color: colors.glow },
+  scaleBadText: { fontFamily: fonts.sans, fontSize: 10, color: colors.warn },
+  scaleNote: {
+    fontFamily: fonts.sans,
+    fontSize: 10,
+    lineHeight: 15,
+    color: colors.haze,
+    textAlign: 'center',
+    marginTop: 8,
+  },
   phone: {
     alignSelf: 'stretch',
     borderWidth: 1,

@@ -8,11 +8,19 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import {
+  useAudioRecorder,
+  RecordingPresets,
+  getRecordingPermissionsAsync,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+} from 'expo-audio';
 import Screen from '../components/Screen';
 import BreathingCircle from '../components/BreathingCircle';
 import PhaseLabel from '../components/PhaseLabel';
 import CountdownNumber from '../components/CountdownNumber';
 import CompletionScreen from '../components/CompletionScreen';
+import RisingBubbles from '../components/RisingBubbles';
 import TransparencyPill from '../components/TransparencyPill';
 import PressableScale from '../components/PressableScale';
 import { colors } from '../constants/colors';
@@ -23,19 +31,27 @@ import { useSettings, useT } from '../context/SettingsContext';
 import { usePremium } from '../context/PremiumContext';
 import { useMotion } from '../hooks/useMotion';
 import { haptics } from '../utils/haptics';
+import { getCachedHealthSnapshot } from '../utils/health';
 import {
   breathPhases,
   breathRoundSeconds,
   factForStep,
+  MOOD_ADJUST_THRESHOLD,
   poolsFor,
   seedFor,
   stepSeconds,
   type BreathAction,
 } from '../utils/formulaEngine';
 import { playTone, prepareAudioMode, stopTone } from '../utils/audio';
+import {
+  breathMetricsFrom,
+  type BreathAnalysis,
+  type MeteringSample,
+} from '../utils/breathSignal';
 import { newSessionId } from '../utils/storage';
 import { resolveComplaint } from '../constants/complaints';
 import { getDailyWord, motivationCategory } from '../constants/motivationWords';
+import { pacedLines, storyFor, storyLineIndex } from '../constants/calmingStories';
 import type { StepKind } from '../types';
 import type { RootStackParamList } from '../navigation/types';
 
@@ -53,13 +69,14 @@ function formatTime(total: number): string {
 }
 
 export default function RitualScreen({ navigation, route }: Props) {
-  const { formula, complaintId, customText, scoreBefore } = route.params;
+  const { formula, complaintId, customText, scoreBefore, faceMoodScore, reactionBeforeMs } =
+    route.params;
   const { user, recordSession } = useUser();
   /** Ritüelin gerçekte ne kadar sürdüğü — seans özetinde gösteriliyor. */
   const startedAt = useRef(Date.now());
   const { settings } = useSettings();
   const t = useT();
-  const { isPremium, packs } = usePremium();
+  const { isPremium, packs, limits } = usePremium();
   const pools = useMemo(() => poolsFor(isPremium, packs), [isPremium, packs]);
   const motion = useMotion();
 
@@ -130,6 +147,36 @@ export default function RitualScreen({ navigation, route }: Props) {
     return getDailyWord(category, user.streak);
   }, [complaintId, customText, user.streak]);
 
+  /**
+   * Ritüel boyunca akan metin.
+   *
+   * Hikâye güne göre seçiliyor (aynı gün tekrar edilirse metin
+   * değişmesin) ve ritüelin **tamamına** yayılıyor: satır başına düşen
+   * süre toplam süreden hesaplandığı için son satır, son saniyede
+   * ekranda duran satır oluyor.
+   *
+   * Doz da hesaba giriyor: çift doz bütün süreleri ikiye katladığı için
+   * metin de iki hikâye uzunluğunda geliyor, böylece satır başına düşen
+   * süre dozdan bağımsız olarak üç ilâ dört saniyede kalıyor.
+   */
+  const story = useMemo(() => storyFor(seed, formula.dose ?? 1), [seed, formula.dose]);
+  const totalRitualSeconds = useMemo(
+    () => steps.reduce((sum, kind) => sum + stepSeconds(formula, kind), 0),
+    [steps, formula]
+  );
+
+  /**
+   * Ekranda gerçekten görünecek satırlar.
+   *
+   * Havuzdaki 45 satırın hepsi gösterilseydi satır başına üç saniye
+   * düşerdi; `pacedLines` süreyi bölerek her satıra yedi buçuk saniye
+   * kalacak kadarını seçiyor.
+   */
+  const lines = useMemo(
+    () => pacedLines(story.lines, totalRitualSeconds),
+    [story, totalRitualSeconds]
+  );
+
   const [index, setIndex] = useState(0);
   const [remaining, setRemaining] = useState(() => stepSeconds(formula, steps[0]));
   const [finished, setFinished] = useState(false);
@@ -138,6 +185,39 @@ export default function RitualScreen({ navigation, route }: Props) {
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const step = steps[index];
+
+  /**
+   * Nefes adımı sırasında mikrofon genliği örneklenir; ses hiçbir yere
+   * kaydedilmez/gönderilmez, sadece anlık genlik (dB) okunur. İzin
+   * verilmezse ya da bir hata olursa ritüel sessizce sürer — bu sinyal
+   * hiçbir zaman akışı durdurmaz.
+   */
+  const breathRecorder = useAudioRecorder({
+    ...RecordingPresets.LOW_QUALITY,
+    isMeteringEnabled: true,
+  });
+  const breathSamplesRef = useRef<MeteringSample[]>([]);
+  const breathStartRef = useRef(0);
+  const breathPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  /** Kayıt bir kez durduruldu mu — serbest bırakılmış kaydediciye iki kez dokunmamak için. */
+  const breathStoppedRef = useRef(false);
+  const breathRegularityRef = useRef<number | undefined>(undefined);
+  /**
+   * Aynı kayıttan çıkan diğer ölçütler (dakikadaki nefes, derinlik).
+   * Düzenlilikle birlikte hesaplanıyor; ayrı bir izin ya da ikinci bir
+   * kayıt gerektirmiyor.
+   */
+  const breathMetricsRef = useRef<BreathAnalysis | undefined>(undefined);
+  /** Ölçüm çıkmadıysa nedeni — ölçüm ekranında açık bir mesaja çevrilir. */
+  const breathMicOutcomeRef = useRef<'denied' | 'no-mic-data' | 'no-signal' | undefined>(undefined);
+  /**
+   * Mikrofonun o anki durumu — ekranda görünür bir gösterge olsun diye.
+   * Önceki sürümde bu tamamen sessiz çalışıyordu; kullanıcı ne olduğunu
+   * göremiyordu ("çalışmıyor" gibi görünüyordu).
+   */
+  const [micStatus, setMicStatus] = useState<
+    'idle' | 'requesting' | 'listening' | 'denied' | 'error'
+  >('idle');
   const totalForStep = stepSeconds(formula, step);
   const elapsedInStep = totalForStep - remaining;
 
@@ -167,6 +247,34 @@ export default function RitualScreen({ navigation, route }: Props) {
     }
     return { ...phases[0], left: phases[0].seconds, round, phaseIndex: 0 };
   }, [step, elapsedInStep, formula.breath]);
+
+  /**
+   * Faz değişiminde titreşim.
+   *
+   * Yönerge daha önce yalnızca ekranın altındaki yazıdaydı ve onu okumak
+   * için bakışın dairenin merkezinden ayrılması gerekiyordu — "ne zaman
+   * alacağımı anlamıyorum, aşağı bakınca da odağım kaçıyor" şikâyeti tam
+   * olarak buydu. Titreşim aynı bilgiyi bakmadan veriyor.
+   *
+   * Tetikleyici, fazın kimliği: tur numarası + faz sırası. Süreye ya da
+   * `action` alanına bakılsaydı arka arkaya gelen iki "al" fazı
+   * (fizyolojik iç çekişte var) tek bir faz sanılırdı.
+   */
+  const lastPhaseRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!breath || finished) {
+      lastPhaseRef.current = null;
+      return;
+    }
+    const key = `${breath.round}-${breath.phaseIndex}`;
+    if (lastPhaseRef.current === key) return;
+    lastPhaseRef.current = key;
+
+    if (breath.action === 'inhale') haptics.breathInhale();
+    else if (breath.action === 'hold') haptics.breathHold();
+    else if (breath.action === 'exhale') haptics.breathExhale();
+    // 'pause' bilerek sessiz: beklemenin işareti hiçbir şey olmaması.
+  }, [breath, finished]);
 
   // Geri sayım
   useEffect(() => {
@@ -198,8 +306,178 @@ export default function RitualScreen({ navigation, route }: Props) {
   // Ekran tamamen kapanırken sönümü bekletecek bir şey kalmıyor; anında kes.
   useEffect(() => () => stopTone(true), []);
 
-  const goNext = useCallback(() => {
+  /**
+   * Mikrofon kaydını güvenle durdurur.
+   *
+   * Ekran kapanırken `useAudioRecorder` kaydediciyi native tarafta serbest
+   * bırakıyor. Kayıt hâlâ sürerken ekranı kapatmak, bizim `stop()`
+   * çağrımızla o serbest bırakma işlemini aynı ana getiriyordu ve
+   * uygulama anında çöküyordu — nokta atışı reçete akışında ritüel
+   * ekranı ölçüm ekranıyla **değiştirildiği** için tam olarak bu oluyordu.
+   * Ana ekrandan başlatılan ritüelde ekran açık kaldığından aynı hata
+   * görünmüyordu.
+   *
+   * Bu yüzden kayıt artık her zaman gezinmeden **önce** ve tek seferde
+   * durduruluyor; `stopped` bayrağı ikinci çağrının serbest bırakılmış
+   * kaydediciye dokunmasını engelliyor.
+   */
+  const stopBreathCapture = useCallback(async () => {
+    if (breathPollRef.current) {
+      clearInterval(breathPollRef.current);
+      breathPollRef.current = null;
+    }
+    if (breathStoppedRef.current) return;
+    breathStoppedRef.current = true;
+    try {
+      if (breathRecorder.isRecording) await breathRecorder.stop();
+    } catch {
+      // yoksay — ölçüm bir kolaylık, ritüelin koşulu değil.
+    }
+    try {
+      await setAudioModeAsync({ allowsRecording: false });
+    } catch {
+      // yoksay
+    }
+  }, [breathRecorder]);
+
+  /**
+   * Ekran hangi yoldan kapanırsa kapansın kayıt önce durur.
+   *
+   * `goNext` ve geri düğmesi kaydı zaten kendileri durduruyor; ama iOS'ta
+   * ekrandan kenardan kaydırarak da çıkılabiliyor ve o yol hiçbirinden
+   * geçmiyor. `beforeRemove`, ekran gezinme ağacından çıkarılmadan önce
+   * çalışan tek ortak nokta — çökmeye yol açan yarış burada da kapanıyor.
+   */
+  useEffect(
+    () => navigation.addListener('beforeRemove', () => void stopBreathCapture()),
+    [navigation, stopBreathCapture]
+  );
+
+  // Nefes adımı boyunca mikrofon genliği örneklenir; adım bitince
+  // `goNext` bu örneklerden düzenlilik skorunu çıkarır. Durum, ekranda
+  // görünen `micStatus`'a yazılıyor — kullanıcı ne olduğunu görebilsin.
+  useEffect(() => {
+    /*
+     * Nefes analizi Plus'a ait.
+     *
+     * Kapalıyken mikrofon izni **hiç istenmiyor**: ölçümü yapmayacaksak
+     * izin sormak hem anlamsız hem de kullanıcıya yanlış bir şey vaat
+     * ediyor. Ritüelin nefes adımı aynen çalışmaya devam ediyor — kilit
+     * ölçümde, ritüelde değil.
+     */
+    if (step !== 'breath' || finished || formula.sham || !limits.breathAnalysis) {
+      setMicStatus('idle');
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        setMicStatus('requesting');
+        const current = await getRecordingPermissionsAsync();
+        const granted = current.granted
+          ? true
+          : (await requestRecordingPermissionsAsync()).granted;
+        if (cancelled) return;
+        if (!granted) {
+          setMicStatus('denied');
+          return;
+        }
+        // iOS'ta `allowsRecording` açık olmadan `record()` sessizce hiçbir
+        // şey kaydetmiyor — ses oturumunun kayda izin verdiğini burada
+        // açıkça belirtiyoruz, adım bitince kapatıyoruz.
+        await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+        if (cancelled) return;
+        breathSamplesRef.current = [];
+        breathStartRef.current = Date.now();
+        breathStoppedRef.current = false;
+
+        /*
+         * `prepareToRecordAsync` ATLANAMAZ ve seçenekler ona da verilmeli.
+         *
+         * expo-audio'da kaydedici önce hazırlanmak zorunda; hazırlanmadan
+         * çağrılan `record()` hata fırlatmıyor, sessizce hiçbir şey
+         * yapmıyor. Sonuç: `getStatus().metering` hep `null` dönüyor, tek
+         * bir örnek bile toplanmıyor ve nefes ölçümü her seferinde
+         * "sinyal yok" ile bitiyordu. Kullanıcı ortam sesi vererek
+         * denediğinde de aynı sonucu alıyordu, çünkü mikrofon hiç
+         * dinlemiyordu.
+         *
+         * Kaydedici `stop()` sonrası geçersizleşiyor, bu yüzden hazırlık
+         * her nefes adımında yeniden yapılıyor.
+         *
+         * Seçenekler burada bir kez daha veriliyor: `isMeteringEnabled`
+         * hazırlık aşamasında geçerli değilse `getStatus().metering`
+         * tanımsız dönüyor ve ortada kayıt varken bile tek bir örnek
+         * toplanmıyor.
+         */
+        await breathRecorder.prepareToRecordAsync({
+          ...RecordingPresets.LOW_QUALITY,
+          isMeteringEnabled: true,
+        });
+        if (cancelled) return;
+
+        breathRecorder.record();
+        setMicStatus('listening');
+        breathPollRef.current = setInterval(() => {
+          const status = breathRecorder.getStatus();
+          if (status.metering != null) {
+            breathSamplesRef.current.push({
+              t: Date.now() - breathStartRef.current,
+              db: status.metering,
+            });
+          }
+        }, 200);
+      } catch {
+        if (!cancelled) setMicStatus('error');
+      }
+    })();
+    return () => {
+      cancelled = true;
+      void stopBreathCapture();
+    };
+  }, [step, finished, formula.sham, limits.breathAnalysis, breathRecorder, stopBreathCapture]);
+
+  const goNext = useCallback(async () => {
     stopTone();
+
+    // Nefes adımından çıkılıyor: örnekler henüz elde, ekran değişmeden
+    // önce düzenlilik skorunu hesaplıyoruz. Kayıt da burada, gezinmeden
+    // önce durduruluyor (bkz. `stopBreathCapture`).
+    if (step === 'breath') {
+      await stopBreathCapture();
+      if (breathSamplesRef.current.length) {
+        // Beklenen tur süresi de veriliyor: ölçülen ritim uygulamanın
+        // dayattığı ritme yakın değilse (gürültü, konuşma, müzik) sonuç
+        // reddediliyor — sahte bir sayı üretilmiyor.
+        breathMetricsRef.current =
+          breathMetricsFrom(
+            breathSamplesRef.current,
+            breathRoundSeconds(formula.breath.pattern) * 1000
+          ) ?? undefined;
+        breathRegularityRef.current = breathMetricsRef.current?.regularity;
+      }
+      // Sonuç ölçüm ekranında da görünsün diye bir sonuca dönüştürülüyor:
+      // ölçü çıktıysa ayrıca bir not gerekmez, çıkmadıysa nedeni taşınır.
+      /*
+       * Başarısızlığın nedeni ayrıştırılıyor.
+       *
+       * Eskiden izin dışındaki her durum "sinyal yok" diye tek bir
+       * mesaja düşüyordu ve iki tamamen farklı arıza aynı görünüyordu:
+       * (a) mikrofon hiç çalışmadı, tek örnek bile gelmedi; (b) mikrofon
+       * çalıştı ama gelen sinyal nefes gibi görünmedi. Birincisi bir
+       * yazılım hatası, ikincisi ölçümün kendi kararı — ayrı yazmazsak
+       * hangisinin olduğunu anlamanın yolu yok.
+       */
+      if (breathRegularityRef.current == null) {
+        breathMicOutcomeRef.current =
+          micStatus === 'denied'
+            ? 'denied'
+            : breathSamplesRef.current.length === 0
+              ? 'no-mic-data'
+              : 'no-signal';
+      }
+    }
+
     if (index < steps.length - 1) {
       const next = index + 1;
       haptics.step();
@@ -220,19 +498,41 @@ export default function RitualScreen({ navigation, route }: Props) {
         scoreBefore,
         durationSeconds: Math.max(1, Math.round((Date.now() - startedAt.current) / 1000)),
         steps: [...steps],
+        faceMoodScore,
+        reactionBeforeMs,
+        breathRegularity: breathRegularityRef.current,
+        breathsPerMinute: breathMetricsRef.current?.breathsPerMinute,
+        breathDepth: breathMetricsRef.current?.depth,
+        breathMicOutcome: breathMicOutcomeRef.current,
       });
       return;
     }
 
     setFinished(true);
-  }, [index, steps, formula, complaintId, customText, scoreBefore, navigation]);
+  }, [
+    index,
+    steps,
+    formula,
+    complaintId,
+    customText,
+    scoreBefore,
+    faceMoodScore,
+    reactionBeforeMs,
+    step,
+    micStatus,
+    navigation,
+    stopBreathCapture,
+  ]);
 
   useEffect(() => {
-    if (remaining === 0 && !finished) goNext();
+    if (remaining === 0 && !finished) void goNext();
   }, [remaining, finished, goNext]);
 
-  const exit = () => {
+  // Geri çıkışta da kayıt önce durduruluyor: ekran burada da kapanıyor,
+  // yani `stopBreathCapture`'daki çakışma riski birebir aynı.
+  const exit = async () => {
     stopTone();
+    await stopBreathCapture();
     navigation.goBack();
   };
 
@@ -250,6 +550,16 @@ export default function RitualScreen({ navigation, route }: Props) {
       sham: formula.sham,
       dose: formula.dose ?? 1,
       note: note.trim() || undefined,
+      faceMoodBefore: faceMoodScore,
+      reactionBeforeMs,
+      breathRegularity: breathRegularityRef.current,
+      // Sağlık verisi açıksa o günün bağlamı da kayda giriyor: haftalık
+      // desen kartı uykuyla puanı ancak ikisi aynı kayıtta durursa
+      // karşılaştırabiliyor.
+      sleepMinutes: getCachedHealthSnapshot()?.sleepMinutes ?? undefined,
+      restingHeartRate: getCachedHealthSnapshot()?.restingHeartRate ?? undefined,
+      breathsPerMinute: breathMetricsRef.current?.breathsPerMinute,
+      breathDepth: breathMetricsRef.current?.depth,
     });
     navigation.goBack();
   };
@@ -303,14 +613,37 @@ export default function RitualScreen({ navigation, route }: Props) {
           note={note}
           onNoteChange={setNote}
           onSave={complete}
+          breathRegularity={breathRegularityRef.current}
+          breathMicOutcome={breathMicOutcomeRef.current}
         />
       </Screen>
     );
   }
 
   // Bulgu, o an ekranda olan şeyle uyuşur: ses adımında çalan sesin,
-  // nefes adımında uygulanan desenin bulgusu gösterilir.
-  const fact = t(factForStep(formula, step, index, pools));
+  // nefes adımında uygulanan desenin bulgusu gösterilir. İlk adımda,
+  // kamera kullanıldıysa gerçek karşılığı olan bir mesaj bunun yerine
+  // geçer — kötü ruh halinde bir tur eklendiğini de burada söylüyoruz.
+  const moodInsight =
+    index === 0 && faceMoodScore != null && faceMoodScore >= MOOD_ADJUST_THRESHOLD
+      ? t(
+          '🤖 Yapay zeka duygularını anladı: bugünkü ritüele ekstra bir sakinleştirme turu eklendi.'
+        )
+      : null;
+  const fact = moodInsight ?? t(factForStep(formula, step, index, pools));
+
+  /**
+   * Akan metnin o anki cümlesi.
+   *
+   * Geçen süre, tamamlanan adımların toplamına o adımın içinde geçen
+   * süre eklenerek bulunuyor — cümle sırası tek bir adıma değil ritüelin
+   * tamamına bağlı, böylece son cümle son saniyeye denk geliyor.
+   */
+  const elapsedTotal =
+    steps.slice(0, index).reduce((sum, kind) => sum + stepSeconds(formula, kind), 0) +
+    elapsedInStep;
+  const storyLine = t(lines[storyLineIndex(elapsedTotal, totalRitualSeconds, lines.length)]);
+
   const action: BreathAction = breath ? breath.action : 'inhale';
   const phaseSecondsValue = breath ? breath.seconds : totalForStep;
   const phaseKey = breath
@@ -319,8 +652,16 @@ export default function RitualScreen({ navigation, route }: Props) {
 
   return (
     <Screen background={colors.ink} style={styles.container}>
+      {/* Ritüelin arkasında yavaşça yükselen baloncuklar — ekranın geri
+          kalanı sayaç ve metinken, gözün dinlendiği yer burası. */}
+      <RisingBubbles />
+
       <View style={styles.topBar}>
-        <PressableScale onPress={exit} accessibilityRole="button" style={styles.back}>
+        <PressableScale
+          onPress={() => void exit()}
+          accessibilityRole="button"
+          style={styles.back}
+        >
           <Text style={styles.backText}>←</Text>
         </PressableScale>
         <View style={styles.progressTrack}>
@@ -338,11 +679,11 @@ export default function RitualScreen({ navigation, route }: Props) {
           phaseSeconds={phaseSecondsValue}
           phaseKey={phaseKey}
           colorHex={formula.color.hex}
-          // Motivasyon kelimesi renk adımında da görünüyor: ritüelin
-          // tamamı boyunca merkezde duran tek sabit o.
-          word={
-            motivationWord ?? (step === 'color' ? undefined : t(formula.word))
-          }
+          // Merkezde artık tek bir kelime değil, ritüelin tamamına
+          // yayılan bir metin akıyor: kelime ilk saniyede okunup
+          // bitiyordu, cümleler ise ritüel boyunca takip edilecek bir şey
+          // veriyor ve sonunda kapanıyor.
+          sentence={storyLine}
           // Renk ve ses adımlarında faz yok; daire kendi nabzıyla döner.
           ambient={step !== 'breath'}
         />
@@ -357,6 +698,17 @@ export default function RitualScreen({ navigation, route }: Props) {
           }
         />
         <Text style={styles.subText}>{breath ? copy.breath.sub : copy[step].sub}</Text>
+        {step === 'breath' && micStatus !== 'idle' ? (
+          <Text style={styles.micStatus}>
+            {micStatus === 'requesting'
+              ? t('🎙️ Mikrofon izni isteniyor…')
+              : micStatus === 'listening'
+                ? t('🎙️ Nefesin dinleniyor')
+                : micStatus === 'denied'
+                  ? t('🎙️ Mikrofon izni verilmedi — nefes ölçümü olmadan devam edeceksin')
+                  : t('🎙️ Mikrofon kullanılamadı')}
+          </Text>
+        ) : null}
       </Animated.View>
 
       <CountdownNumber
@@ -370,7 +722,7 @@ export default function RitualScreen({ navigation, route }: Props) {
         </Animated.View>
 
         <PressableScale
-          onPress={goNext}
+          onPress={() => void goNext()}
           accessibilityRole="button"
           style={styles.button}
         >
@@ -423,6 +775,14 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   counter: { marginTop: 16 },
+  micStatus: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 11,
+    color: colors.glow,
+    opacity: 0.8,
+    textAlign: 'center',
+    marginTop: 10,
+  },
   // Alt güvenli alan `Screen` tarafından ekleniyor.
   bottom: { paddingBottom: 16, marginTop: 26 },
   button: {

@@ -94,7 +94,9 @@ function serialize<T>(job: () => Promise<T>): Promise<T> {
 const DAILY_MARK = { plaseboDaily: true } as const;
 
 /** Verilen işareti taşıyan zamanlanmış bildirimleri iptal eder. */
-async function cancelMarked(flag: 'plaseboDaily' | 'plaseboNudge'): Promise<void> {
+async function cancelMarked(
+  flag: 'plaseboDaily' | 'plaseboNudge' | 'plaseboCheckin' | 'plaseboReport'
+): Promise<void> {
   try {
     const scheduled = await Notifications.getAllScheduledNotificationsAsync();
     for (const item of scheduled) {
@@ -248,6 +250,82 @@ export async function scheduleNudges(
           });
         }
       }
+      return true;
+    } catch {
+      return false;
+    }
+  });
+}
+
+/* ==================================================================
+ * 24 saatlik döngü
+ * ------------------------------------------------------------------
+ * Gün içinde üç kısa ölçüm daveti, ertesi sabah da tek bir rapor
+ * bildirimi. Arka planda çalışan hiçbir şey yok: bildirimler önden
+ * kuruluyor, ölçüm yalnızca kullanıcı dokunduğunda ve ekran açıkken
+ * yapılıyor (bkz. `utils/dailyCycle.ts`).
+ * ================================================================== */
+
+/** Ölçüm davetlerinin saatleri — sabah, öğleden sonra, akşam. */
+export const CHECKIN_HOURS = [10, 15, 21];
+/** Raporun düştüğü saat: gece biriken veri sabah okunuyor. */
+export const REPORT_HOUR = 8;
+const CHECKIN_MARK = { plaseboCheckin: true } as const;
+const REPORT_MARK = { plaseboReport: true } as const;
+
+/** Döngü bildirimlerini kaldırır; diğer bildirimlere dokunmaz. */
+export async function cancelDailyCycle(): Promise<void> {
+  await serialize(async () => {
+    await cancelMarked('plaseboCheckin');
+    await cancelMarked('plaseboReport');
+  });
+}
+
+/**
+ * Ölçüm davetlerini ve sabah raporunu kurar.
+ *
+ * Günlük tetikleyici kullanılıyor: her gün aynı saatlerde tekrarlıyor,
+ * dolayısıyla dürtmelerdeki gibi bir haftalık kuyruk doldurmak
+ * gerekmiyor.
+ */
+export async function scheduleDailyCycle(
+  t: TranslateFn = (text) => text
+): Promise<boolean> {
+  return serialize(async () => {
+    try {
+      await cancelMarked('plaseboCheckin');
+      await cancelMarked('plaseboReport');
+      await ensureNudgeChannel();
+
+      for (const hour of CHECKIN_HOURS) {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: t('45 saniyelik ölçüm'),
+            body: t('Nefesini ölçelim mi? Günün raporu bu ölçümlerden kuruluyor.'),
+            data: { ...CHECKIN_MARK },
+            ...(Platform.OS === 'android' ? { channelId: NUDGE_CHANNEL_ID } : null),
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.DAILY,
+            hour,
+            minute: 0,
+          },
+        });
+      }
+
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: t('Günün raporu hazır'),
+          body: t('Son 24 saatte ölçülenler bir arada.'),
+          data: { ...REPORT_MARK },
+          ...(Platform.OS === 'android' ? { channelId: NUDGE_CHANNEL_ID } : null),
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.DAILY,
+          hour: REPORT_HOUR,
+          minute: 30,
+        },
+      });
       return true;
     } catch {
       return false;

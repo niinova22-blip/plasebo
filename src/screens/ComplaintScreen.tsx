@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import Animated, {
-  Easing,
-  useAnimatedStyle,
-  useSharedValue,
-  withSequence,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
 import PressableScale from '../components/PressableScale';
-import TransparencyPill from '../components/TransparencyPill';
+import CameraMoodCapture from '../components/CameraMoodCapture';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import {
-  COMPLAINTS,
-  CUSTOM_COMPLAINT_ID,
-  type Complaint,
-} from '../constants/complaints';
+import { CUSTOM_COMPLAINT_ID, rememberTextGoal } from '../constants/complaints';
+import { PLAN_NAME } from '../constants/plans';
 import { useT, useTheme } from '../context/SettingsContext';
 import { useUser } from '../context/UserContext';
-import { useMotion } from '../hooks/useMotion';
+import { usePremium } from '../context/PremiumContext';
 import { haptics } from '../utils/haptics';
+import { moodComplaintTextFor } from '../utils/faceMood';
+import { consumeFaceScan, remainingFaceScans } from '../utils/faceScanQuota';
+import { classifyComplaintGoal } from '../utils/localAI';
 import type { RootStackParamList } from '../navigation/types';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Complaint'>;
@@ -30,206 +30,267 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Complaint'>;
 /**
  * Akışın ilk adımı: bugün ne şikayet var?
  *
- * Seçim, ritüelin hangi hedeften üretileceğini ve sonraki ekranlardaki
- * reçete metnini belirliyor. Tek seçim — "hepsi biraz" demenin ölçümü
- * anlamsızlaştıracağı bir akış bu.
+ * İki yol var, üçüncüsü yok:
+ *
+ *   1. **Fotoğraf analiziyle otomatik reçete** — önerilen yol. Yüz
+ *      ifadesinden çıkan ruh hali hem reçeteyi belirliyor hem de
+ *      ritüelin başlangıç puanı oluyor.
+ *   2. **Kendim anlatayım** — kendi cümlesi. Cihaz üstü model cümleyi
+ *      bir hedefe bağlıyor.
+ *
+ * Arada bir de hazır şikayet listesi vardı (uykusuzluk, gerginlik…).
+ * Kaldırıldı: liste, kişinin kendi durumunu on iki kutudan birine
+ * sıkıştırmasını istiyordu ve seçtiği kutu ne fotoğraf kadar nesnel ne
+ * kendi cümlesi kadar kişiseldi — iki iyi yolun arasında duran, ikisini
+ * de gölgeleyen bir üçüncü yoldu.
  */
 export default function ComplaintScreen({ navigation }: Props) {
   const theme = useTheme();
   const t = useT();
   const { user } = useUser();
-  const [selected, setSelected] = useState<Complaint | null>(null);
-  /** Listedeki hazır şikayetler yerine kendi cümlesini yazıyor mu? */
+  /** Fotoğraf yerine kendi cümlesini mi yazıyor? */
   const [custom, setCustom] = useState(false);
+  const scrollRef = useRef<ScrollView>(null);
   const [customText, setCustomText] = useState('');
+  const [cameraOpen, setCameraOpen] = useState(false);
 
-  const customReady = customText.trim().length >= 3;
-  const canContinue = custom ? customReady : selected !== null;
+  /**
+   * Bugün kaç yüz taraması hakkı kaldı? Plus'ta sonsuz.
+   *
+   * `null` "henüz okunmadı" demek; okunana kadar kart, hakkı varmış gibi
+   * görünüyor. Tersi (hak yokmuş gibi başlayıp sonra açılmak) ekranın ilk
+   * karesinde yanlış bir kilit gösterirdi.
+   */
+  const { limits } = usePremium();
+  const [scansLeft, setScansLeft] = useState<number | null>(null);
+  useEffect(() => {
+    let alive = true;
+    void remainingFaceScans(limits.faceScansPerDay).then((left) => {
+      if (alive) setScansLeft(left);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [limits.faceScansPerDay]);
+  const scanLocked = scansLeft != null && scansLeft <= 0;
+  /** Model cümleyi sınıflandırırken buton bekliyor gibi görünsün. */
+  const [classifying, setClassifying] = useState(false);
 
-  const start = () => {
-    if (!canContinue) return;
+  const canContinue = custom && customText.trim().length >= 3;
+
+  /**
+   * Serbest metin yazıldıysa, akışa girmeden önce cihaz üstü modele
+   * hangi hedefe ait olduğu soruluyor.
+   *
+   * Beklemek bilerek kısa tutuluyor ve sonuç gelmezse hiç beklenmiyor:
+   * `classifyComplaintGoal` kendi zaman aşımına sahip ve `null` dönünce
+   * anahtar kelime eşlemesi devreye giriyor. Yani model olmayan bir
+   * cihazda bu adım görünmez biçimde atlanıyor.
+   */
+  const start = async () => {
+    if (!canContinue || classifying) return;
     haptics.tap();
+    const text = customText.trim();
+
+    setClassifying(true);
+    const goal = await classifyComplaintGoal(text);
+    if (goal) rememberTextGoal(text, goal);
+    setClassifying(false);
+
     navigation.navigate('Examination', {
-      complaintId: custom ? CUSTOM_COMPLAINT_ID : (selected as Complaint).id,
-      customText: custom ? customText.trim() : undefined,
+      complaintId: CUSTOM_COMPLAINT_ID,
+      customText: text,
     });
   };
 
   return (
     <Screen background={theme.bg}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <PressableScale
-          onPress={() => navigation.goBack()}
-          accessibilityRole="button"
-          style={styles.back}
+      {/* Klavye, yazılan cümlenin üstüne biniyordu: alan ekranın altına
+          yakın, ScrollView ise klavyeyi hiç hesaba katmıyordu. iOS'ta
+          `padding` davranışı görünür alanı klavye kadar kısaltıyor,
+          `automaticallyAdjustKeyboardInsets` da kaydırma payını
+          büyütüyor; Android zaten `adjustResize` ile aynı işi kendi
+          yapıyor, o yüzden orada davranış verilmiyor. */}
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="interactive"
+          automaticallyAdjustKeyboardInsets
         >
-          <Text style={[styles.backText, { color: theme.sub }]}>{t('‹ Geri')}</Text>
-        </PressableScale>
-
-        {/* Kurulumdan hemen sonra buraya düşüldüğü için ilk satır
-            kişisel: beklenti etkisini adıyla başlatıyor. */}
-        {user.name ? (
-          <>
-            <Text style={[styles.greeting, { color: theme.text }]}>
-              {t('Merhaba {ad}.', { ad: user.name })}
-            </Text>
-            <Text style={[styles.question, { color: theme.sub }]}>
-              {t('Bugün ne hissediyorsun?')}
-            </Text>
-          </>
-        ) : (
-          // Ad yoksa soru başlığın kendisi olur; ekran başsız kalmasın.
-          <Text style={[styles.title, { color: theme.text }]}>
-            {t('Bugün ne hissediyorsun?')}
-          </Text>
-        )}
-        <Text style={[styles.sub, { color: theme.sub }]}>
-          {t('Dürüst ol. Beklenti protokolü dürüstlükle daha iyi çalışır.')}
-        </Text>
-
-        <View style={styles.list}>
-          {COMPLAINTS.map((complaint) => (
-            <ComplaintRow
-              key={complaint.id}
-              complaint={complaint}
-              active={selected?.id === complaint.id}
-              onPress={() => {
-                haptics.tap();
-                setSelected(complaint);
-                setCustom(false);
-              }}
-            />
-          ))}
-
-          {/* Listede karşılığı olmayan durumlar için: kendi cümlesi. */}
           <PressableScale
-            onPress={() => {
-              haptics.tap();
-              setCustom(true);
-              setSelected(null);
-            }}
-            pressedScale={0.99}
+            onPress={() => navigation.goBack()}
             accessibilityRole="button"
-            accessibilityState={{ selected: custom }}
-            style={[
-              styles.row,
-              {
-                backgroundColor: custom ? theme.accentSoft : theme.surface,
-                borderColor: custom ? theme.pulse : theme.border,
-              },
-            ]}
+            style={styles.back}
           >
-            <Text style={styles.icon}>✍️</Text>
-            <Text style={[styles.label, { color: theme.text }]}>
-              {t('Kendim anlatayım')}
-            </Text>
+            <Text style={[styles.backText, { color: theme.sub }]}>{t('‹ Geri')}</Text>
           </PressableScale>
 
-          {custom ? (
-            <View style={styles.customWrap}>
-              <TextInput
-                value={customText}
-                onChangeText={setCustomText}
-                placeholder={t('Örn. Sabahları kalkmakta zorlanıyorum')}
-                placeholderTextColor={theme.faint}
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: theme.surface,
-                    borderColor: theme.border,
-                    color: theme.text,
-                  },
-                ]}
-                multiline
-                maxLength={120}
-                autoFocus
-              />
-              <Text style={[styles.inputHint, { color: theme.faint }]}>
-                {t(
-                  'Kendi cümlen reçetenin adını ve formülün hedefini belirler. {kalan} karakter kaldı.',
-                  { kalan: 120 - customText.length }
-                )}
+          {/* Kurulumdan hemen sonra buraya düşüldüğü için ilk satır
+              kişisel: beklenti etkisini adıyla başlatıyor. */}
+          {user.name ? (
+            <>
+              <Text style={[styles.greeting, { color: theme.text }]}>
+                {t('Merhaba {ad}.', { ad: user.name })}
               </Text>
-            </View>
-          ) : null}
-        </View>
-
-        <TransparencyPill
-          light
-          style={styles.pill}
-          text={t('⚗️ Şikayetin formülün adını belirler; etkiyi belirleyen sensin.')}
-        />
-
-        <PressableScale
-          onPress={start}
-          disabled={!canContinue}
-          accessibilityRole="button"
-          style={[
-            styles.cta,
-            { backgroundColor: canContinue ? colors.pulse : theme.border },
-          ]}
-        >
-          <Text
-            style={[styles.ctaText, { color: canContinue ? colors.white : theme.faint }]}
-          >
-            {t('Devam Et')}
+              <Text style={[styles.question, { color: theme.sub }]}>
+                {t('Bugün ne hissediyorsun?')}
+              </Text>
+            </>
+          ) : (
+            // Ad yoksa soru başlığın kendisi olur; ekran başsız kalmasın.
+            <Text style={[styles.title, { color: theme.text }]}>
+              {t('Bugün ne hissediyorsun?')}
+            </Text>
+          )}
+          <Text style={[styles.sub, { color: theme.sub }]}>
+            {t('Dürüst ol. Beklenti protokolü dürüstlükle daha iyi çalışır.')}
           </Text>
-        </PressableScale>
-      </ScrollView>
+
+          <View style={styles.list}>
+            {/* Fotoğraftan otomatik reçete listenin başında: asıl önerilen
+                yol bu, aşağıdaki hazır şikayetler ise elle seçim. Sonuç ne
+                olursa olsun (sakin ya da gergin) doğrudan bir reçeteye
+                geçilir. */}
+            <PressableScale
+              onPress={() => {
+                haptics.tap();
+                // Günlük hak bittiyse kart kilitlenmiyor, plan ekranına
+                // götürüyor: kullanıcı neyi kaybettiğini ve nereden
+                // açacağını aynı dokunuşta öğreniyor. Sessizce çalışmayan
+                // bir düğme, kilit olduğunu anlatmayan bir kilittir.
+                if (scanLocked) navigation.navigate('Plans');
+                else setCameraOpen(true);
+              }}
+              pressedScale={0.99}
+              accessibilityRole="button"
+              style={[
+                styles.row,
+                styles.cameraRow,
+                { borderColor: scanLocked ? theme.border : theme.pulse },
+              ]}
+            >
+              <Text style={styles.icon}>🤖</Text>
+              <Text style={[styles.label, { color: theme.text }]}>
+                {t('Fotoğraf analiziyle otomatik reçete')}
+              </Text>
+            </PressableScale>
+            <Text style={[styles.cameraNote, { color: theme.faint }]}>
+              {scanLocked
+                ? t('Bugünkü ölçüm hakkın doldu. {plan} ile sınırsız.', { plan: PLAN_NAME })
+                : t('Bir fotoğraf çek, reçeteni yüz ifaden belirlesin.')}
+            </Text>
+
+            <Text style={[styles.listDivider, { color: theme.faint }]}>
+              {t('YA DA')}
+            </Text>
+
+            <PressableScale
+              onPress={() => {
+                haptics.tap();
+                setCustom(true);
+              }}
+              pressedScale={0.99}
+              accessibilityRole="button"
+              accessibilityState={{ selected: custom }}
+              style={[
+                styles.row,
+                {
+                  backgroundColor: custom ? theme.accentSoft : theme.surface,
+                  borderColor: custom ? theme.pulse : theme.border,
+                },
+              ]}
+            >
+              <Text style={styles.icon}>✍️</Text>
+              <Text style={[styles.label, { color: theme.text }]}>
+                {t('Kendim anlatayım')}
+              </Text>
+            </PressableScale>
+
+            {custom ? (
+              <View style={styles.customWrap}>
+                <TextInput
+                  value={customText}
+                  onChangeText={setCustomText}
+                  placeholder={t('Örn. Sabahları kalkmakta zorlanıyorum')}
+                  placeholderTextColor={theme.faint}
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: theme.surface,
+                      borderColor: theme.border,
+                      color: theme.text,
+                    },
+                  ]}
+                  multiline
+                  maxLength={120}
+                  autoFocus
+                  // Klavye açılırken düzen henüz yeni yüksekliğine
+                  // oturmamış oluyor; kaydırma bir kare sonraya bırakılıyor.
+                  onFocus={() =>
+                    setTimeout(() => scrollRef.current?.scrollToEnd({ animated: true }), 120)
+                  }
+                />
+                <Text style={[styles.inputHint, { color: theme.faint }]}>
+                  {t(
+                    'Kendi cümlen reçetenin adını ve formülün hedefini belirler. {kalan} karakter kaldı.',
+                    { kalan: 120 - customText.length }
+                  )}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+
+          <PressableScale
+            onPress={() => void start()}
+            disabled={!canContinue || classifying}
+            accessibilityRole="button"
+            style={[
+              styles.cta,
+              { backgroundColor: canContinue ? colors.pulse : theme.border },
+            ]}
+          >
+            <Text
+              style={[styles.ctaText, { color: canContinue ? colors.white : theme.faint }]}
+            >
+              {classifying ? t('Okunuyor…') : t('Devam Et')}
+            </Text>
+          </PressableScale>
+        </ScrollView>
+      </KeyboardAvoidingView>
+
+      <CameraMoodCapture
+        visible={cameraOpen}
+        onCancel={() => setCameraOpen(false)}
+        onResult={({ score, emotions }) => {
+          setCameraOpen(false);
+          // Hak yalnız başarılı ölçümde düşüyor.
+          void consumeFaceScan();
+          setScansLeft((left) => (left == null ? left : Math.max(0, left - 1)));
+          // Sonuç ne olursa olsun (sakin ya da gergin) doğrudan bir
+          // reçeteye geçilir — kullanıcıyı elle seçime geri göndermek
+          // bu düğmenin bütün amacını (fotoğraftan otomatik reçete)
+          // anlamsızlaştırıyordu.
+          haptics.success();
+          navigation.navigate('Examination', {
+            complaintId: CUSTOM_COMPLAINT_ID,
+            customText: moodComplaintTextFor(emotions),
+            faceMoodScore: score,
+          });
+        }}
+      />
     </Screen>
   );
 }
 
 /** Tek şikayet kartı — seçilince kısa bir yaylanma yapar. */
-function ComplaintRow({
-  complaint,
-  active,
-  onPress,
-}: {
-  complaint: Complaint;
-  active: boolean;
-  onPress: () => void;
-}) {
-  const theme = useTheme();
-  const t = useT();
-  const motion = useMotion();
-  const scale = useSharedValue(1);
-
-  const press = () => {
-    if (!motion.reduced) {
-      scale.value = withSequence(
-        withTiming(0.97, { duration: 90, easing: Easing.out(Easing.quad) }),
-        withSpring(1, { damping: 11, stiffness: 220 })
-      );
-    }
-    onPress();
-  };
-
-  const style = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
-
-  return (
-    <Animated.View style={style}>
-      <PressableScale
-        onPress={press}
-        pressedScale={0.99}
-        accessibilityRole="button"
-        accessibilityState={{ selected: active }}
-        style={[
-          styles.row,
-          {
-            backgroundColor: active ? theme.accentSoft : theme.surface,
-            borderColor: active ? theme.pulse : theme.border,
-          },
-        ]}
-      >
-        <Text style={styles.icon}>{complaint.icon}</Text>
-        <Text style={[styles.label, { color: theme.text }]}>{t(complaint.label)}</Text>
-      </PressableScale>
-    </Animated.View>
-  );
-}
-
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   content: { padding: 20, paddingBottom: 40 },
   back: { alignSelf: 'flex-start', paddingVertical: 6, paddingRight: 12 },
   backText: { fontFamily: fonts.sansMedium, fontSize: 13 },
@@ -255,6 +316,22 @@ const styles = StyleSheet.create({
     includeFontPadding: false,
   },
   label: { flex: 1, fontFamily: fonts.sans, fontSize: 14, lineHeight: 20 },
+  cameraRow: { borderWidth: 1.5 },
+  listDivider: {
+    fontFamily: fonts.sansMedium,
+    fontSize: 10,
+    letterSpacing: 1.5,
+    marginTop: 6,
+    marginBottom: 10,
+  },
+  cameraNote: {
+    fontFamily: fonts.sans,
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: -2,
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
   customWrap: { marginTop: 2, marginBottom: 10 },
   input: {
     borderWidth: 1,

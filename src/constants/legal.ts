@@ -55,7 +55,7 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
       },
       {
         heading: '3. Ağ bağlantıları',
-        body: ['Plasebo yalnızca iki durumda internete bağlanır:'],
+        body: ['Plasebo oturum açarken ve reklam getirirken internete bağlanır:'],
         bullets: [
           'Google ile oturum açma. Google’ın kendi oturum açma ekranına yönlendirilirsin; bu, Google’ın gizlilik politikasına tabidir. Uygulama yalnızca “profile” ve “email” kapsamlarını ister.',
           'Apple ile oturum açma (yalnızca iPhone). Apple’ın sistem penceresi açılır; bu, Apple’ın gizlilik politikasına tabidir. Uygulama yalnızca ad ve e-posta ister; ad ve e-posta Apple tarafından yalnızca ilk girişte verilir.',
@@ -63,20 +63,27 @@ export const LEGAL_DOCS: Record<LegalDocId, LegalDoc> = {
         ],
       },
       {
-        heading: '4. Analitik, reklam ve izleme yoktur',
+        heading: '4. Reklamlar',
         body: [
-          'Plasebo’da analiz aracı, reklam ağı, çökme raporlama servisi veya üçüncü taraf izleme kiti bulunmaz. Reklam kimliği okunmaz. Verilerin kimseye satılmaz veya paylaşılmaz.',
+          'Ücretsiz sürümde Google AdMob üzerinden reklam gösterilir. Reklam tek bir yerde çıkar: bir seansı bitirip ana sayfaya dönerken. Ritüelin, ölçümün ya da nefes adımının ortasında hiçbir zaman reklam gösterilmez; günde en çok üç reklam çıkar.',
+          'Reklamları getirmek için AdMob, cihazının reklam tanımlayıcısını ve cihaz bilgisi gibi standart reklam verilerini kendi gizlilik politikası kapsamında işler. Bu veriler uygulamadaki kayıtlarınla ilişkilendirilmez: şikâyetlerin, ölçümlerin, ritüel geçmişin, Sağlık verilerin ve kamera ya da mikrofonla yapılan ölçümler reklam ağına gönderilmez.',
+          'iPhone’da izleme izni penceresine “izin verme” dersen uygulama aynen çalışır, yalnızca reklamlar ilgi alanlarına göre değil genel olarak seçilir.',
+          'Reklam dışında analiz aracı, çökme raporlama servisi veya başka bir üçüncü taraf izleme kiti bulunmaz. Verilerin kimseye satılmaz veya paylaşılmaz.',
         ],
       },
       {
         heading: '5. İzinler',
         bullets: [
           'Bildirimler — yalnızca Ayarlar’dan günlük hatırlatıcıyı açarsan istenir. Bildirimler cihazda zamanlanır; push sunucusu kullanılmaz.',
-          'İnternet — yalnızca Google ya da Apple ile oturum açma için.',
+          'İnternet — oturum açma ve reklam için.',
           'Titreşim — dokunsal geri bildirim için; Ayarlar’dan kapatılabilir.',
+          'Mikrofon — yalnızca ritüelin nefes adımında, sen o ölçümü başlatırsan istenir. Ses kaydedilmez ve hiçbir yere gönderilmez; kayıttan yalnızca nefes ritmine ait sayılar çıkarılır.',
+          'Kamera — yalnızca sen ruh halini yüz ifadenden ölçmeyi seçersen istenir. Çekilen kareler cihazda işlenir, kaydedilmez ve cihazından çıkmaz; geriye yalnızca bir sayı kalır.',
+          'Apple Sağlık (yalnızca okuma, yalnızca iPhone) — yalnızca sen Ayarlar’dan açarsan istenir. Uyku süresi, dinlenme nabzı ve kalp atış hızı değişkenliği okunur; Sağlık uygulamasına hiçbir şey yazılmaz.',
+          'İzleme izni (yalnızca iPhone) — reklam tanımlayıcısının reklam kişiselleştirmesi için kullanılmasına izin verip vermediğini sorar; reddedilebilir.',
         ],
         body: [
-          'Uygulama mikrofona, kameraya, konuma, kişilere veya dosyalarına erişmez.',
+          'Uygulama konuma, kişilere veya dosyalarına erişmez. Mikrofon, kamera ve Sağlık erişimlerinin üçü de isteğe bağlıdır: hiçbirine izin vermeden uygulamanın tamamı kullanılabilir.',
         ],
       },
       {

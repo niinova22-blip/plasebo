@@ -11,15 +11,21 @@ import Animated, {
 import { BlurView } from 'expo-blur';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import Icon, { type IconName } from './Icon';
 import { fonts } from '../constants/typography';
 import { useT, useTheme } from '../context/SettingsContext';
 import { useMotion } from '../hooks/useMotion';
 
-const ICONS: Record<string, string> = {
-  Home: '🧪',
-  Stats: '📊',
-  Archive: '🗂️',
-  Settings: '⚙️',
+/**
+ * Sekme ikonları. Emoji değil çizgi ikon: emoji kendi çok renkli
+ * paletini getiriyor, tema rengini alamıyor ve her platformda başka
+ * çiziliyordu. Ayrıntı için `components/Icon.tsx`.
+ */
+const ICONS: Record<string, IconName> = {
+  Home: 'flask',
+  Stats: 'chart',
+  Archive: 'archive',
+  Settings: 'sliders',
 };
 
 const LABELS: Record<string, string> = {
@@ -93,7 +99,15 @@ function TabItem({ focused, name, onPress, onLongPress }: TabItemProps) {
       style={styles.item}
     >
       <Animated.View style={[styles.itemContent, contentStyle]}>
-        <Text style={styles.icon}>{ICONS[name] ?? '•'}</Text>
+        <Icon
+          name={ICONS[name] ?? 'flask'}
+          size={22}
+          color={focused ? theme.text : theme.sub}
+          // Aktif sekme yalnızca renkle değil çizgi ağırlığıyla da
+          // ayrılıyor; opaklık farkı tek başına küçük ekranda zayıf
+          // kalıyordu.
+          strokeWidth={focused ? 1.8 : 1.4}
+        />
         <Text
           style={[
             styles.label,
@@ -171,15 +185,6 @@ const styles = StyleSheet.create({
   },
   item: { flex: 1, alignItems: 'center' },
   itemContent: { alignItems: 'center' },
-  // Emoji glifi satır kutusundan taşıp üstten kırpılıyordu (Android):
-  // yazı tipi dolgusu kapatılıp satır yüksekliği glife göre açıldı.
-  icon: {
-    fontSize: 18,
-    lineHeight: 24,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    includeFontPadding: false,
-  },
   label: {
     fontFamily: fonts.sans,
     fontSize: 10,

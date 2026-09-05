@@ -41,10 +41,16 @@ export interface Settings {
   smartNudges: boolean;
   /** Dürtme sayısı (gün başına). */
   nudgesPerDay: number;
+  /**
+   * 24 saatlik döngü: gün içinde üç kısa nefes ölçümü daveti ve ertesi
+   * sabah tek bir rapor. Varsayılan kapalı — mikrofon kullanan hiçbir
+   * şey kullanıcı açıkça istemeden çalışmıyor.
+   */
+  dailyCycle: boolean;
 }
 
 export const defaultSettings: Settings = {
-  themeMode: 'dark',
+  themeMode: 'dawn',
   haptics: true,
   soundVolume: 0.6,
   reminderEnabled: false,
@@ -58,6 +64,7 @@ export const defaultSettings: Settings = {
   // kapalıya çekilir, böylece açık görünen bir anahtar boşa çalışmaz.
   smartNudges: true,
   nudgesPerDay: 2,
+  dailyCycle: false,
 };
 
 interface SettingsContextValue {
@@ -88,9 +95,18 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
         if (raw) {
           try {
             const stored = JSON.parse(raw) as Partial<Settings>;
-            // Eski sürümlerde `themeMode: 'system'` kaydedilmiş olabilir;
-            // o seçenek kaldırıldığı için koyuya taşınıyor.
-            if ((stored.themeMode as string) === 'system') stored.themeMode = 'dark';
+            // Kaldırılmış tema kimlikleri taşınıyor. `system` çoktan
+            // yoktu; `dark` de 2026 Eylül'ünde kaldırıldı.
+            //
+            // İkisi farklı yerlere gidiyor ve bu bilerek: `system` hiçbir
+            // zaman bilinçli bir koyuluk tercihi değildi, o yüzden yeni
+            // varsayılana (Şafak) düşüyor. `dark` ise kullanıcının kendi
+            // seçtiği koyu bir temaydı; onu aydınlık bir varsayılana
+            // atmak seçimini elinden almak olurdu, o yüzden en yakın
+            // karşılığına — Sis'e — taşınıyor.
+            const savedTheme = stored.themeMode as string | undefined;
+            if (savedTheme === 'system') stored.themeMode = 'dawn';
+            else if (savedTheme === 'dark') stored.themeMode = 'mist';
             setSettings({ ...defaultSettings, ...stored });
           } catch {
             // bozuk kayıt — varsayılanlarla devam

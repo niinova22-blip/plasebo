@@ -4,7 +4,6 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
 import PressableScale from '../components/PressableScale';
-import TransparencyPill from '../components/TransparencyPill';
 import { fonts } from '../constants/typography';
 import { useUser } from '../context/UserContext';
 import { useLang, useT, useTheme } from '../context/SettingsContext';
@@ -12,15 +11,24 @@ import { usePremium } from '../context/PremiumContext';
 import { GOAL_LABELS, generateDailyFormula } from '../utils/formulaEngine';
 import { daysBetween, toISODate } from '../utils/storage';
 import type { RootStackParamList } from '../navigation/types';
-import { PREMIUM_ENABLED } from '../constants/plans';
+import { PLAN_NAME, PREMIUM_ENABLED } from '../constants/plans';
+import { FORCE_FREE_TIER } from '../constants/devTier';
+import Icon, { type IconName } from '../components/Icon';
 import type { Goal, Session } from '../types';
 import { translateFormulaName, type Lang, type TranslateFn } from '../i18n';
 
-const STEP_ICONS: Record<string, string> = {
-  color: '🎨',
-  sound: '🎧',
-  breath: '🌬️',
-  word: '🔤',
+/**
+ * Kayıt satırındaki adım ikonları.
+ *
+ * Emoji dizisiydi ("🎨 🎧 🌬️") ve tek bir metin satırına yazılıyordu.
+ * Artık çizgi ikon: rengini temadan alıyor ve listede yanındaki
+ * yazıyla aynı ağırlıkta okunuyor. `color` burada da yok — o adımı
+ * satırın solundaki renk örneği zaten gösteriyor.
+ */
+const STEP_ICONS: Record<string, IconName> = {
+  sound: 'wave',
+  breath: 'wind',
+  word: 'quote',
 };
 
 /** Tarih başlığı — İngilizcede ay öne geçer. */
@@ -51,10 +59,23 @@ function SessionRow({ session }: { session: Session }) {
           {translateFormulaName(name, t)}
           {session.crisis ? t(' · kriz') : ''}
         </Text>
-        <Text style={[styles.rowSub, { color: theme.sub }]}>
-          {t(GOAL_LABELS[session.goal as Goal] ?? session.goal)} ·{' '}
-          {session.steps.map((s) => STEP_ICONS[s] ?? '•').join(' ')}
-        </Text>
+        <View style={styles.rowSubLine}>
+          <Text style={[styles.rowSub, { color: theme.sub }]}>
+            {t(GOAL_LABELS[session.goal as Goal] ?? session.goal)}
+          </Text>
+          {session.steps
+            .filter((s) => STEP_ICONS[s])
+            .map((s, i) => (
+              <Icon
+                key={`${s}-${i}`}
+                name={STEP_ICONS[s]}
+                size={13}
+                color={theme.faint}
+                strokeWidth={1.6}
+                style={styles.stepIcon}
+              />
+            ))}
+        </View>
       </View>
       <Text style={[styles.score, { color: theme.pulse }]}>{session.score}/10</Text>
     </View>
@@ -110,7 +131,7 @@ export default function ArchiveScreen() {
                 adet: user.sessions.length,
               })}
             </Text>
-            {PREMIUM_ENABLED && hiddenCount > 0 ? (
+            {(PREMIUM_ENABLED || FORCE_FREE_TIER) && hiddenCount > 0 ? (
               <PressableScale
                 onPress={() => navigation.navigate('Plans')}
                 accessibilityRole="button"
@@ -118,8 +139,8 @@ export default function ArchiveScreen() {
               >
                 <Text style={[styles.upsellText, { color: theme.sub }]}>
                   {t(
-                    '🔒 {gizli} eski kayıt gizli. Ücretsiz kademe son {gun} günü gösterir — kayıtlar silinmedi, ileride hepsi geri gelecek.',
-                    { gizli: hiddenCount, gun: limits.historyDays }
+                    '🔒 {gizli} eski kayıt gizli. Ücretsiz kademe son {gun} günü gösterir — kayıtlar silinmedi, {plan} ile hepsi geri gelir.',
+                    { gizli: hiddenCount, gun: limits.historyDays, plan: PLAN_NAME }
                   )}
                 </Text>
               </PressableScale>
@@ -141,13 +162,6 @@ export default function ArchiveScreen() {
           </Text>
         )}
         renderItem={({ item }) => <SessionRow session={item} />}
-        ListFooterComponent={
-          <TransparencyPill
-            light
-            style={styles.pill}
-            text={t('⚗️ Devamlılık, plasebo yanıtını besleyen en güçlü şey.')}
-          />
-        }
       />
     </Screen>
   );
@@ -179,10 +193,13 @@ const styles = StyleSheet.create({
   swatch: { width: 10, height: 36, borderRadius: 5, marginRight: 12 },
   rowText: { flex: 1 },
   rowTitle: { fontFamily: fonts.sansMedium, fontSize: 14 },
+  rowSubLine: { flexDirection: 'row', alignItems: 'center', marginTop: 2 },
+  stepIcon: { marginLeft: 6 },
+  // Üst boşluk artık satırı saran kutuda; burada kalsaydı ikisi
+  // toplanıyordu.
   rowSub: {
     fontFamily: fonts.sans,
     fontSize: 11,
-    marginTop: 3,
   },
   score: { fontFamily: fonts.sansBold, fontSize: 13 },
   upsell: { marginTop: 10, paddingVertical: 4 },

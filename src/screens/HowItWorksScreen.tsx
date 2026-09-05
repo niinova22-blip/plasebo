@@ -2,7 +2,6 @@ import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
-import TransparencyPill from '../components/TransparencyPill';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
 import { useT } from '../context/SettingsContext';
@@ -40,8 +39,20 @@ const BLOCKS: { title: string; body: string }[] = [
     body: 'Beklenti iki yönlü çalışır. Bir şeyin sana kötü geleceğini düşünmek de gerçek şikâyet üretebilir; buna nocebo deniyor. Bu yüzden burada hiçbir şey "kötü gün" olarak etiketlenmiyor ve düşük puan bir başarısızlık gibi sunulmuyor.',
   },
   {
+    title: 'Yüz ve nefes analizi ne yapıyor?',
+    body: 'İki isteğe bağlı ölçüm var. Birincisi: durum bilgisi ekranında bir fotoğraf çekersen, telefonunda çalışan bir yapay zeka modeli yüz ifadeni yedi duyguya dağıtıyor ve reçeten buna göre yazılıyor. İkincisi: nefes adımında mikrofon, nefes verişlerinin ritmini dinleyip ne kadar düzenli olduğunu ölçüyor. İkisi de tamamen isteğe bağlı; kullanmazsan akış aynı şekilde işler.',
+  },
+  {
+    title: 'Bu analizler ne kadar güvenilir?',
+    body: 'Yüz modeli AffectNet adlı bir veri kümesiyle eğitildi ve tek bir kareden tahmin yapıyor — ışık, açı ve ifadenin belirginliği sonucu ciddi biçimde değiştirir; klinik bir teşhis değil. Nefes ölçümü ise ses seviyesinin ritmine bakar, nefes duyulmayacak kadar sessizse ya da ortamda başka ses varsa sayı uydurmak yerine "sinyal yakalanamadı" der. Nefes ölçümü puanın yerine geçmez, yanına konur.',
+  },
+  {
+    title: 'Fotoğrafım ve sesim nereye gidiyor?',
+    body: 'Hiçbir yere. Fotoğraf ve ses telefonun içinde işlenir, buluta gönderilmez ve saklanmaz; yalnızca çıkan sayı seansın kaydına yazılır. Model de uygulamanın içinde gömülü, çalışmak için internet gerekmiyor.',
+  },
+  {
     title: 'Verilerim nerede?',
-    body: 'Her şey telefonunda, yerel depolamada duruyor. Sunucu yok, hesap yok, paylaşım yok.',
+    body: 'Ritüel geçmişin, puanların ve ölçümlerin telefonunda, yerel depolamada duruyor — sunucuya gönderilmiyor. Uygulamaya giriş için bir Google ya da Apple hesabı kullanılıyor; bu hesap yalnızca kimliğini doğrulamak için, ritüel verilerin oraya yüklenmiyor.',
   },
 ];
 
@@ -157,11 +168,6 @@ export default function HowItWorksScreen({ navigation }: Props) {
             </Text>
           </View>
         ))}
-
-        <TransparencyPill
-          style={styles.pill}
-          text={t('⚗️ Bu ekran dahil her yerde aynı şeyi yazıyoruz: bu bir plasebo.')}
-        />
       </ScrollView>
     </Screen>
   );

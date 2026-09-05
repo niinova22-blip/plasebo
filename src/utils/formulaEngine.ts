@@ -11,6 +11,7 @@ import {
 import { PACK_CONTENT } from '../constants/packs';
 import type { PackId } from '../constants/plans';
 import type { Formula, Goal, StepKind } from '../types';
+import type { IconName } from '../components/Icon';
 
 /**
  * Formül motoru — tamamen saf. Hiçbir fonksiyon depolamaya yazmaz,
@@ -265,6 +266,21 @@ export function isShamDay(date: string): boolean {
   return seed % 3 === 0;
 }
 
+/** Kameradan çıkan ruh hali skoru bu değerin üstündeyse "kötü" sayılır. */
+export const MOOD_ADJUST_THRESHOLD = 7;
+
+/**
+ * Kötü ruh haline karşı ekstra bir nefes turu ekler.
+ *
+ * Sabit çarpan (`applyDose`) kullanılmıyor bilerek: bu fonksiyon zaten
+ * dozlanmış bir formülün üstüne uygulanabilir, üstüne tekrar çarpan
+ * uygulamak süreleri katlayıp yanlış bir sonuç üretirdi. Tur sayısına
+ * sabit +1 eklemek katlanmıyor.
+ */
+export function withExtraCalmRound(formula: Formula): Formula {
+  return { ...formula, breath: { ...formula.breath, rounds: formula.breath.rounds + 1 } };
+}
+
 /** Doz çarpanını formüldeki sürelere uygular. */
 export function applyDose(formula: Formula, dose: number): Formula {
   if (dose <= 1) return { ...formula, dose: 1 };
@@ -431,11 +447,21 @@ export const STEP_LABELS: Record<StepKind, string> = {
   word: 'Kelime',
 };
 
-export const STEP_ICONS: Record<StepKind, string> = {
-  color: '🎨',
-  sound: '🎧',
-  breath: '🌬️',
-  word: '🔤',
+/**
+ * Adım türünün ikonu.
+ *
+ * Değerler artık emoji değil `components/Icon.tsx` içindeki çizgi ikon
+ * adları. Tip yalnızca tip olarak alınıyor (`import type`), yani bu
+ * yardımcı dosya bileşen katmanına çalışma anında bağlanmıyor.
+ *
+ * `color` bilerek listede yok: renk adımının ikonu, adımın kendi rengi.
+ * Oraya bir damla çizmek rengin üstüne rengi anlatan bir sembol koymak
+ * olurdu; kutunun kendisi zaten örneğin ta kendisi.
+ */
+export const STEP_ICONS: Record<Exclude<StepKind, 'color'>, IconName> = {
+  sound: 'wave',
+  breath: 'wind',
+  word: 'quote',
 };
 
 /** Her ekranda görünen şeffaflık cümleleri. */

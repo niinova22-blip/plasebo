@@ -52,6 +52,32 @@ export interface Session {
   scoreAfter?: number;
   /** Ritüelin gerçekte ne kadar sürdüğü (saniye). */
   durationSeconds?: number;
+
+  /* --- Objektif sinyaller --------------------------------------------
+   * Yüz okumasının ham hâli. Puanların (scoreBefore/scoreAfter) yanına konan,
+   * cihaz üzerinde ölçülen kaba sinyaller. Bunlar bir duygu teşhisi
+   * değil; ölçümün ham kaynağını kayıtta tutmak için bir alan.
+   */
+  /** Ritüel öncesi kamera fotoğrafından çıkan kaba ruh hali skoru (1-10, yüksek = kötü). */
+  faceMoodBefore?: number;
+  /** Ritüel sonrası kamera fotoğrafından çıkan kaba ruh hali skoru (1-10, yüksek = kötü). */
+  faceMoodAfter?: number;
+  /** `scoreAfter` kameradan mı geldi? Yeni kayıtlarda her zaman doğru; eski kayıtlarda elle verilmiş olabilir. */
+  scoreAfterFromCamera?: boolean;
+  /** Nefes adımında mikrofon genliğinden çıkan düzenlilik skoru (0-1, yüksek = daha düzenli). */
+  breathRegularity?: number;
+  /** Aynı kayıttan çıkan dakikadaki nefes sayısı. */
+  breathsPerMinute?: number;
+  /** Aynı kayıttan çıkan kaba derinlik ölçüsü (0-1). */
+  breathDepth?: number;
+  /** Ritüel öncesi refleks ölçümü — ortanca tepki süresi (ms). */
+  reactionBeforeMs?: number;
+  /** Ritüel sonrası refleks ölçümü — ortanca tepki süresi (ms). */
+  reactionAfterMs?: number;
+  /** Sağlık verisi bağlıysa: o günkü uyku süresi (dakika). */
+  sleepMinutes?: number;
+  /** Sağlık verisi bağlıysa: dinlenme nabzı (atım/dakika). */
+  restingHeartRate?: number;
 }
 
 export interface FormulaColor {

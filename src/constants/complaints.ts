@@ -23,8 +23,6 @@ export interface Complaint {
   prescriptionName: string;
   /** Reçetedeki sözde etki açıklaması. */
   formulaDesc: string;
-  /** Ölçüm ekranlarında sorulan soru. */
-  measureQuestion: string;
   /** Kart üzerindeki simge. */
   icon: string;
 }
@@ -37,7 +35,6 @@ export const COMPLAINTS: Complaint[] = [
     goal: 'focus',
     prescriptionName: 'Zihin Berraklığı',
     formulaDesc: 'Dağınık nöral bağlantıları tek odak noktasında toplar',
-    measureQuestion: 'Zihnindeki dağınıklığı şu an puanla',
     icon: '🎯',
   },
   {
@@ -47,7 +44,6 @@ export const COMPLAINTS: Complaint[] = [
     goal: 'anxiety',
     prescriptionName: 'Nefes Açıcı',
     formulaDesc: 'Göğüs bölgesindeki sempatik sinir aktivasyonunu yatıştırır',
-    measureQuestion: 'İçindeki sıkışıklığı şu an puanla',
     icon: '🫁',
   },
   {
@@ -57,7 +53,6 @@ export const COMPLAINTS: Complaint[] = [
     goal: 'energy',
     prescriptionName: 'Aktivasyon',
     formulaDesc: 'Uyuyan dopamin devrelerini düşük frekanslı uyarıyla harekete geçirir',
-    measureQuestion: 'Enerji eksikliğini şu an puanla',
     icon: '⚡',
   },
   {
@@ -67,7 +62,6 @@ export const COMPLAINTS: Complaint[] = [
     goal: 'sleep',
     prescriptionName: 'Sessizleştirici',
     formulaDesc: 'Varsayılan mod ağı aktivitesini frekans entrainment ile filtreler',
-    measureQuestion: 'Kafandaki kalabalığı şu an puanla',
     icon: '🌫️',
   },
   {
@@ -77,7 +71,6 @@ export const COMPLAINTS: Complaint[] = [
     goal: 'anxiety',
     prescriptionName: 'Kas Sıfırlayıcı',
     formulaDesc: 'Kronik kas gerilimini tetikleyen kortikal uyarımı baskılar',
-    measureQuestion: 'Bedenindeki gerilimi şu an puanla',
     icon: '🪢',
   },
   {
@@ -87,7 +80,6 @@ export const COMPLAINTS: Complaint[] = [
     goal: 'energy',
     prescriptionName: 'Başlatıcı',
     formulaDesc: 'Harekete geçişi engelleyen prefrontal frenleme döngüsünü keser',
-    measureQuestion: 'Hareketsizlik hissini şu an puanla',
     icon: '🚀',
   },
 ];
@@ -168,6 +160,26 @@ export function goalForText(text: string): Goal {
   return goals[hashText(lower) % goals.length];
 }
 
+/**
+ * Cihaz üstü modelin bulduğu hedefler — metin → hedef.
+ *
+ * `customComplaint` senkron kalmak zorunda: akıştaki her ekran şikayet
+ * nesnesini bu metinden yeniden kuruyor ve hiçbiri `await` edemez. Model
+ * ise asenkron. Çözüm, sınıflandırmayı akış başlarken bir kez yapıp
+ * sonucu buraya bırakmak; `customComplaint` de varsa onu, yoksa anahtar
+ * kelime eşlemesini kullanıyor.
+ *
+ * Bellekte duruyor, diske yazılmıyor: bu eşleme yalnızca o anki akış
+ * boyunca gerekli — seans kaydedilirken hedef zaten kaydın içine
+ * yazılıyor, yani geçmiş kayıtlar bu tabloya bağlı değil.
+ */
+const textGoalOverrides = new Map<string, Goal>();
+
+/** Sınıflandırma sonucunu, akışın geri kalanının görebileceği yere koyar. */
+export function rememberTextGoal(text: string, goal: Goal): void {
+  textGoalOverrides.set(text.trim().toLocaleLowerCase('tr-TR'), goal);
+}
+
 /** Serbest şikayet için reçete adları — metnin karmasına göre seçilir. */
 const CUSTOM_NAMES = [
   'Kişiye Özel Karışım',
@@ -197,10 +209,10 @@ export function customComplaint(text: string): Complaint {
     id: CUSTOM_COMPLAINT_ID,
     label: clean,
     category: 'custom',
-    goal: goalForText(clean),
+    goal:
+      textGoalOverrides.get(clean.toLocaleLowerCase('tr-TR')) ?? goalForText(clean),
     prescriptionName: CUSTOM_NAMES[hash % CUSTOM_NAMES.length],
     formulaDesc: CUSTOM_DESCS[(hash >>> 8) % CUSTOM_DESCS.length],
-    measureQuestion: 'Anlattığın şeyin şiddetini şu an puanla',
     icon: '✍️',
   };
 }

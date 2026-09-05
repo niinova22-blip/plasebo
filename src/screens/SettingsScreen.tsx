@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import {
   Alert,
   Linking,
@@ -19,23 +19,36 @@ import DateTimePicker, {
 } from '@react-native-community/datetimepicker';
 import Screen from '../components/Screen';
 import SettingRow from '../components/SettingRow';
+import {
+  HEALTH_SUPPORTED,
+  connectHealth,
+  healthAvailable,
+  isHealthEnabled,
+  setHealthEnabled,
+} from '../utils/health';
 import SegmentedControl from '../components/SegmentedControl';
+import PressableScale from '../components/PressableScale';
 import TransparencyPill from '../components/TransparencyPill';
 import { fonts } from '../constants/typography';
 import { useUser } from '../context/UserContext';
 import { useSettings, useT, useTheme } from '../context/SettingsContext';
 import { useAuth } from '../context/AuthContext';
 import { usePremium } from '../context/PremiumContext';
-import { PREMIUM_ENABLED } from '../constants/plans';
+import { PLAN_NAME, PREMIUM_ENABLED } from '../constants/plans';
+import { FORCE_FREE_TIER } from '../constants/devTier';
+import { resetFaceScanQuota } from '../utils/faceScanQuota';
 import {
+  cancelDailyCycle,
   cancelNudges,
   cancelReminder,
   formatTime,
   requestPermission,
+  scheduleDailyCycle,
   scheduleDailyReminder,
   scheduleNudges,
 } from '../utils/reminders';
 import { haptics } from '../utils/haptics';
+import { adsPrivacyOptionsRequired, showAdsPrivacyOptions } from '../utils/ads';
 import type { ThemeMode } from '../theme/theme';
 import { LANGUAGE_LABELS, type LanguagePref } from '../i18n';
 import type { RootStackParamList } from '../navigation/types';
@@ -44,8 +57,9 @@ import type { RootStackParamList } from '../navigation/types';
 const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
 
 const THEME_OPTIONS: { value: ThemeMode; label: string }[] = [
+  { value: 'dawn', label: 'Şafak' },
+  { value: 'mist', label: 'Sis' },
   { value: 'light', label: 'Açık' },
-  { value: 'dark', label: 'Koyu' },
 ];
 
 /** Dil seçimi: cihazı izle ya da bir dile sabitle. */
@@ -84,12 +98,115 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const t = useT();
   const [name, setName] = useState(user.name);
+
+  // Ad hesaptan sonradan doldurulabiliyor (girişin hemen ardından, ya da
+  // uygulama kökünde adı boş bulan tohumlama). Bu ekran o sırada zaten
+  // açıksa yerel kopya eskimiş kalıyordu: kutu boş görünüyor, kaydedilen
+  // değer başka oluyordu. Yalnızca kutu boşken tazeleniyor — kullanıcı
+  // yazmaya başladıysa üzerine yazmak olmaz.
+  useEffect(() => {
+    if (!name.trim() && user.name.trim()) setName(user.name);
+  }, [user.name, name]);
   /** Saat seçici açık mı? Android'de sistem penceresi olarak açılır. */
   const [pickingTime, setPickingTime] = useState(false);
   // iOS'ta seçici, kullanıcı çarkı çevirdikçe onChange yolluyor. Saat
   // onaylanana kadar burada bekletiliyor; ayar ve bildirim yalnızca
   // "Tamam"a basılınca bir kez kuruluyor.
   const [draftTime, setDraftTime] = useState<Date | null>(null);
+
+  /**
+   * Sağlık verisi anahtarı. Tercih HealthKit'te değil yerelde duruyor:
+   * Apple, okuma izninin sonucunu uygulamaya söylemiyor, o yüzden
+   * "açık mı" sorusunun tek güvenilir kaynağı bu kayıt.
+   */
+  const [healthOn, setHealthOn] = useState(false);
+
+  /**
+   * Reklam rızası tercihleri. Düğme yalnız UMP gerektirdiğinde görünüyor —
+   * AB/İngiltere/İsviçre kullanıcısında rıza sonradan değiştirilebilmeli,
+   * Türkiye'deki kullanıcı ise rıza ekranıyla hiç karşılaşmadığı için
+   * ayarlarında o satırın işi yok.
+   */
+  const [adsPrivacyOn, setAdsPrivacyOn] = useState(false);
+  useEffect(() => {
+    // Hemen altındaki sağlık denetiminde olduğu gibi iptal koruması var:
+    // ekran cevap gelmeden kapatılırsa sökülmüş bileşene yazılmıyor.
+    let alive = true;
+    void adsPrivacyOptionsRequired().then((required) => {
+      if (alive) setAdsPrivacyOn(required);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+  useEffect(() => {
+    let alive = true;
+    void isHealthEnabled().then((v) => {
+      if (alive) setHealthOn(v);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const onHealthToggle = async (next: boolean) => {
+    if (!next) {
+      setHealthOn(false);
+      await setHealthEnabled(false);
+      return;
+    }
+    // Önce açılıyor: izin diyaloğu ancak tercih açıkken anlamlı.
+    await setHealthEnabled(true);
+    const { ok, hasData } = await connectHealth();
+    if (!ok) {
+      // Diyalog hiç açılamadı (cihazda HealthKit yok ya da hata) — bu
+      // durumda anahtar açık kalırsa kullanıcı çalıştığını sanır.
+      await setHealthEnabled(false);
+      setHealthOn(false);
+      Alert.alert(
+        t('Sağlık verisi kullanılamıyor'),
+        t('Bu cihazda Sağlık verisi okunamıyor.')
+      );
+      return;
+    }
+    setHealthOn(true);
+    if (!hasData) {
+      // Anahtar bilerek açık bırakılıyor: izin verilmiş olabilir, sadece
+      // okunacak kayıt yok. Eskiden burada anahtar sessizce kapanıyordu ve
+      // izin veren kullanıcı düğmenin bozuk olduğunu sanıyordu.
+      Alert.alert(
+        t('Şimdilik okunacak veri yok'),
+        t(
+          'Bağlantı açıldı ama Sağlık uygulamasında dün geceye ait uyku ya da dinlenme nabzı kaydı bulunamadı. Bu genelde saat/uyku takibi olmadığında olur. Kayıt oluştuğunda reçeten kendiliğinden ona göre ayarlanır.'
+        )
+      );
+    }
+  };
+
+  /**
+   * 24 saatlik döngü anahtarı.
+   *
+   * Bildirim izni yoksa döngünün hiçbir parçası çalışmaz (davetler
+   * bildirimle geliyor), o yüzden izin burada isteniyor ve verilmezse
+   * anahtar açılmıyor — açık görünüp iş görmeyen bir ayar bırakmıyoruz.
+   */
+  const onDailyCycleToggle = async (next: boolean) => {
+    if (!next) {
+      updateSettings({ dailyCycle: false });
+      await cancelDailyCycle();
+      return;
+    }
+    const granted = await requestPermission();
+    if (!granted) {
+      Alert.alert(
+        t('Bildirim izni yok'),
+        t('Ölçüm davetleri bildirimle geliyor; izin vermeden bu döngü çalışmaz.')
+      );
+      return;
+    }
+    updateSettings({ dailyCycle: true });
+    await scheduleDailyCycle(t);
+  };
 
   const onReminderToggle = async (enabled: boolean) => {
     if (!enabled) {
@@ -235,6 +352,10 @@ export default function SettingsScreen() {
           onPress: async () => {
             await cancelReminder();
             await cancelNudges();
+            await cancelDailyCycle();
+            // Günlük ölçüm sayacı da kullanıcıya ait bir kayıt: hesap
+            // silindiğinde cihazda kalmamalı.
+            await resetFaceScanQuota();
             reset();
             resetSettings();
             resetPremium();
@@ -286,27 +407,34 @@ export default function SettingsScreen() {
 
         {/* Plan satırı yalnızca satın alma açıkken görünür. Kapalıyken
             gösterilecek bir kademe yok: herkes tam sürümü kullanıyor. */}
-        {PREMIUM_ENABLED ? (
+        {PREMIUM_ENABLED || FORCE_FREE_TIER ? (
           <SettingRow
             label={t('Plan')}
-            value={isPremium ? 'Premium' : 'Freemium'}
+            value={isPremium ? PLAN_NAME : t('Ücretsiz')}
             hint={
               isPremium
                 ? packs.length
                   ? t('Tüm özellikler açık · {adet} içerik paketi', { adet: packs.length })
                   : t('Tüm özellikler açık.')
-                : t('Dört hedef, temel formül havuzu, 7 günlük geçmiş. Premium yakında.')
+                : t('Dört hedef, temel formül havuzu, 7 günlük geçmiş.')
             }
             onPress={() => navigation.navigate('Plans')}
           />
         ) : null}
 
-        {/* ---------------- Profil ---------------- */}
+        {/* ---------------- Profil ----------------
+            Ad hesaptan otomatik geliyor ama kilitli değil: sağlayıcının
+            verdiği ad (ya da e-postadan türetilen karşılığı) her zaman
+            kişinin kendini çağırdığı ad olmuyor. */}
         <Text style={[styles.section, { color: theme.sub }]}>{t('ADIN')}</Text>
         <TextInput
           value={name}
           onChangeText={setName}
-          onBlur={() => update({ name: name.trim() || 'Misafir' })}
+          // Kutu boşaltılırsa "Misafir" değil, hesaptan gelen ada
+          // dönülüyor: kullanıcı adı silmekle misafir olmuyor.
+          onBlur={() =>
+            update({ name: name.trim() || account?.name?.trim() || 'Misafir' })
+          }
           placeholder={t('Adın')}
           placeholderTextColor={theme.faint}
           style={[
@@ -315,6 +443,9 @@ export default function SettingsScreen() {
           ]}
           maxLength={24}
         />
+        <Text style={[styles.hint, { color: theme.faint }]}>
+          {t('Hesabından alındı; dilediğin gibi değiştirebilirsin.')}
+        </Text>
 
         {/* Hedef seçimi burada değil, ana ekrandaki şeritte yapılır:
             aynı seçimin iki yerde durması, hangisinin geçerli olduğunu
@@ -331,7 +462,7 @@ export default function SettingsScreen() {
           }}
         />
         <Text style={[styles.hint, { color: theme.faint }]}>
-          {t('Renk paleti aynı kalır; yalnızca zemin ve metin rolleri yer değiştirir.')}
+          {t('Vurgu rengi üç temada da aynı; değişen zemin, yüzey ve metin tonları.')}
         </Text>
 
         <Text style={[styles.miniLabel, styles.spaced, { color: theme.sub }]}>
@@ -361,7 +492,7 @@ export default function SettingsScreen() {
         />
 
         <View style={styles.spacer} />
-        {limits.customDose || !PREMIUM_ENABLED ? (
+        {limits.customDose ? (
           <>
             <Text style={[styles.miniLabel, { color: theme.sub }]}>{t('Doz')}</Text>
             <SegmentedControl
@@ -379,7 +510,7 @@ export default function SettingsScreen() {
           <SettingRow
             label={t('Doz')}
             value={t('Tek doz')}
-            hint={t('Ritüel süresini kendin ayarlamak yakında açılacak.')}
+            hint={t('Ritüel süresini kendin ayarlamak {plan} ile açılır.', { plan: PLAN_NAME })}
             onPress={() => navigation.navigate('Plans')}
           />
         )}
@@ -394,9 +525,29 @@ export default function SettingsScreen() {
           onSwitchChange={(v) => updateSettings({ blindTest: v })}
         />
 
+        {/* Sağlık verisi: varsayılan kapalı, tek dokunuşla açılıp
+            kapanıyor. Açılırken izin diyaloğu çıkıyor; kullanıcı
+            reddederse anahtar kendiliğinden geri kapanıyor, çünkü
+            "açık ama veri yok" durumu yanıltıcı olurdu. */}
+        {HEALTH_SUPPORTED && healthAvailable() ? (
+          <SettingRow
+            label={t('Sağlık verisi (Apple Sağlık)')}
+            hint={
+              healthOn
+                ? t(
+                    'Dün geceki uyku süren ve dinlenme nabzın okunuyor; az uyunmuş bir gecede reçeteye fazladan bir sakinleştirme turu ekleniyor. Sağlık uygulamasına hiçbir şey yazılmaz.'
+                  )
+                : t(
+                    'Kapalı. Açarsan dün geceki uyku süren okunup reçeteni etkiler. Veri cihazından çıkmaz, hiçbir şey geri yazılmaz.'
+                  )
+            }
+            switchValue={healthOn}
+            onSwitchChange={(v) => void onHealthToggle(v)}
+          />
+        ) : null}
+
         <SettingRow
           label={t('Titreşimli geri bildirim')}
-          hint={t('Adım geçişlerinde ve butonlarda hafif titreşim.')}
           switchValue={settings.haptics}
           onSwitchChange={(v) => updateSettings({ haptics: v })}
         />
@@ -441,6 +592,49 @@ export default function SettingsScreen() {
               {t('Hatırlatmalar 10:00 ile 21:00 arasına dağıtılır; saatleri her hafta değişir.')}
             </Text>
           </>
+        ) : null}
+
+        {/* 24 saatlik döngü. Mikrofon kullandığı için varsayılan kapalı ve
+            ne yaptığı açıkça yazıyor: arka planda dinleyen hiçbir şey yok.
+
+            Plus'a ait, çünkü sattığımız şey ölçüm: gün içi nefes ölçümü ve
+            sabah raporu bu katmanın en pahalı parçası. Kapalı kademede
+            anahtar hiç görünmüyor, yerine ne olduğunu anlatan bir satır
+            duruyor — kilitli bir anahtar göstermek, dokunulduğunda hiçbir
+            şey olmayan bir anahtar demek. */}
+        {limits.dailyReport ? (
+          <SettingRow
+            label={t('24 saatlik döngü')}
+            hint={t(
+              'Gün içinde üç kez 45 saniyelik nefes ölçümü önerilir; ertesi sabah hepsi tek bir raporda toplanır. Mikrofon yalnızca ölçüm ekranı açıkken çalışır, arka planda hiçbir şey dinlenmez.'
+            )}
+            switchValue={settings.dailyCycle}
+            onSwitchChange={(v) => void onDailyCycleToggle(v)}
+          />
+        ) : (
+          <SettingRow
+            label={t('24 saatlik döngü')}
+            value={t('Kapalı')}
+            hint={t(
+              'Gün içinde üç kısa nefes ölçümü ve ertesi sabah tek bir rapor. {plan} ile açılır.',
+              { plan: PLAN_NAME }
+            )}
+            onPress={() => navigation.navigate('Plans')}
+          />
+        )}
+        {limits.dailyReport && settings.dailyCycle ? (
+          <PressableScale
+            onPress={() => {
+              haptics.tap();
+              navigation.navigate('DailyReport');
+            }}
+            accessibilityRole="button"
+            style={styles.reportLink}
+          >
+            <Text style={[styles.reportLinkText, { color: theme.pulse }]}>
+              {t('📊 Son 24 saatin raporunu aç')}
+            </Text>
+          </PressableScale>
         ) : null}
 
         {/*
@@ -529,7 +723,6 @@ export default function SettingsScreen() {
         <Text style={[styles.section, { color: theme.sub }]}>{t('YASAL')}</Text>
         <SettingRow
           label={t('Gizlilik politikası')}
-          hint={t('Uygulama içinde okunur; internet gerekmez.')}
           onPress={() => navigation.navigate('Legal', { doc: 'privacy' })}
         />
         <SettingRow
@@ -537,6 +730,13 @@ export default function SettingsScreen() {
           hint={t('Silme adımları ve kapsamı.')}
           onPress={() => navigation.navigate('Legal', { doc: 'dataDeletion' })}
         />
+        {adsPrivacyOn ? (
+          <SettingRow
+            label={t('Reklam gizlilik tercihleri')}
+            hint={t('Reklamlar için verdiğin rızayı değiştir.')}
+            onPress={() => void showAdsPrivacyOptions()}
+          />
+        ) : null}
 
         <TransparencyPill
           light
@@ -578,6 +778,12 @@ const styles = StyleSheet.create({
   hint: { fontFamily: fonts.sans, fontSize: 11, lineHeight: 16, marginTop: 6 },
   spaced: { marginTop: 16 },
   spacer: { height: 14 },
+  /* Rapor bağlantısı bir zamanlar `spacer` (sabit 14px) içindeydi ve
+     yazı kutuya sığmadığı için yarısı kırpılıyordu. Yükseklik artık
+     içeriğe bırakılıyor; dikey dolgu aynı zamanda dokunma alanını
+     parmak boyuna çıkarıyor. */
+  reportLink: { marginTop: 10, paddingVertical: 8 },
+  reportLinkText: { fontFamily: fonts.sansMedium, fontSize: 13, lineHeight: 18 },
   pill: { marginTop: 24 },
   backdrop: {
     flex: 1,

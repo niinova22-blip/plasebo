@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../constants/colors';
+import { withAlpha } from '../utils/color';
 import { fonts } from '../constants/typography';
 import { translateFormulaName, type TranslateFn } from '../i18n';
 import type { Formula } from '../types';
@@ -17,6 +18,9 @@ export interface ReceiptCardProps {
   date: string;
   name: string;
   t: TranslateFn;
+  /** Ritüel öncesi/sonrası puanlar — varsa belgeye bir "etki" satırı ekler. */
+  scoreBefore?: number;
+  scoreAfter?: number;
 }
 
 /** Belgedeki "etiket · değer" satırı. */
@@ -48,17 +52,41 @@ export default function ReceiptCard({
   date,
   name,
   t,
+  scoreBefore,
+  scoreAfter,
 }: ReceiptCardProps) {
+  /**
+   * Belge, günün formülünün rengini giyiyor.
+   *
+   * Önceki sürümde degrade sabit mordu; her gün başka bir renk üreten bir
+   * uygulamada bütün belgeler birbirinin aynısı çıkıyordu. Renk artık
+   * formülden geliyor, yani paylaşılan iki belge asla aynı görünmüyor.
+   */
+  const tint = formula.color.hex;
+  const effect =
+    scoreBefore != null && scoreAfter != null && scoreBefore > 0
+      ? Math.round(((scoreBefore - scoreAfter) / scoreBefore) * 100)
+      : null;
+
   return (
     <View style={styles.card}>
       <LinearGradient
-        colors={['rgba(123,110,246,0.22)', 'rgba(14,14,18,0)']}
+        colors={[withAlpha(tint, 0.32), withAlpha(tint, 0.06), 'rgba(14,14,18,0)']}
         start={{ x: 0.5, y: 0 }}
-        end={{ x: 0.5, y: 0.6 }}
+        end={{ x: 0.5, y: 0.72 }}
+        style={StyleSheet.absoluteFill}
+      />
+      {/* Alt köşeden gelen ikinci bir ışık: belgenin düz bir dikdörtgen
+          yerine derinliği olan bir nesne gibi durmasını sağlıyor. */}
+      <LinearGradient
+        colors={['rgba(14,14,18,0)', withAlpha(tint, 0.16)]}
+        start={{ x: 0.1, y: 0.6 }}
+        end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
 
-      <View style={styles.frame}>
+      <View style={[styles.frame, { borderColor: withAlpha(tint, 0.4) }]}>
+        <View style={[styles.halo, { backgroundColor: withAlpha(tint, 0.22) }]} />
         <Text style={styles.mark}>⚗️</Text>
         <Text style={styles.brand}>Plasebo</Text>
         <Text style={styles.sub}>{t('ZİHİN PROTOKOLÜ')}</Text>
@@ -91,6 +119,15 @@ export default function ReceiptCard({
           value={formula.dose && formula.dose > 1 ? `${formula.dose}x` : t('tek')}
         />
 
+        {/* Ölçüm satırları yalnızca gerçekten ölçüldüyse basılıyor —
+            boş bir "—" satırı belgenin iddiasını zayıflatıyor. */}
+        {scoreBefore != null && scoreAfter != null ? (
+          <Row
+            label={t('Ölçülen puan')}
+            value={`${scoreBefore} → ${scoreAfter}`}
+          />
+        ) : null}
+
         <View style={styles.divider} />
 
         <View style={styles.scoreRow}>
@@ -99,9 +136,15 @@ export default function ReceiptCard({
             <Text style={styles.scoreLabel}>{t('/10 hissettim')}</Text>
           </View>
           <View style={styles.scoreBlock}>
-            <Text style={styles.streakValue}>{streak}</Text>
+            <Text style={[styles.streakValue, { color: tint }]}>{streak}</Text>
             <Text style={styles.scoreLabel}>{t('gün seri')}</Text>
           </View>
+          {effect != null ? (
+            <View style={styles.scoreBlock}>
+              <Text style={styles.scoreValue}>{`%${Math.max(0, effect)}`}</Text>
+              <Text style={styles.scoreLabel}>{t('etki')}</Text>
+            </View>
+          ) : null}
         </View>
 
         <View style={styles.stamp}>
@@ -134,6 +177,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mark: { fontSize: 30 },
+  /** Amblemin arkasındaki renk halesi — belgenin "canlı" duran kısmı. */
+  halo: {
+    position: 'absolute',
+    top: 2,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
   brand: {
     fontFamily: fonts.serif,
     fontSize: 30,

@@ -163,60 +163,51 @@ export default function SlideOne({ width, active, onNext }: SlideOneProps) {
         <Text style={[styles.title, titleType]}>{t('1955. Boston, Amerika.')}</Text>
       </Reveal>
 
-      {/* Vurgular tam cümle/öbek düzeyinde: " vardı." gibi tek başına
-          anlamsız parçalar çeviri sözlüğüne anahtar olarak girseydi hem
-          İngilizce sözdizimi bozulur hem aynı parça iki farklı yerde
-          çakışırdı. */}
-      {/* Anlatım bilerek belgesel dilinde: yalın geçmiş zaman, abartısız
-          sıfat yok, sonuç "iyileşti" değil "bildirdi". Uygulamanın geri
-          kalanı çalışmaları böyle anlatıyor; giriş dersinin ondan daha
-          iddialı konuşması, ilk ekranda verdiği sözü bozardı. */}
+      {/*
+        İki çalışma, iki cümle, iki sayı.
+
+        Buradaki anlatım eskiden on bir cümleydi ve ikinci çalışma ayrı
+        bir slayttaydı: uygulamayı ilk açan kişi, hiçbir şey yapmadan
+        önce yirmi dört cümle okumak zorunda kalıyordu. Anlatımın işi
+        kanıt sunmak değil, "bu uygulama neden var" sorusunu tek nefeste
+        yanıtlamak; ayrıntısını merak eden *Nasıl Çalışır* ekranında
+        bulabiliyor.
+
+        Dil bilerek belgesel dilinde: abartısız sıfat yok ve sonuç
+        "iyileşti" değil "bildirdi". Uygulamanın geri kalanı çalışmaları
+        böyle anlatıyor; girişin daha iddialı konuşması, ilk ekranda
+        verdiği sözü bozardı.
+      */}
       <Reveal active={active} delay={400} offsetY={16}>
         <Text style={[styles.body, bodyType]}>
-          {t('Bir hasta, ')}
-          <HighlightText type="negative">
-            {t('aylardır geçmeyen bir ağrıyla')}
-          </HighlightText>
-          {t(' hastaneye başvurdu.')}
-          {'\n\n'}
-          <HighlightText type="negative">
-            {t('Denenen ilaçlar sonuç vermedi.')}
-          </HighlightText>
-        </Text>
-      </Reveal>
-
-      {/* Beklentinin kurulduğu cümle mor: hikâyenin çevirdiği yer burası.
-          Kırmızı şikâyeti, mor verilen sözü, yeşil sonucu gösteriyor. */}
-      <Reveal active={active} delay={1200} offsetY={16}>
-        <Text style={[styles.body, bodyType]}>
-          {t('Dr. Henry Beecher ona bir enjeksiyon yaptı.')}
-          {'\n\n'}
-          <HighlightText type="science">
-            {t('İçeriğinin özel olduğunu ve ağrısını mutlaka dindireceğini söyledi.')}
-          </HighlightText>
+          {t('Ağrısı geçmeyen bir hastaya enjeksiyon yapıldı.')}
           {'\n\n'}
           {t('Şırıngada')}{' '}
           <HighlightText type="positive">{t('yalnızca tuzlu su vardı.')}</HighlightText>
-        </Text>
-      </Reveal>
-
-      <Reveal active={active} delay={1800} offsetY={16}>
-        <Text style={[styles.body, bodyType]}>
-          {t('Yirmi dakika sonra hasta,')}
-          {'\n'}
+          {'\n\n'}
           <HighlightText type="positive" italic style={styles.quoted}>
-            {t('ağrısının geçtiğini bildirdi.')}
+            {t('Ağrısı geçti.')}
           </HighlightText>
         </Text>
       </Reveal>
 
-      <Reveal active={active} delay={2400} offsetY={20}>
-        <Text style={[styles.closing, closingType]}>
-          {t('Bu uygulamanın çıkış\nnoktası o çalışma.')}
+      <Reveal active={active} delay={1100} offsetY={16}>
+        <Text style={[styles.body, bodyType]}>
+          {t('2010. Harvard.')}
+          {'\n\n'}
+          {t('Hastalara sahte hap verildi — sahte olduğu söylenerek.')}
+          {'\n\n'}
+          <HighlightText type="positive">{t('%59’u iyileşme bildirdi.')}</HighlightText>
         </Text>
       </Reveal>
 
-      <Reveal active={active} delay={2700} offsetY={10} style={styles.arrowWrap}>
+      <Reveal active={active} delay={1700} offsetY={20}>
+        <Text style={[styles.closing, closingType]}>
+          {t('Bu uygulamanın çıkış\nnoktası o iki çalışma.')}
+        </Text>
+      </Reveal>
+
+      <Reveal active={active} delay={2000} offsetY={10} style={styles.arrowWrap}>
         <FlowArrow active={active} onPress={onNext} />
       </Reveal>
     </View>

@@ -119,16 +119,14 @@ export default function FormulCard({ formula, onStart, doneToday }: FormulCardPr
         {t(formula.crisis ? 'KRİZ FORMÜLÜ' : 'BUGÜNÜN FORMÜLÜ')}
       </Text>
       <Text style={styles.title}>{translateFormulaName(formula.name, t)}</Text>
-      <Text style={styles.disclaimer}>
-        {t('⚗️ Etken madde yok — etki var. Bu bir beklenti protokolü.')}
-      </Text>
 
       <View style={styles.steps}>
         {rows.map((row, i) => (
           <FormulaStep
             key={row.key}
             swatch={row.swatch}
-            icon={STEP_ICONS[row.key]}
+            // Renk adımı ikon almıyor; kutusu rengin kendisi oluyor.
+            icon={row.key === 'color' ? undefined : STEP_ICONS[row.key]}
             label={t(STEP_LABELS[row.key])}
             detail={row.detail}
             duration={row.duration}

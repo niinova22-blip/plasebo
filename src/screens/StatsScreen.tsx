@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -7,9 +7,9 @@ import ScoreBig from '../components/ScoreBig';
 import ChartArea from '../components/ChartArea';
 import InsightCard from '../components/InsightCard';
 import Heatmap from '../components/Heatmap';
+import LedgerChart from '../components/LedgerChart';
 import BadgeGrid from '../components/BadgeGrid';
 import PressableScale from '../components/PressableScale';
-import TransparencyPill from '../components/TransparencyPill';
 import { fonts } from '../constants/typography';
 import { useUser } from '../context/UserContext';
 import { useT, useTheme } from '../context/SettingsContext';
@@ -22,12 +22,19 @@ import {
   heatmapDays,
   improvementByCategory,
   improvementPercent,
+  ledgerSeries,
   overallScore,
+  weeklyFacts,
+  BLIND_MIN_DIFFERENCE,
+  BLIND_MIN_PER_GROUP,
 } from '../utils/storage';
+import { weeklySummary } from '../utils/localAI';
+import { colors } from '../constants/colors';
 import { useToday } from '../hooks/useToday';
 import { CATEGORY_LABELS } from '../constants/complaints';
 import type { RootStackParamList } from '../navigation/types';
-import { PREMIUM_ENABLED } from '../constants/plans';
+import { PLAN_NAME, PREMIUM_ENABLED } from '../constants/plans';
+import { FORCE_FREE_TIER } from '../constants/devTier';
 
 /** Isı haritasının premium'da kapsadığı gün sayısı. */
 const FULL_HEATMAP_DAYS = 28;
@@ -68,6 +75,43 @@ export default function StatsScreen() {
   const blind = blindTestResult(user.sessions);
   const badges = badgesFor(user);
   const byCategory = improvementByCategory(user.sessions);
+  // Ölçüm defteri: her seansın önce/sonra çifti.
+  const ledger = useMemo(
+    () => ledgerSeries(user.sessions, 7, today),
+    [user.sessions, today]
+  );
+
+  /**
+   * Haftalık özet. Bulgular saf fonksiyonlarla burada hesaplanıyor;
+   * cihaz üstü model varsa onları bir paragrafa diziyor, yoksa aşağıdaki
+   * elle yazılmış cümleler görünüyor. Yani kart her koşulda dolu.
+   */
+  const facts = useMemo(() => weeklyFacts(user, today), [user, today]);
+  const [weeklyText, setWeeklyText] = useState<string | null>(null);
+  useEffect(() => {
+    if (!facts) {
+      setWeeklyText(null);
+      return;
+    }
+    let alive = true;
+    void weeklySummary({
+      sessions: facts.sessions,
+      averageEffect: facts.averageEffect,
+      bestDay: facts.bestDay ?? undefined,
+      sleepEffect: facts.sleepEffect
+        ? {
+            shortNights: facts.sleepEffect.shortNights,
+            otherNights: facts.sleepEffect.otherNights,
+          }
+        : undefined,
+      weekKey: facts.weekKey,
+    }).then((text) => {
+      if (alive) setWeeklyText(text);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [facts]);
   // Çubukların ölçeği en yüksek etkiye göre; 1 puanın altında da görünsün.
   const maxEffect = Math.max(1, ...byCategory.map((c) => c.average));
 
@@ -94,7 +138,7 @@ export default function StatsScreen() {
 
         <View style={styles.block}>
           <Heatmap days={heatmapDays(user, heatmapWindow, today)} />
-          {PREMIUM_ENABLED && heatmapWindow < FULL_HEATMAP_DAYS ? (
+          {(PREMIUM_ENABLED || FORCE_FREE_TIER) && heatmapWindow < FULL_HEATMAP_DAYS ? (
             <PressableScale
               onPress={() => navigation.navigate('Plans')}
               accessibilityRole="button"
@@ -102,35 +146,115 @@ export default function StatsScreen() {
             >
               <Text style={[styles.upsellText, { color: theme.sub }]}>
                 {t(
-                  '🔒 Ücretsiz kademe son {gun} günü gösterir. Tüm geçmiş yakında açılacak.',
-                  { gun: heatmapWindow }
+                  '🔒 Ücretsiz kademe son {gun} günü gösterir. Tüm geçmiş {plan} ile açılır.',
+                  { gun: heatmapWindow, plan: PLAN_NAME }
                 )}
               </Text>
             </PressableScale>
           ) : null}
         </View>
 
+        {ledger.length ? (
+          <View style={styles.block}>
+            <Text style={[styles.sectionLabel, { color: theme.sub }]}>
+              {t('ÖLÇÜM DEFTERİ')}
+            </Text>
+            <View style={[styles.objCard, { backgroundColor: theme.surface }]}>
+              <Text style={[styles.objIntro, { color: theme.sub }]}>
+                {t('Her ritüelin öncesi ve sonrası, aynı yöntemle ölçülmüş hâliyle.')}
+              </Text>
+
+              <LedgerChart data={ledger} />
+            </View>
+          </View>
+        ) : null}
+
         {blind ? (
           <View style={styles.block}>
+            <Text style={[styles.sectionLabel, { color: theme.sub }]}>
+              {t('KÖR TEST')}
+            </Text>
+            <View style={[styles.objCard, { backgroundColor: theme.surface }]}>
+              <Text style={[styles.objIntro, { color: theme.sub }]}>
+                {t(
+                  blind.metric === 'effect'
+                    ? 'Ölçülen şey ritüelin etkisi: o günün öncesi eksi sonrası. Sahte günlerde renk, ses ve nefes verilmiyor — yalnızca aynı süre bekleniyor.'
+                    : 'Eski kayıtlarda önce/sonra ölçümü olmadığı için gün sonu puanı karşılaştırılıyor; bu ölçü ritüel dışındaki her şeyden de etkilenir.'
+                )}
+              </Text>
+
+              <View style={styles.objRow}>
+                <View style={styles.objBox}>
+                  <Text style={[styles.objValue, { color: theme.pulse }]}>
+                    {blind.real.toFixed(1)}
+                  </Text>
+                  <Text style={[styles.objCaption, { color: theme.faint }]}>
+                    {t('Gerçek ({adet})', { adet: blind.realCount })}
+                  </Text>
+                </View>
+                <View style={styles.objBox}>
+                  <Text style={[styles.objValue, { color: colors.glow }]}>
+                    {blind.sham.toFixed(1)}
+                  </Text>
+                  <Text style={[styles.objCaption, { color: theme.faint }]}>
+                    {t('Sahte ({adet})', { adet: blind.shamCount })}
+                  </Text>
+                </View>
+              </View>
+
+              <Text style={[styles.objNote, { color: theme.faint }]}>
+                {!blind.meaningful
+                  ? t(
+                      'Aradaki fark {fark} puan. Yorumlamak için her iki tarafta en az {gereken} kayıt ve en az {esik} puan fark gerekiyor — şu an bu bir sonuç değil, biriken bir kayıt.',
+                      {
+                        fark: Math.abs(blind.difference).toFixed(1),
+                        gereken: BLIND_MIN_PER_GROUP,
+                        esik: BLIND_MIN_DIFFERENCE,
+                      }
+                    )
+                  : blind.difference > 0
+                    ? t(
+                        'Gerçek ritüel günlerin sahte günlerden {fark} puan iyi geçmiş. Fark sende; ritüel bir çerçeve kuruyor.',
+                        { fark: blind.difference.toFixed(1) }
+                      )
+                    : t(
+                        'Sahte günlerin {fark} puan daha iyi geçmiş. Bu da mümkün ve bir hata değil — beklentinin ritüele ihtiyacı olmayabilir.',
+                        { fark: Math.abs(blind.difference).toFixed(1) }
+                      )}
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
+        {facts ? (
+          <View style={styles.block}>
             <InsightCard
-              title={t('🔬 Kör test karşılaştırması')}
+              title={t('📅 Bu haftanın özeti')}
               text={
-                t(
-                  'Gerçek ritüel ortalaman {gercek}/10 ({gercekAdet} kez), sahte ritüel ortalaman {sahte}/10 ({sahteAdet} kez). ',
-                  {
-                    gercek: blind.real,
-                    gercekAdet: blind.realCount,
-                    sahte: blind.sham,
-                    sahteAdet: blind.shamCount,
-                  }
-                ) +
-                t(
-                  Math.abs(blind.real - blind.sham) < 0.5
-                    ? 'Aradaki fark neredeyse yok — bu da bir bulgu.'
-                    : blind.real > blind.sham
-                      ? 'Fark sende; ritüel bir çerçeve kuruyor.'
-                      : 'Sahte günlerin daha iyi geçmiş. Bu da mümkün.'
-                )
+                weeklyText ??
+                [
+                  t('Son 7 günde {adet} ritüel yaptın; ortalama etki {etki} puan.', {
+                    adet: facts.sessions,
+                    etki: facts.averageEffect.toFixed(1),
+                  }),
+                  facts.bestDay
+                    ? t('En iyi geçen gün {gun}, ortalamanın %{yuzde} üstünde.', {
+                        gun: t(facts.bestDay.day),
+                        yuzde: facts.bestDay.percent,
+                      })
+                    : '',
+                  facts.sleepEffect
+                    ? t(
+                        'Az uyuduğun gecelerin ortalama etkisi {az}, diğer gecelerin {cok}. Bu bir neden-sonuç değil, yalnızca bir eşlik.',
+                        {
+                          az: facts.sleepEffect.shortNights.toFixed(1),
+                          cok: facts.sleepEffect.otherNights.toFixed(1),
+                        }
+                      )
+                    : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')
               }
             />
           </View>
@@ -161,7 +285,7 @@ export default function StatsScreen() {
           />
         </View>
 
-        {PREMIUM_ENABLED && !limits.prescriptionTracking ? (
+        {(PREMIUM_ENABLED || FORCE_FREE_TIER) && !limits.prescriptionTracking ? (
           <View style={styles.block}>
             <Text style={[styles.sectionLabel, { color: theme.sub }]}>
               {t('ŞİKAYETE GÖRE')}
@@ -172,11 +296,12 @@ export default function StatsScreen() {
               style={[styles.categoryCard, { backgroundColor: theme.surface }]}
             >
               <Text style={[styles.categoryName, { color: theme.sub }]}>
-                {t('🔒 Reçete takibi · yakında')}
+                {t('🔒 Reçete takibi · {plan}', { plan: PLAN_NAME })}
               </Text>
               <Text style={[styles.categoryNote, { color: theme.faint }]}>
                 {t(
-                  'Hangi şikayette ne kadar iyileştiğini gösteren takip, ilerideki bir güncellemede premium ile açılacak.'
+                  'Hangi şikayette ne kadar iyileştiğini gösteren takip {plan} ile açılır.',
+                  { plan: PLAN_NAME }
                 )}
               </Text>
             </PressableScale>
@@ -225,11 +350,6 @@ export default function StatsScreen() {
         </Text>
         <BadgeGrid badges={badges} />
 
-        <TransparencyPill
-          light
-          style={styles.pill}
-          text={t('⚗️ Burada gördüğün senin plasebo yanıtın — araştırmaların ölçtüğü de tam olarak bu.')}
-        />
       </ScrollView>
     </Screen>
   );
@@ -266,4 +386,17 @@ const styles = StyleSheet.create({
   upsell: { marginTop: 10, paddingVertical: 4 },
   upsellText: { fontFamily: fonts.sans, fontSize: 11, lineHeight: 16 },
   pill: { marginTop: 26 },
+  objCard: { borderRadius: 24, padding: 20 },
+  objIntro: { fontFamily: fonts.sans, fontSize: 11, lineHeight: 17 },
+  objRow: { flexDirection: 'row', justifyContent: 'center', gap: 36, marginTop: 16 },
+  objBox: { alignItems: 'center' },
+  objValue: { fontFamily: fonts.mono, fontSize: 30, includeFontPadding: false },
+  objCaption: { fontFamily: fonts.sans, fontSize: 10, marginTop: 4 },
+  objNote: {
+    fontFamily: fonts.sans,
+    fontSize: 10,
+    lineHeight: 15,
+    textAlign: 'center',
+    marginTop: 12,
+  },
 });

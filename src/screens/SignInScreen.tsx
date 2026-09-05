@@ -5,7 +5,6 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Screen from '../components/Screen';
 import PressableScale from '../components/PressableScale';
 import ConicRing from '../components/ConicRing';
-import TransparencyPill from '../components/TransparencyPill';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
 import { useAuth } from '../context/AuthContext';
@@ -42,16 +41,18 @@ export default function SignInScreen({ navigation }: Props) {
     signInWithGoogle,
     signInWithApple,
   } = useAuth();
-  const { user, update } = useUser();
+  const { user } = useUser();
   const t = useT();
 
   useEffect(() => {
     if (!account) return;
     haptics.success();
-    // Kullanıcı adını kendisi yazdıysa ona dokunmuyoruz.
-    if (!user.name.trim() && account.name) update({ name: account.name });
+    // Adın hesaptan tohumlanması buradan alındı ve uygulama köküne
+    // (AppNavigator) taşındı: bu ekrana yalnızca yeni giriş yapan
+    // uğruyor, oysa adı boş kalmış bir kullanıcı buraya hiç gelmeden de
+    // uygulamayı kullanabiliyordu.
     navigation.navigate('Preparation');
-  }, [account, navigation, user.name, update]);
+  }, [account, navigation]);
 
   return (
     <Screen background={colors.ink} style={styles.container}>
@@ -133,11 +134,6 @@ export default function SignInScreen({ navigation }: Props) {
               "Devam ederek Gizlilik Politikası'nı kabul etmiş olursun. Google'dan yalnızca adın, e-postan ve profil fotoğrafın okunur; ritüel verilerin hiçbir sunucuya gönderilmez."
             )}
       </Text>
-
-      <TransparencyPill
-        style={styles.pill}
-        text={t('⚗️ Giriş yapmak formülü değiştirmez. Hiçbir şey etkiyi değiştirmez.')}
-      />
     </Screen>
   );
 }

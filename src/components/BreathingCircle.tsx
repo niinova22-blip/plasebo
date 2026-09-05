@@ -21,6 +21,7 @@ import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
 import { lighten, withAlpha } from '../utils/color';
 import { useMotion } from '../hooks/useMotion';
+import GhostSentence from './GhostSentence';
 import type { BreathAction } from '../utils/formulaEngine';
 import type { BreathId } from '../constants/formulaPools';
 import RadialGlow from './RadialGlow';
@@ -91,6 +92,14 @@ export interface BreathingCircleProps {
   /** Merkezde gösterilecek kelime. */
   word?: string;
   /**
+   * Merkezde gösterilecek cümle — verilirse `word`'ün yerine geçer.
+   *
+   * Kelime tek satırda, harf aralıklı ve büyük harflerle bir etiket gibi
+   * duruyor; cümle ise okunacak bir metin. İkisi aynı stille çizilemez,
+   * o yüzden ayrı bir alan: cümle serif, aralıksız ve çok satırlı.
+   */
+  sentence?: string;
+  /**
    * Nefes dışındaki adımlar (renk, ses) için sakin, kendi kendine
    * yinelenen bir nabız.
    *
@@ -117,6 +126,7 @@ export default function BreathingCircle({
   phaseKey,
   colorHex,
   word,
+  sentence,
   ambient = false,
 }: BreathingCircleProps) {
   const motion = useMotion();
@@ -268,6 +278,18 @@ export default function BreathingCircle({
   // Kelime parlak çekirdeğin içinde kalmalı: dışına taştığında harflerin
   // ucu koyu zemine düşüyor ve aynı kelimenin yarısı okunmuyordu.
   const wordMaxWidth = core * 0.86;
+  /**
+   * Akan cümle çekirdeğe değil ekrana göre ölçülüyor.
+   *
+   * Önce `word` ile aynı kutuyu paylaşıyordu: çekirdeğin %86'sı, yani
+   * iPhone 11'de 69 piksel genişlik ve 9 piksel yazı. Cümleler o kutuya
+   * sığmadığı için `adjustsFontSizeToFit` devreye giriyor ve metni 6
+   * piksele kadar küçültüyordu — okunacak bir metin olarak tasarlanan şey
+   * okunamaz hâle geliyordu. Etiket gibi duran tek kelimenin çekirdeğe
+   * bağlı kalması doğru; okunacak bir cümlenin değil.
+   */
+  const sentenceMaxWidth = base * 0.74;
+  const sentenceSize = Math.round(base * 0.056);
 
   const outerStyle = useAnimatedStyle(() => ({
     opacity: 0.3 + glowOf(progress.value) * 0.2,
@@ -427,7 +449,18 @@ export default function BreathingCircle({
           çekirdeğin üstünde havada asılı kalıyordu. Gölge rengi
           formülün rengi değil koyu mürekkep — açık renkli çekirdeklerde
           (sarı, açık yeşil) beyaz yazı kendi ışığında kayboluyordu. */}
-      {word ? (
+      {sentence ? (
+        <View style={[styles.wordWrap, { maxWidth: sentenceMaxWidth }]} pointerEvents="none">
+          <GhostSentence
+            text={sentence}
+            glowColor={colorHex}
+            style={[
+              styles.sentence,
+              { fontSize: sentenceSize, lineHeight: Math.round(sentenceSize * 1.42) },
+            ]}
+          />
+        </View>
+      ) : word ? (
         <View style={[styles.wordWrap, { maxWidth: wordMaxWidth }]} pointerEvents="none">
           <View style={[styles.wordRule, { width: ruleWidth }]} />
           <Text
@@ -500,6 +533,21 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: 'rgba(255,255,255,0.5)',
     marginVertical: 5,
+  },
+  sentence: {
+    // Kitap serifi (EB Garamond italik): metin bir arayüz etiketi değil,
+    // iki dakika boyunca takip edilen bir hikâye.
+    fontFamily: fonts.story,
+    color: colors.white,
+    textAlign: 'center',
+    paddingHorizontal: 10,
+    includeFontPadding: false,
+    // Gölge yalnızca parlak çekirdek üstünde okunabilirlik için var.
+    // Yarıçap 6'ydı ve 9 piksellik yazıyı görünür biçimde bulanıklaştırıyordu;
+    // yazı büyüdüğü için artık ince bir kontur yetiyor.
+    textShadowColor: 'rgba(14,14,18,0.45)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   word: {
     fontFamily: fonts.serif,
