@@ -1,0 +1,152 @@
+# Plasebo — iOS derlemesi ve TestFlight yüklemesi (Codemagic)
+#
+# NEDEN CODEMAGIC
+#
+# iOS derlemesi bir Mac istiyor; geliştirme Windows'ta yapılıyor. Bugüne
+# kadar bu işi EAS yapıyordu, ama EAS derleme hakkı sınırlı ve boşa giden
+# her deneme gerçek bir maliyet. Codemagic'in ücretsiz kademesi aylık 500
+# dakika macOS makinesi veriyor; Plasebo'nun bir derlemesi ~15–20 dakika
+# sürüyor, yani ay içinde rahatça birkaç deneme hakkı oluyor.
+#
+# EAS kaldırılmadı: `eas.json` olduğu gibi duruyor ve `npm run build:ios`
+# hâlâ çalışıyor. İki yol da aynı `app.json`u okuduğu için üretilen ikili
+# aynı; yalnızca derlemenin nerede koştuğu değişiyor.
+#
+# DERLEME NUMARASI NEREDEN GELİYOR
+#
+# `app.json` içinde iOS derleme numarası **bilerek yok**. İki derleme
+# sistemi ve bir de TestFlight varken numarayı depoda tutmak üç ayrı
+# doğruluk kaynağı demekti; biri unutulduğunda yükleme "bu derleme
+# numarası zaten kullanılmış" diye reddediliyor ve bir derleme hakkı boşa
+# gidiyor. Bunun yerine numara her seferinde TestFlight'a sorulup bir
+# artırılıyor — hangi sistemin en son yüklediğinden bağımsız olarak doğru.
+#
+# Kullanıcıya görünen sürüm (`1.4.0`) `app.json` içinde ve elle artırılıyor.
+#
+# KURULUM
+#
+# Codemagic panelinde yapılması gerekenler (tıklama düzeyinde anlatımı
+# `store/CODEMAGIC.md` içinde):
+#
+#   1. `plasebo-asc` adında bir App Store Connect API anahtarı bağlantısı
+#   2. `plasebo-ios` adında bir ortam değişkeni grubu; içinde:
+#        EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID
+#        EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID
+#        EXPO_PUBLIC_ADS_TEST_DEVICE_ID   (isteğe bağlı)
+#
+# Bu iki ad aşağıda birebir geçiyor; panelde farklı bir ad verirsen burayı
+# da düzeltmek gerekir.
+
+workflows:
+  ios-testflight:
+    name: Plasebo iOS · TestFlight
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+
+    # App Store Connect API anahtarı. Hem imzalama dosyalarını çekmek hem
+    # de TestFlight'a yüklemek için kullanılıyor; parola ya da iki adımlı
+    # doğrulama gerekmiyor.
+    integrations:
+      app_store_connect: plasebo-asc
+
+    environment:
+      groups:
+        - plasebo-ios
+      # Otomatik imzalama: dağıtım sertifikası ve profil Apple tarafında
+      # yoksa Codemagic kendisi oluşturuyor. Widget uzantısı
+      # (com.plasebo.app.PlaseboWidget) ana kimliğin altında olduğu için
+      # onun profili de aynı adımda çekiliyor.
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.plasebo.app
+      vars:
+        XCODE_WORKSPACE: "ios/Plasebo.xcworkspace"
+        XCODE_SCHEME: "Plasebo"
+        # App Store Connect'teki uygulama kimliği (eas.json → ascAppId).
+        APP_STORE_APP_ID: 6802842875
+        # Widget hedefinin imzalanacağı ekip. plugins/withIosWidget.js
+        # bu değişkeni okuyor; boş bırakılırsa koddaki varsayılan geçerli.
+        APPLE_TEAM_ID: ML3UZXMU3D
+      node: 22.14.0
+      xcode: latest
+      cocoapods: default
+
+    cache:
+      cache_paths:
+        - $HOME/.npm
+        - $HOME/Library/Caches/CocoaPods
+
+    scripts:
+      - name: Ortam değişkenlerini denetle
+        script: |
+          set -e
+          missing=0
+          for name in EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID; do
+            if [ -z "$(eval echo \$$name)" ]; then
+              echo "EKSİK: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" = "1" ]; then
+            echo ""
+            echo "Bu değişkenler olmadan derleme yapılabilir ama iOS'ta Google"
+            echo "girişi çalışmaz: app.config.js, geri dönüş URL şemasını"
+            echo "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID'den türetiyor ve değişken"
+            echo "yoksa şemayı Info.plist'e hiç yazmıyor. Giriş penceresi"
+            echo "açılır, uygulamaya geri dönemez."
+            echo ""
+            echo "Codemagic → uygulama → Environment variables → 'plasebo-ios'"
+            echo "grubuna ekle, sonra derlemeyi yeniden başlat."
+            exit 1
+          fi
+          echo "Ortam değişkenleri tamam."
+
+      - name: Bağımlılıklar
+        script: npm ci
+
+      - name: Yerel denetimler
+        # Derleme dakikası harcamadan önce tip denetimi, mantık testleri,
+        # eklenti testleri, Swift yapı taraması ve çeviri kapsamı. Windows'ta
+        # da aynı komut çalışıyor; burada olmasının sebebi, yerelde
+        # çalıştırmayı unutan bir derlemenin Apple'a kadar gitmemesi.
+        script: npm test
+
+      - name: iOS projesini üret (prebuild)
+        # ios/ klasörü depoda yok, her derlemede yeniden üretiliyor.
+        # --no-install: pod kurulumu bir sonraki adımda, önbellekten.
+        script: npx expo prebuild --platform ios --clean --no-install
+
+      - name: CocoaPods
+        script: |
+          set -e
+          cd ios
+          pod install
+
+      - name: Derleme numarasını TestFlight'tan al
+        script: |
+          set -e
+          latest=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo "0")
+          # Uygulamanın hiç derlemesi yoksa komut boş dönebiliyor.
+          if [ -z "$latest" ]; then latest=0; fi
+          next=$((latest + 1))
+          echo "TestFlight'taki son derleme: $latest → bu derleme: $next"
+          cd ios
+          agvtool new-version -all "$next"
+
+      - name: IPA üret
+        script: |
+          xcode-project build-ipa \
+            --workspace "$XCODE_WORKSPACE" \
+            --scheme "$XCODE_SCHEME"
+
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+
+    publishing:
+      app_store_connect:
+        auth: integration
+        # TestFlight'a yükle, ama App Store incelemesine gönderme.
+        # Mağaza sürümü elle, App Store Connect'ten başlatılıyor.
+        submit_to_testflight: true
+        submit_to_app_store: false

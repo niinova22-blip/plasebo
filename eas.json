@@ -15,9 +15,6 @@
     "preview": {
       "distribution": "internal",
       "environment": "preview",
-      "env": {
-        "EXPO_PUBLIC_ALLOW_TEST_PURCHASES": "1"
-      },
       "android": {
         "buildType": "apk"
       }
@@ -37,9 +34,9 @@
         "releaseStatus": "draft"
       },
       "ios": {
-        "appleId": "niinova22@gmail.com",
+        "appleId": "akokdogan59@gmail.com",
         "ascAppId": "6802842875",
-        "appleTeamId": "GUYY5AAT36"
+        "appleTeamId": "ML3UZXMU3D"
       }
     }
   }
