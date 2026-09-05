@@ -13,15 +13,26 @@ import {
   DMSerifDisplay_400Regular,
   DMSerifDisplay_400Regular_Italic,
 } from '@expo-google-fonts/dm-serif-display';
+// Ritüelde akan hikâye metninin yüzü. DM Serif Display bir *başlık*
+// yüzü: küçük puntoda ince yerleri kayboluyor ve uzun okumada yoruyor.
+// EB Garamond bir kitap yüzü — italik kesimi akan metne kitap sayfası
+// tonunu veriyor ve 20-24 punto aralığında ekranda rahat okunuyor.
+import {
+  EBGaramond_400Regular_Italic,
+  EBGaramond_500Medium_Italic,
+} from '@expo-google-fonts/eb-garamond';
 import AppNavigator from './src/navigation/AppNavigator';
 import { UserProvider } from './src/context/UserContext';
-import { AuthProvider } from './src/context/AuthContext';
-import { PremiumProvider } from './src/context/PremiumContext';
+import { AuthProvider, useAuth } from './src/context/AuthContext';
+import { PremiumProvider, usePremium } from './src/context/PremiumContext';
 import { SettingsProvider, useSettings } from './src/context/SettingsContext';
 import { setHapticsEnabled } from './src/utils/haptics';
+import { initAds } from './src/utils/ads';
 import {
+  cancelDailyCycle,
   cancelUnmarked,
   hasPermission,
+  scheduleDailyCycle,
   scheduleDailyReminder,
   scheduleNudges,
 } from './src/utils/reminders';
@@ -32,11 +43,32 @@ import { colors } from './src/constants/colors';
  * aktif temaya göre ayarlar.
  */
 function ThemedApp() {
-  const { settings, ready, themeName, theme, t } = useSettings();
+  const { settings, ready, theme, t } = useSettings();
+  const { account } = useAuth();
+  const { limits } = usePremium();
 
   useEffect(() => {
     setHapticsEnabled(settings.haptics);
   }, [settings.haptics]);
+
+  /**
+   * Reklam altyapısı kullanıcı oturum açtıktan sonra kuruluyor, açılışta
+   * değil.
+   *
+   * Sebep, kurulumun ilk çağrısının sessiz olmaması: UMP rıza formu ve
+   * onun tetiklediği iOS izleme izni penceresi bu adımda çıkıyor. Açılışa
+   * bağlansaydı, uygulamayı ilk kez açan kullanıcı daha ne olduğunu
+   * görmeden iki sistem penceresiyle karşılaşırdı. Hesap dolduğunda
+   * kurulum ve giriş bitmiş, kullanıcı ana ekrana geçiyor demektir.
+   *
+   * Erken çağrılması yine de gerekli: geçiş reklamı seans sonunda
+   * gösterilecek ve önden yüklenmiş olması lazım. O anda yüklemeye
+   * başlansaydı reklam çoğu zaman yetişemezdi.
+   */
+  useEffect(() => {
+    if (!ready || !account) return;
+    void initAds();
+  }, [ready, account]);
 
   /**
    * Bildirim kuyruğu uygulama her açıldığında yeniden kuruluyor.
@@ -62,11 +94,28 @@ function ThemedApp() {
       if (settings.smartNudges) {
         await scheduleNudges(settings.nudgesPerDay, t);
       }
+      /*
+       * 24 saatlik döngü: gün içi ölçüm davetleri ve sabah raporu.
+       *
+       * Yetki de denetleniyor, yalnız ayar değil. Abonelik bittiğinde
+       * ayardaki anahtar açık kalıyor (kullanıcı onu kapatmadı) ama
+       * bildirimlerin gelmeye devam etmesi, artık açılamayan bir ekrana
+       * davet göndermek olurdu. Kuyruk her açılışta yeniden kurulduğu
+       * için denetimin doğru yeri burası: bir sonraki açılışta döngü
+       * kendiliğinden susuyor.
+       */
+      if (settings.dailyCycle && limits.dailyReport) {
+        await scheduleDailyCycle(t);
+      } else {
+        await cancelDailyCycle();
+      }
     })();
   }, [
     ready,
+    limits.dailyReport,
     settings.smartNudges,
     settings.nudgesPerDay,
+    settings.dailyCycle,
     settings.reminderEnabled,
     settings.reminderHour,
     settings.reminderMinute,
@@ -75,7 +124,11 @@ function ThemedApp() {
 
   return (
     <View style={[styles.root, { backgroundColor: theme.bg }]}>
-      <StatusBar style={themeName === 'dark' ? 'light' : 'dark'} />
+      {/* Durum çubuğunun rengini temanın kendi token'ı söylüyor. Eskiden
+          burada tema adına bakılıyordu ("dark" ise açık içerik); o koşul,
+          "koyu" adlı tema kaldırıldıktan sonra geriye kalan koyu temada
+          (Sis) koyu üstüne koyu veriyordu. */}
+      <StatusBar style={theme.statusBar} />
       <AppNavigator />
     </View>
   );
@@ -88,6 +141,8 @@ export default function App() {
     SpaceGrotesk_700Bold,
     DMSerifDisplay_400Regular,
     DMSerifDisplay_400Regular_Italic,
+    EBGaramond_400Regular_Italic,
+    EBGaramond_500Medium_Italic,
   });
 
   if (!fontsLoaded) {
