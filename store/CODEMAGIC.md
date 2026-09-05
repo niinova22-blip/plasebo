@@ -140,6 +140,56 @@ türü yalnızca varsayılan şablonu etkiler.
 
 ---
 
+## Adım 3b — Kod imzalama sertifikası (atlanırsa derleme hiç başlamaz)
+
+Bu adım ilk kurulumda atlandı ve üç derleme denemesi arka arkaya şu
+hatayla düştü:
+
+```
+No matching profiles found for bundle identifier "com.plasebo.app"
+and distribution type "app_store"
+```
+
+**Sebep.** Apple tarafında iki dağıtım sertifikası vardı ama ikisinin de
+**özel anahtarı Codemagic'te değildi** — biri EAS'in, diğeri bir API
+anahtarıyla oluşturulup anahtarı saklanmamış bir sertifikaydı. Codemagic,
+imzalayamayacağı bir sertifikaya bağlı sağlama profilini "eşleşme"
+saymıyor; o yüzden profiller Apple'da dururken bile "bulunamadı" diyor.
+
+Apple'da elle profil oluşturmak da işe yaramıyor: profil, Codemagic'in
+özel anahtarını tuttuğu bir sertifikaya bağlı olmak zorunda.
+
+**Çözüm.** Sertifikayı Codemagic'e ürettir:
+
+1. Codemagic → **Settings** → **Code signing identities** → **iOS
+   certificates**.
+2. **"Generate certificate"** düğmesine bas.
+3. Formu doldur:
+   - **Reference name:** `plasebo-distribution`
+   - **Certificate type:** `Apple Distribution`
+   - **App Store Connect API key:** `Codemagic`
+4. **Create certificate** de.
+
+Codemagic sertifikayı Apple'da oluşturur, özel anahtarını kendinde saklar
+ve derlemeye `CERTIFICATE_PRIVATE_KEY` olarak verir. Oluşturulduktan sonra
+bir kez indirme penceresi çıkar ve bir parola gösterir — yerel bir yedek
+istemiyorsan kapatabilirsin, derleme için gerekmiyor.
+
+> ⚠️ **Apple hesap başına en çok üç dağıtım sertifikasına izin veriyor.**
+> Bu hesapta artık üçü de dolu: EAS'inki, anahtarı kaybolmuş eski bir
+> tanesi ve `plasebo-distribution`. Yeni bir sertifika gerekirse önce
+> Apple Developer → Certificates altından kullanılmayan biri iptal
+> edilmeli. Anahtarı kaybolmuş olan aday: adı `Rahile KÖKDOGAN`, türü
+> `Distribution`, "created by API Key" yazan satır.
+
+**Sağlama profilleri.** `codemagic.yaml` içindeki "Kod imzalama dosyaları"
+adımı profilleri `app-store-connect fetch-signing-files --create` ile
+kendisi oluşturuyor — ana uygulama ve widget uzantısı için ayrı ayrı,
+çünkü Apple her paket kimliği için ayrı profil istiyor. Elle profil
+oluşturmaya gerek yok.
+
+---
+
 ## Adım 4 — Ortam değişkenlerini gir
 
 Google ile giriş, iOS'ta uygulamaya geri dönerken özel bir adres şeması
@@ -201,6 +251,7 @@ görünmesi Apple tarafındaki işleme yüzünden 5–15 dakika daha sürer.
 | Hata metni | Anlamı ve çözümü |
 | --- | --- |
 | Depo listesinde `plasebo` çıkmıyor | GitHub'da Codemagic'e o depo için erişim verilmemiş. Adım 2a. |
+| `No matching profiles found for bundle identifier ...` | Codemagic'te saklı bir dağıtım sertifikası yok. Adım 3b. |
 | `integration '...' not found` | `codemagic.yaml` içindeki `app_store_connect:` değeri panelde kayıtlı anahtar adıyla tutmuyor. Codemagic → Settings → Integrations → Developer Portal → Manage keys altındaki adı yaml'a yaz. |
 | `EKSİK: EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Adım 4 yapılmamış ya da grup adı `plasebo-ios` değil. |
 | `No matching provisioning profile` | Apple tarafında kimlik ya da yetenek eksik. Genelde widget uzantısının (`com.plasebo.app.PlaseboWidget`) kimliği Apple'da yok demektir; Certificates, Identifiers & Profiles → Identifiers altında var mı bak. |
