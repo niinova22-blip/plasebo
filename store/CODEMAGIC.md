@@ -252,6 +252,8 @@ görünmesi Apple tarafındaki işleme yüzünden 5–15 dakika daha sürer.
 | --- | --- |
 | Depo listesinde `plasebo` çıkmıyor | GitHub'da Codemagic'e o depo için erişim verilmemiş. Adım 2a. |
 | `No matching profiles found for bundle identifier ...` | Codemagic'te saklı bir dağıtım sertifikası yok. Adım 3b. |
+| `Failed to set code signing settings for node_modules/...` | `use-profiles` bütün depoyu tarıyor. `codemagic.yaml` içinde `--project ios/*.xcodeproj` ile daraltılmış olmalı. |
+| `openiap` pod'unda `has no member 'pricingTerms'` / `'billingPlanType'` / `'commitmentInfo'` | `expo-iap` sürümü, kullandığı StoreKit API'lerini derleyici koruması olmadan çağıran bir `openiap` pod'una bağlı. `openiap` 3.4.0 (expo-iap 5.5.0) bunları `#if compiler(>=6.3.2)` + `#available(iOS 26.4)` içine alıyor; Xcode 26.4'te kod derlemeye hiç girmiyor. `expo-iap` en az 5.5.0 olmalı ve **tam sürüm olarak sabitlenmeli** — podspec `openiap` sürümünü birebir pinliyor. |
 | `integration '...' not found` | `codemagic.yaml` içindeki `app_store_connect:` değeri panelde kayıtlı anahtar adıyla tutmuyor. Codemagic → Settings → Integrations → Developer Portal → Manage keys altındaki adı yaml'a yaz. |
 | `EKSİK: EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Adım 4 yapılmamış ya da grup adı `plasebo-ios` değil. |
 | `No matching provisioning profile` | Apple tarafında kimlik ya da yetenek eksik. Genelde widget uzantısının (`com.plasebo.app.PlaseboWidget`) kimliği Apple'da yok demektir; Certificates, Identifiers & Profiles → Identifiers altında var mı bak. |
