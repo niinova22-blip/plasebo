@@ -56,13 +56,10 @@ workflows:
     environment:
       groups:
         - plasebo-ios
-      # Otomatik imzalama: dağıtım sertifikası ve profil Apple tarafında
-      # yoksa Codemagic kendisi oluşturuyor. Widget uzantısı
-      # (com.plasebo.app.PlaseboWidget) ana kimliğin altında olduğu için
-      # onun profili de aynı adımda çekiliyor.
-      ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.plasebo.app
+      # NOT: burada `ios_signing:` bloğu bilerek YOK. O blok profilleri
+      # yalnızca arıyor, eksikse oluşturmuyor; ayrıca widget uzantısının
+      # ayrı profilini kendiliğinden çekmiyor. İmzalama aşağıda, CocoaPods
+      # adımından sonra CLI ile yapılıyor.
       vars:
         XCODE_WORKSPACE: "ios/Plasebo.xcworkspace"
         XCODE_SCHEME: "Plasebo"
@@ -71,6 +68,10 @@ workflows:
         # Widget hedefinin imzalanacağı ekip. plugins/withIosWidget.js
         # bu değişkeni okuyor; boş bırakılırsa koddaki varsayılan geçerli.
         APPLE_TEAM_ID: ML3UZXMU3D
+        # Ana uygulama ve widget uzantısının paket kimlikleri. İkisinin de
+        # ayrı bir sağlama profili olmak zorunda.
+        BUNDLE_ID: com.plasebo.app
+        WIDGET_BUNDLE_ID: com.plasebo.app.PlaseboWidget
       node: 22.14.0
       xcode: latest
       cocoapods: default
@@ -125,6 +126,39 @@ workflows:
           set -e
           cd ios
           pod install
+
+      - name: Kod imzalama dosyaları
+        # `keychain initialize` boş bir anahtar zinciri açıyor;
+        # `fetch-signing-files --create` sağlama profilini Apple'da yoksa
+        # oluşturup indiriyor; `use-profiles` da indirilen profilleri
+        # Xcode projesindeki hedeflere bağlıyor.
+        #
+        # İki ayrı çağrı var çünkü widget bir uygulama uzantısı ve Apple
+        # her paket kimliği için ayrı profil istiyor. Ana uygulamanın
+        # profili uzantıyı kapsamıyor.
+        script: |
+          set -e
+          if [ -z "$CERTIFICATE_PRIVATE_KEY" ]; then
+            echo "CERTIFICATE_PRIVATE_KEY tanımlı değil."
+            echo ""
+            echo "Dağıtım sertifikasının özel anahtarı olmadan sağlama"
+            echo "profili oluşturulamıyor. Codemagic → Settings → Code"
+            echo "signing identities → iOS certificates altında bir dağıtım"
+            echo "sertifikası bulunmalı; Codemagic onu derlemeye"
+            echo "CERTIFICATE_PRIVATE_KEY olarak veriyor."
+            echo ""
+            echo "Bilerek yeni sertifika üretilmiyor: Apple hesap başına en"
+            echo "çok üç dağıtım sertifikasına izin veriyor ve her derlemede"
+            echo "bir tane üretmek bu hakkı birkaç günde tüketirdi."
+            exit 1
+          fi
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE --create
+          app-store-connect fetch-signing-files "$WIDGET_BUNDLE_ID" \
+            --type IOS_APP_STORE --create
+          keychain add-certificates
+          xcode-project use-profiles
 
       - name: Derleme numarasını TestFlight'tan al
         script: |
