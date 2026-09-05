@@ -8,13 +8,20 @@ tek tek yazılı.
 Kurulum bir kez yapılıyor. Bittiğinde her yeni sürüm, Codemagic'te tek bir
 "Start new build" düğmesiyle derlenip TestFlight'a düşüyor.
 
-> **Durum (bugün):** Adım 1–3 **bitti**. Codemagic hesabı
-> `akokdogan59@gmail.com` ile açıldı ve Rahile Kökdoğan'ın App Store
-> Connect hesabından üretilen API anahtarıyla bağlandı. Geriye **Adım 4**
-> (ortam değişkenleri) kaldı; Adım 5 ilk derlemede yapılacak.
+> **Durum:** Codemagic hesabı `akokdogan59@gmail.com` ile açıldı, App
+> Store Connect API anahtarı bağlandı ve GitHub yetkisi zaten verilmiş
+> durumda (Gelişim Takip aynı hesapta duruyor).
 >
-> Adım 3'te anahtara verdiğin adın **`plasebo-asc`** olduğunu bir kez
-> doğrula — `codemagic.yaml` anahtarı bu adla arıyor ve ad tutmazsa
+> **Takıldığımız yer — Adım 2a:** Codemagic'in GitHub uygulamasına
+> yalnızca `forge` deposu için erişim verilmiş. Depo listesinde `plasebo`
+> hiç görünmüyor, dolayısıyla uygulama eklenemiyor. Bunu senin açman
+> gerekiyor; GitHub parolası isteyebileceği için ben yapamıyorum.
+>
+> Sonrasında kalanlar: uygulamayı ekle (Adım 2b) ve ortam değişkenlerini
+> gir (Adım 4).
+>
+> Ayrıca Adım 3'te anahtara verdiğin adın **`plasebo-asc`** olduğunu bir
+> kez doğrula — `codemagic.yaml` anahtarı bu adla arıyor ve ad tutmazsa
 > derleme "integration not found" diyerek ilk saniyede durur.
 
 ---
@@ -79,21 +86,39 @@ iptal edilebiliyor.
 
 ---
 
-## Adım 2 — Codemagic hesabına depoyu bağla
+## Adım 2a — GitHub'da `plasebo` deposuna erişim ver (SEN yapacaksın)
 
-1. **https://codemagic.io** adresine git ve **akokdogan59@gmail.com** ile
-   giriş yap.
-2. İlk girişte Codemagic bir kod deposu bağlamanı ister. **"GitHub"**
-   seçeneğini seç.
-3. GitHub, Codemagic'e erişim izni ister. Burada dikkat: depo
-   **niinova22-blip** GitHub hesabında. Açılan izin ekranında o hesapla
-   giriş yapman ve **"plasebo"** deposunu seçmen gerekiyor.
-   - GitHub'da o an başka bir hesapla oturum açıksa önce çıkış yap,
-     sonra niinova22-blip ile gir.
-   - İzin ekranında "Only select repositories" seçip yalnızca **plasebo**
-     deposunu işaretlemen yeterli; diğer depolara erişim vermeye gerek yok.
-4. Codemagic'in uygulama listesinde **plasebo** göründüğünde bağlantı
-   tamamdır.
+Codemagic'in GitHub yetkisi var ama bu yetki **depo bazında**: şu an
+yalnızca `forge` deposunu görüyor. `plasebo` listede olmadığı için
+uygulama eklenemiyor. Bunu açmak GitHub hesabında bir izin değişikliği
+demek, o yüzden senin yapman gerekiyor.
+
+1. **https://github.com/settings/installations** adresine git.
+   (GitHub'da **niinova22-blip** hesabıyla oturum açık olmalı; değilse
+   önce çıkış yapıp o hesapla gir.)
+2. Listede **Codemagic CI/CD** satırını bul, sağındaki **"Configure"**
+   düğmesine bas.
+3. **"Repository access"** bölümüne in. Muhtemelen **"Only select
+   repositories"** seçili ve altında yalnızca `forge` yazıyor.
+4. Aşağıdaki **"Select repositories"** kutusuna tıkla, listeden
+   **plasebo**'yu seç.
+5. Sayfanın altındaki **"Save"** düğmesine bas.
+
+Artık Codemagic depoyu görüyor.
+
+## Adım 2b — Uygulamayı Codemagic'e ekle
+
+1. **https://codemagic.io/apps** adresine git.
+2. Sağ üstteki **"Add application"** düğmesine bas.
+3. **"GitHub"** seç → **"Next: Authorize integration"**.
+   (Yeni bir izin ekranı çıkmaz, yetki zaten var.)
+4. **"Select repository"** kutusuna `plasebo` yaz ve çıkan
+   **plasebo (niinova22-blip)** satırını seç.
+5. **"Select project type"** altında **React Native** seç.
+6. **"Finish: Add application"** de.
+
+Depoda `codemagic.yaml` olduğu için Codemagic hattı kendisi bulur; proje
+türü yalnızca varsayılan şablonu etkiler.
 
 ---
 
@@ -182,6 +207,7 @@ görünmesi Apple tarafındaki işleme yüzünden 5–15 dakika daha sürer.
 
 | Hata metni | Anlamı ve çözümü |
 | --- | --- |
+| Depo listesinde `plasebo` çıkmıyor | GitHub'da Codemagic'e o depo için erişim verilmemiş. Adım 2a. |
 | `integration 'plasebo-asc' not found` | Adım 3'teki anahtar adı farklı yazılmış. Codemagic → Integrations → App Store Connect'te adı `plasebo-asc` yap. |
 | `EKSİK: EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID` | Adım 4 yapılmamış ya da grup adı `plasebo-ios` değil. |
 | `No matching provisioning profile` | Apple tarafında kimlik ya da yetenek eksik. Genelde widget uzantısının (`com.plasebo.app.PlaseboWidget`) kimliği Apple'da yok demektir; Certificates, Identifiers & Profiles → Identifiers altında var mı bak. |
