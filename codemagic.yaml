@@ -147,7 +147,29 @@ workflows:
         #
         # prebuild ve pod install'dan sonra çalışmak zorunda: var olmayan
         # bir Xcode projesine profil yazamaz.
-        script: xcode-project use-profiles
+        #
+        # `--project` ŞART: komut varsayılan olarak depodaki bütün
+        # `**/*.xcodeproj` dosyalarını tarıyor ve `node_modules` içindeki
+        # kütüphanelerin projelerine takılıp düşüyor (RNDateTimePicker'da
+        # düştü). O projelerin imzalanmasına gerek yok; hepsi ana
+        # uygulamanın içine statik olarak giriyor. `ios/Pods/Pods.xcodeproj`
+        # de kapsam dışında kalıyor, çünkü desen yalnızca `ios/` kökündeki
+        # projeyi tutuyor.
+        script: |
+          set -e
+          PROJ=$(ls -d ios/*.xcodeproj 2>/dev/null | head -1)
+          if [ -z "$PROJ" ]; then
+            echo "ios/ altında .xcodeproj bulunamadı. Klasörün içeriği:"
+            ls -la ios || true
+            exit 1
+          fi
+          echo "Proje: $PROJ"
+          # Bir hata olursa tek denemede tam bilgi kalsın diye seçenekler
+          # loga yazılıyor.
+          echo "--- use-profiles seçenekleri ---"
+          xcode-project use-profiles --help || true
+          echo "--------------------------------"
+          xcode-project use-profiles --project "$PROJ"
 
       - name: Derleme numarasını TestFlight'tan al
         script: |
