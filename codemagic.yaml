@@ -137,22 +137,66 @@ workflows:
           cd ios
           pod install
 
+      - name: Profilleri Xcode projesine bağla
+        # Codemagic'in "Set up code signing identities" adımı sertifikayı ve
+        # profilleri makineye kuruyor, ama Xcode projesine bağlamıyor.
+        # `use-profiles` iki iş yapıyor: her hedefe (ana uygulama ve widget)
+        # doğru profili yazıyor ve `~/export_options.plist` dosyasını
+        # üretiyor. O dosya olmadan `build-ipa` "Path
+        # /Users/builder/export_options.plist does not exist" diyor.
+        #
+        # prebuild ve pod install'dan sonra çalışmak zorunda: var olmayan
+        # bir Xcode projesine profil yazamaz.
+        script: xcode-project use-profiles
+
       - name: Derleme numarasını TestFlight'tan al
         script: |
           set -e
           latest=$(app-store-connect get-latest-testflight-build-number "$APP_STORE_APP_ID" 2>/dev/null || echo "0")
-          # Uygulamanın hiç derlemesi yoksa komut boş dönebiliyor.
-          if [ -z "$latest" ]; then latest=0; fi
+          # Uygulamanın hiç derlemesi yoksa komut boş ya da hata metni
+          # dönebiliyor; sayı değilse sıfırdan başlanıyor.
+          case "$latest" in
+            ''|*[!0-9]*) latest=0 ;;
+          esac
           next=$((latest + 1))
-          echo "TestFlight'taki son derleme: $latest → bu derleme: $next"
+          echo "TestFlight'taki son derleme: $latest -> bu derleme: $next"
           cd ios
-          agvtool new-version -all "$next"
+          # agvtool yalnızca "apple-generic" sürümleme ayarlı projelerde
+          # çalışıyor ve Expo'nun ürettiği projede bu ayar garanti değil.
+          # Çalışmazsa CFBundleVersion doğrudan yazılıyor — widget'ınki de
+          # dahil, çünkü uzantının derleme numarası ana uygulamayla aynı
+          # olmak zorunda.
+          if agvtool new-version -all "$next"; then
+            echo "Derleme numarası agvtool ile yazıldı."
+          else
+            echo "agvtool çalışmadı; Info.plist dosyaları doğrudan yazılıyor."
+            find . -name Info.plist -not -path "./Pods/*" | while read -r f; do
+              if /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $next" "$f" >/dev/null 2>&1; then
+                echo "  yazıldı: $f"
+              fi
+            done
+          fi
 
       - name: IPA üret
         script: |
-          xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+          set -e
+          # Workspace adı app.json'daki uygulama adından türüyor; sabit
+          # yazmak yerine diskten bulunuyor ki ad değişirse burası sessizce
+          # yanlış olmasın.
+          WS=$(ls -d ios/*.xcworkspace 2>/dev/null | head -1)
+          if [ -z "$WS" ]; then
+            echo "ios/ altında .xcworkspace bulunamadı. Klasörün içeriği:"
+            ls -la ios || true
+            exit 1
+          fi
+          echo "Workspace: $WS"
+          echo "--- Şemalar ---"
+          xcodebuild -list -workspace "$WS" || true
+          echo "---------------"
+          if ! xcodebuild -list -workspace "$WS" 2>/dev/null | grep -q "$XCODE_SCHEME"; then
+            echo "UYARI: '$XCODE_SCHEME' şeması listede görünmedi; yine de deneniyor."
+          fi
+          xcode-project build-ipa --workspace "$WS" --scheme "$XCODE_SCHEME"
 
     artifacts:
       - build/ios/ipa/*.ipa
