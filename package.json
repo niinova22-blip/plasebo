@@ -4,6 +4,7 @@
   "main": "index.ts",
   "dependencies": {
     "@expo-google-fonts/dm-serif-display": "^0.4.2",
+    "@expo-google-fonts/eb-garamond": "^0.4.3",
     "@expo-google-fonts/space-grotesk": "^0.4.1",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "9.1.0",
@@ -18,11 +19,14 @@
     "expo-auth-session": "~57.0.7",
     "expo-blur": "~57.0.2",
     "expo-build-properties": "~57.0.12",
+    "expo-camera": "~57.0.3",
     "expo-constants": "~57.0.10",
     "expo-crypto": "~57.0.1",
+    "expo-dev-client": "~57.0.18",
     "expo-file-system": "~57.0.4",
     "expo-font": "~57.0.1",
     "expo-haptics": "~57.0.1",
+    "expo-iap": "^5.3.2",
     "expo-linear-gradient": "~57.0.1",
     "expo-localization": "~57.0.1",
     "expo-notifications": "~57.0.12",
@@ -34,6 +38,7 @@
     "react": "19.2.3",
     "react-native": "0.86.2",
     "react-native-gesture-handler": "~2.32.0",
+    "react-native-google-mobile-ads": "^16.5.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
@@ -47,6 +52,7 @@
   },
   "scripts": {
     "start": "expo start",
+    "dev": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -60,8 +66,14 @@
     "build:preview": "eas build --platform android --profile preview",
     "build:play": "eas build --platform android --profile production",
     "build:ios": "eas build --platform ios --profile production",
+    "build:dev-ios": "eas build --platform ios --profile development",
     "submit:play": "eas submit --platform android --latest",
-    "submit:ios": "eas submit --platform ios --latest"
+    "submit:ios": "eas submit --platform ios --latest",
+    "test:logic": "tsx src/__tests__/logic.test.ts",
+    "test:plugin": "node plugins/__tests__/ios-widget.test.js",
+    "check:swift": "node scripts/check-swift.js",
+    "check:i18n": "node scripts/check-i18n.js",
+    "test": "node scripts/test-all.js"
   },
   "private": true
 }
