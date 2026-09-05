@@ -112,9 +112,11 @@ söylersen ben de yazarım.
 3. Sayfada aşağı in, **Build / Derleme** bölümünde 1. adımda yüklediğin
    derlemeyi seç.
 4. Daha da aşağıda **App Review Information** bölümü var. Oradaki
-   **Notes** kutusuna `store/APP-REVIEW-NOTES.md` dosyasının tamamını
-   yapıştır (dosyanın en üstündeki Türkçe açıklama satırlarını değil,
-   `---` çizgisinden sonrasını).
+   **Notes** kutusuna `store/APP-REVIEW-NOTES.md` dosyasının `---`
+   çizgisinden sonraki kısmını yapıştır (en üstteki Türkçe açıklama
+   satırlarını alma). Kutu **4000 karakterle sınırlıdır**; metin bu
+   sınıra göre yazıldı ve 3869 karakter, olduğu gibi sığıyor.
+   Değiştirirsen uzunluğu yeniden ölç.
 5. Aynı bölümdeki **Sign-In Required** ("Giriş gerekli") kutusunu
    **işaretle** — uygulama gerçekten giriş istiyor, "hayır" demek
    incelemecinin giriş ekranına takılıp yeniden reddetmesine yol açar.

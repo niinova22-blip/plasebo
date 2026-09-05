@@ -36,9 +36,18 @@ Ek komutlar:
 npm run typecheck     # tsc --noEmit
 npm run tones         # ses dosyalarını yeniden üret
 npm run store:assets  # Play mağaza simgesi + öne çıkan grafik
+npm test              # tip denetimi + mantık, eklenti, Swift ve çeviri testleri
 npm run build:preview # EAS ile test APK'sı
 npm run build:play    # EAS ile Play'e yüklenecek AAB
 ```
+
+**iOS derlemesi Codemagic'te.** iOS için bir Mac gerekiyor ve geliştirme
+Windows'ta yapılıyor. Bu iş EAS yerine Codemagic'e alındı: EAS'in derleme
+hakkı sınırlı, Codemagic'in ücretsiz kademesi aylık 500 dakika macOS
+makinesi veriyor. Hat `codemagic.yaml` içinde tanımlı; panelde tek bir
+"Start new build" düğmesiyle derleyip TestFlight'a yüklüyor. Kurulumu
+`store/CODEMAGIC.md` içinde tıklama düzeyinde anlatılıyor. EAS kaldırılmadı,
+`npm run build:ios` hâlâ çalışıyor.
 
 ## İmzalama
 
@@ -154,11 +163,13 @@ yetkileri tutar. Ücretsiz kademe 1 hedef, temel formül havuzu ve 7 günlük
 geçmiş verir; Premium sınırsız hedef, tam havuz, tüm geçmiş, kriz modu ve
 doz ayarını açar. İçerik paketleri havuzu genişletir, yerine geçmez.
 
-**Gerçek satın alma henüz yok.** Gerekçe ve bağlama adımları
-`store/RELEASE.md` içindeki "Abonelik" bölümünde. Kilitleri cihazda
-denemek için `EXPO_PUBLIC_ALLOW_TEST_PURCHASES=1` ile derle — bu bayrak
-`eas.json`'da yalnızca `preview` profilinde tanımlı, Play'e giden
-`production` derlemesinde yok.
+**Satış 1.4.0 ile açıldı.** `src/utils/billing.ts` gerçek StoreKit 2 /
+Play Faturalandırma çağrılarını yapıyor, `PlansScreen` gerçek bir satın
+alma ekranı ve `PREMIUM_ENABLED` bayrağı artık `true`. App Store
+Connect'te iki abonelik ürünü tanımlı: aylık ₺149,99 ve yıllık ₺1.159,99,
+ikisinde de bir haftalık ücretsiz deneme. Ne kurulduğunun kaydı
+`store/ASC-ABONELIK-KURULUMU.md`, sürümün bütün yayın sırası
+`store/1.4.0-YAYIN.md` içinde.
 
 ## Kurulum akışı
 
@@ -188,15 +199,22 @@ için akış orada durur.
 
 `src/theme/theme.ts` semantik token'lar tanımlar (`bg`, `surface`, `inkCard`,
 `text`, `sub`, `border`, `accentSoft`…). Palet değişmez — `constants/colors.ts`
-tek kaynak olarak kalır; koyu temada yalnızca hangi rengin hangi rolü
-üstlendiği değişir. Vurgu renkleri (pulse, glow, warn) her iki temada aynıdır.
+tek kaynak olarak kalır; temalar yalnızca hangi rengin hangi rolü üstlendiğini
+değiştirir. Vurgu renkleri (pulse, glow, warn) üç temada da aynıdır; değişen
+zemin, yüzey ve metin tonlarıdır.
 
-Tema `Ayarlar → Görünüm` altından Açık / Koyu olarak seçilir ve
-`AsyncStorage`'da saklanır. **Varsayılan koyu.** Önceden bir de "Sistem"
-seçeneği vardı ve varsayılan oydu; ritüel ekranları koyu zemin üzerine
-kurulu olduğu için (neon çekirdek, ışıma, parçacıklar) uygulamanın cihaz
-ayarına göre açık temada başlaması istenmedi. Eskiden `system` kaydetmiş
-kullanıcılar açılışta koyuya taşınır (`SettingsContext`).
+Tema `Ayarlar → Görünüm` altından **Şafak / Sis / Açık** olarak seçilir ve
+`AsyncStorage`'da saklanır. **Varsayılan Şafak** — krem ve kayısı tonlarında
+aydınlık bir tema. Sis koyu tarafı, Açık ise nötr gri-bej kâğıdı temsil eder.
+
+Ritüel ekranları (`RitualScreen`, `ScoreAfterScreen`) temadan bağımsız olarak
+`colors.ink` üzerine çizilir; neon çekirdek, ışıma ve parçacıklar koyu zemin
+gerektirdiği için tema onları etkilemez.
+
+Kaldırılmış tema kimlikleri açılışta taşınır (`SettingsContext`): `system`
+yeni varsayılana (Şafak) düşer, 2026 Eylül'ünde kaldırılan `dark` ise en yakın
+karşılığı olan Sis'e taşınır — kullanıcının seçtiği koyuluk elinden alınmasın
+diye ikisi farklı yerlere gider.
 
 ## Formül motoru
 

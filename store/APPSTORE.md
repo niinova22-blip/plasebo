@@ -21,7 +21,7 @@ olduğu için Apple'a başka bir ödeme yapılmaz.
 
 | Adım | Durum |
 | --- | --- |
-| 1. Apple Developer Program üyeliği | **Bitti** — bireysel hesap, takım `Ahmet KÖKDOGAN (GUYY5AAT36)` |
+| 1. Apple Developer Program üyeliği | **Bitti** — bireysel hesap, takım `Rahile KOKDOGAN (ML3UZXMU3D)`. Uygulamanın transferi tamamlandı; bütün derleme, yükleme ve yayın işleri artık yalnızca bu hesaptan yürüyor. |
 | 2. App Store Connect uygulama kaydı | **Bitti** — `eas submit` kendisi oluşturdu. Apple kimliği **6802842875** |
 | 3. Google Cloud iOS istemcisi | **Bitti** — kimlik `.env` ve EAS ortamında tanımlı |
 | 4. Derleme ve yükleme | **Bitti** — sürüm **1.1.1**, derleme no **2**, App Store Connect'e yüklendi |
@@ -369,7 +369,7 @@ görsel istenmez; iPad sekmesi görünmez (iPad desteği kapalı).
 > emoji duruyor; orası kabul ediyor.
 | Destek URL'i | `https://niinova22-blip.github.io/plasebo/privacy.html` |
 | Pazarlama URL'i | boş |
-| **Telif hakkı (Copyright)** | `2026 Ahmet KÖKDOGAN` — zorunlu alan; yıl + hak sahibi. © işareti yazılmaz, Apple ekler. |
+| **Telif hakkı (Copyright)** | `2026 Rahile KÖKDOĞAN` — zorunlu alan; yıl + hak sahibi. Hesabın yasal adıyla birebir aynı olmalı. © işareti yazılmaz, Apple ekler. |
 
 "Bu Sürümdeki Yenilikler" alanı ilk sürümde çıkmaz; yalnızca
 güncellemelerde istenir.

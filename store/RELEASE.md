@@ -147,35 +147,25 @@ cd android && ./gradlew assembleRelease # cihazda denemek için .apk
 >
 > Expo, yerel Gradle derlemesinde de proje kökündeki `.env` dosyasını
 > yükler (`env: load .env` satırı derleme çıktısında görünür). Yani
-> geliştirme için `.env` içinde açık bırakılan
-> `EXPO_PUBLIC_ALLOW_TEST_PURCHASES=1`, Play'e gidecek AAB'ye de gömülür ve
-> mağazadaki uygulamada plan ekranı premium'u bedavaya açar.
+> geliştirme için `.env` içinde açık bırakılan herhangi bir
+> `EXPO_PUBLIC_*` bayrağı, Play'e gidecek AAB'ye de gömülür.
 >
 > Daha sinsi ikinci yarısı: `.env`'i değiştirmek Gradle için bir girdi
 > değişikliği **değildir**. JS kaynakları aynı kaldığı için
 > `createBundleReleaseJsAndAssets` görevi "güncel" sayılır ve bir önceki
 > derlemeden kalan paket olduğu gibi yeniden kullanılır — bayrağı
-> kapatmak tek başına hiçbir şeyi değiştirmez.
->
-> AAB derlemeden önce sırasıyla:
+> kapatmak tek başına hiçbir şeyi değiştirmez. Paketi zorla yeniden
+> ürettirmek gerekir:
 >
 > ```bash
-> # 1. bayrağı kapat (0 yap ya da satırı boşalt)
-> # 2. paketi zorla yeniden ürettir:
 > rm -rf android/app/build/generated/assets/react/release
 > cd android && ./gradlew bundleRelease
 > ```
 >
-> Sonuç kontrolü — paket Hermes bayt kodudur, ASCII dizeler düz metin
-> olarak, Türkçe karakterli dizeler UTF-16 olarak durur:
->
-> | Aranan | Kodlama | Bayrak kapalıyken |
-> | --- | --- | --- |
-> | `Test derlemesi` | ASCII | **bulunmamalı** |
-> | `Satın alma henüz açılmadı` | UTF-16 | **bulunmalı** |
->
-> Derleme bitince `.env`'i eski hâline döndürmeyi unutma; cihazda premium
-> kilitlerini denemek için bayrağın açık olması gerekiyor.
+> Not: satın almayı sahteleyen `EXPO_PUBLIC_ALLOW_TEST_PURCHASES` bayrağı
+> **kaldırıldı** (26.08.2026). Satın alma artık gerçek; denemesi mağazanın
+> kendi test hesaplarıyla yapılıyor (bkz. `store/ABONELIK.md` §2f).
+> Tuzağın kendisi başka bayraklar için geçerli olmayı sürdürüyor.
 
 > İmza değiştiği için yeni APK, eski APK'nın üzerine kurulamaz; cihazdaki
 > eski sürümün önce kaldırılması gerekir.
@@ -222,7 +212,8 @@ npm run build:play      # AAB — Play'e yüklenecek olan
 ```
 
 Cihazda mutlaka dene: Google girişi, günlük hatırlatıcı izni ve bildirimin
-gerçekten gelmesi, ritüel sesleri, koyu tema, "Hesabı ve tüm verileri sil".
+gerçekten gelmesi, ritüel sesleri, tema seçimi (Şafak/Sis/Açık), "Hesabı ve
+tüm verileri sil".
 
 ## 5. Play Console
 

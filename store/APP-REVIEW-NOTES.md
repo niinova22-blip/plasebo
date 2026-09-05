@@ -1,133 +1,109 @@
 # App Review Information → Notes (Plasebo, iOS)
 
-Aşağıdaki metin App Store Connect'te App Review Information → Notes alanına
-İngilizce olarak yapıştırılır ve aynısı Resolution Center'a cevap olarak yazılır.
-Ekran kaydı ayrıca Resolution Center mesajına eklenir.
+App Store Connect'teki **App Review Information → Notes** kutusu **4000
+karakterle** sınırlıdır. Aşağıdaki metin bu sınıra göre yazıldı — çizgiden
+sonrasının tamamı bu sınırın altındadır, olduğu gibi yapıştırılabilir.
 
----
+Yapıştırmadan önce giriş paragrafındaki `[MODEL]` ve `[VERSION]`
+doldurulmalıdır (test edilen iPhone modeli ve iOS sürümü).
 
-> **What changed since version 1.1.1.** The screenshots attached to the previous
-> rejection showed a plans screen with "coming soon" placeholders for a premium
-> tier and for content packs. Those were descriptions of future work, not
-> features of the app. They have been removed entirely in version 1.1.2, and the
-> limits they referred to have been lifted, so every feature visible in the app
-> now works for every user. The full information requested is below.
+**1.4.0 için güncellendi (5 Eylül 2026):** abonelik bölümü eklendi ve
+"No in-app purchases" cümlesi kaldırıldı — o cümle, abonelik satan bir
+ikiliyle doğrudan çelişiyordu. Sığdırmak için ekran kaydı maddesi ve
+widget satırı çıkarıldı; not 3.893 karakter, satır sonları çift sayılsa
+bile 3.978.
 
-## 1. Screen recording
+Metin biçimlendirme içermez (kalın, başlık, madde işareti yok): Notes kutusu
+düz metin alanıdır ve markdown işaretleri incelemeciye ham hâliyle görünür.
 
-A screen recording captured on a physical iPhone running the latest iOS is
-attached to this reply. It starts from a cold launch and shows: the sign-in
-screen, signing in with Sign in with Apple, the daily ritual flow from start to
-finish, the prescription and archive screens, the notification permission
-prompt, and the account-and-data deletion flow in Settings.
+Aşağıdaki sayaç satır sonlarını tek karakter sayar; App Store Connect bazı
+tarayıcılarda çift sayabildiği için ~150 karakterlik pay bırakıldı.
 
-## 2. Devices and operating systems tested
+Değiştirirsen karakter sayısını yeniden ölç:
+`node -e "console.log(require('fs').readFileSync('store/APP-REVIEW-NOTES.md','utf8').split(/^---$/m)[1].trimStart().length)"`
 
-- iPhone [MODEL] — iOS [VERSION]
-- iPhone [MODEL] — iOS [VERSION]
-- iPad is not supported; the app is iPhone-only and portrait-only.
+--- WHAT IS NEW IN VERSION 1.4
 
-## 3. Purpose of the app and target audience
+Version 1.4 introduces the Plasebo Plus subscription (section 4). Version 1.1.1
+was rejected under Guideline 2.1 for a plans screen whose features could not be
+bought; that screen returns now only because both subscription products are
+live in App Store Connect and can actually be purchased. Nothing is labelled
+"coming soon".
 
-Plasebo is a self-care and mindfulness app built around the concept of the
-**open-label placebo**: a ritual that the user knowingly performs while being
-told, on every screen, that it is a placebo. Its tagline is "Bilerek inan"
-("Believe on purpose").
+Tested on iPhone [MODEL] - iOS [VERSION]. iPhone-only and portrait-only.
 
-Target audience: adults interested in mindfulness, journaling and daily rituals.
+1. PURPOSE AND AUDIENCE
 
-The problem it addresses: people benefit from a short, structured daily moment of
-calm and intention, but most such apps rely on pseudo-scientific promises. Plasebo
-inverts this. It delivers the same structure — a timed breathing and focus ritual
-with generated ambient sound, a daily "prescription", and a record of how the day
-felt — while being explicitly transparent that the effect comes from the ritual
-and the user's own expectation, not from any active ingredient.
+Plasebo is a self-care app built on the open-label placebo: a daily ritual the
+user performs while being told, on every screen, that it is a placebo.
+Audience: adults interested in mindfulness and daily rituals.
 
-**The app makes no medical claims.** It never states that it treats, cures,
-diagnoses or improves any condition. Screens carry a standing disclaimer that the
-content is a placebo. The open-label placebo research it refers to is real and
-publicly published (for example the work of the Program in Placebo Studies at
-Harvard Medical School); the app cites this as context only and does not claim
-any clinical outcome for itself.
+The ritual is free and complete on the free tier - four goals, a daily formula,
+unlimited repeats, one targeted prescription a day, seven days of history. The
+paid tier adds measurement, not the ritual.
 
-Core features:
+2. SETUP AND ACCESS
 
-- **Ritual** — a timed session with generated ambient sound (noise, tones, bell)
-  and on-screen guidance.
-- **Prescription** — a daily generated "prescription" card describing the day's
-  ritual and intention.
-- **Archive / history** — the user's own past sessions and notes.
-- **Settings** — language, appearance, reminders, and account and data deletion.
+Sign-in is required and no demo account is possible - please use your own Apple
+ID. There is no user database and no credentials to issue; signing in only
+reads a display name and stores it on the device.
 
-Every one of these is free and unrestricted.
+All data is stored locally. The last row of Settings, "Delete account and all
+data", erases everything and returns to sign-in.
+Privacy policy: https://niinova22-blip.github.io/plasebo/privacy.html
 
-## 4. Setup instructions and access to the main features
+3. PERMISSIONS AND ON-DEVICE MEASUREMENTS
 
-**Sign in is required, and no demo account is needed or possible — please sign
-in with your own Apple ID.** The app has no server and no user database, so
-there are no credentials for us to issue. Signing in only reads the user's
-display name from the identity provider and stores it locally on the device.
+Camera: before and after the ritual the user may estimate mood from a facial
+expression. Three frames are analysed on the device and discarded at once; no
+photo is saved, shown or sent.
 
-On iOS the sign-in screen offers **Sign in with Apple**. The reviewer can sign in
-with any Apple ID, including a private-relay address; there is nothing to
-provision on our side. Sign in with Google is offered as a second option.
+Microphone: during the breathing step the user may let the app follow breathing
+rhythm. No audio is recorded; only derived numbers are kept.
 
-After signing in, everything is reachable from the bottom navigation. No sample
-files or additional credentials are required.
+HealthKit, read only, default off: with "Health data" on, the app reads last
+night's sleep, resting heart rate and HRV and uses them only to add one calming
+round to that day's ritual. Nothing is written to Health and no health data
+leaves the device.
 
-**Data storage and deletion.** All data — the account link, the user's name,
-goals, streak, settings and every ritual record — is kept locally on the device
-in AsyncStorage. There is no copy on any server. The interface follows the
-device language, so on an English device the last row of Settings reads
-**"Delete account and all data"** (in Turkish, "Hesabı ve tüm verileri sil").
-Tapping it permanently deletes everything on the device and returns the app to
-the sign-in screen. This flow is shown in the attached recording. A public
-data-deletion page is also available at
-https://niinova22-blip.github.io/plasebo/data-deletion.html and the privacy
-policy at https://niinova22-blip.github.io/plasebo/privacy.html
+Tracking (ATT): shown once, asking whether the advertising identifier may be
+used to personalise ads. Declining only makes ads generic.
 
-## 5. External services, tools and platforms
+On-device language model: where available, Apple's system model writes the
+short prescription paragraph on the device - no network request. Otherwise the
+app uses hand-written text.
 
-- **Sign in with Apple** (expo-apple-authentication) — authentication only.
-- **Google Sign-In** (@react-native-google-signin/google-signin) —
-  authentication only.
-- No backend server, no database, no analytics SDK, no advertising SDK, no AI
-  service, no payment processor and no third-party data provider are used. The
-  app makes no network requests other than the sign-in flow itself, and works
-  fully offline afterwards.
+4. SUBSCRIPTION
 
-Framework: React Native / Expo. Local notifications (expo-notifications) are used
-for the optional daily reminder and are scheduled on the device; there is no push
-server. Audio is generated by us and bundled with the app (expo-audio).
+Plasebo Plus is an auto-renewable subscription sold with StoreKit 2, monthly or
+yearly, both unlocking the same thing: unlimited face-scan measurements instead
+of one a day, breath analysis, daytime check-ins with a next-morning report,
+unlimited prescriptions, full history and no ads. Both offer one free week
+first.
 
-**In-app purchases: there are none in this version, and nothing in the app
-refers to any.** Version 1.1.2 removes the informational plans screen that
-version 1.1.1 contained. There is no paid tier, no "coming soon" placeholder, no
-locked feature and no purchase button anywhere in the app, and no StoreKit or
-other billing code is reachable in this build. Every feature the app shows is
-available and fully working for every user, with no limits on history, on the
-number of daily prescriptions, or on ritual length. If a paid tier is introduced
-later it will be implemented with StoreKit / In-App Purchase and submitted for
-review at that time.
+Purchase screen: Settings tab, then the Plan row. Restore Purchases, the
+renewal terms, the EULA link and the privacy link are all on that screen.
+Entitlement is read from the signed transactions on the device at every launch:
+no server and no receipt sent anywhere.
 
-## 6. Regional differences
+5. EXTERNAL SERVICES
 
-The app functions identically in all regions. There is no geo-gating, no
-region-specific content and no regional pricing. The interface is available in
-Turkish and English, selectable in Settings → Appearance → Language and following
-the device language by default; both languages expose exactly the same features
-and the same disclaimers.
+Sign in with Apple and Google Sign-In, for authentication only.
 
-## 7. Regulated industries and third-party material
+Google AdMob shows one full-screen ad at a single point: when a session ends and
+the user taps "Back to home". Never during a ritual, measurement or breathing
+step; capped at three a day. The UMP consent flow and the ATT prompt run before
+any ad request. Nothing the user records reaches the ad network. Plus
+subscribers see no ads.
 
-Plasebo does not operate in a regulated industry and is not a medical device. It
-provides no diagnosis, no treatment, no health advice and no clinical service; it
-does not connect to any health data, and it does not read or write HealthKit. Its
-entire premise is stated openly to the user: the ritual is a placebo.
+There is no backend, database, analytics SDK, external AI service, payment
+processor or third-party data provider. The daily reminder uses local
+notifications. Behaviour is identical in all regions and both languages.
 
-All content is original and created by us: the interface text, the ritual and
-prescription texts, the visual design, and the ambient audio, which is
-synthesised by our own script (`scripts/generate-tones.js`) rather than licensed.
-No protected third-party material is included. References to open-label placebo
-research are descriptive citations of publicly published work and are presented
-as context, not as a claim about this app.
+6. REGULATED INDUSTRY AND THIRD-PARTY MATERIAL
+
+Plasebo is not a medical device and operates in no regulated industry. It offers
+no diagnosis or treatment and every screen carries a placebo disclaimer. All
+text, design and audio are original. Two components are bundled under Apache-2.0
+with their licence texts: TensorFlow Lite and the EmotiEffLib facial-expression
+model used for the mood estimate.

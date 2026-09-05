@@ -80,8 +80,8 @@ VERİLERİN SENDE KALIR
 ERİŞİLEBİLİRLİK
 
 Cihazında "Hareketi Azalt" açıksa uygulamadaki tüm animasyonlar devre dışı
-kalır ve hiçbir içerik kaybolmaz. Koyu tema, ses seviyesi ve titreşim ayrı
-ayrı ayarlanabilir.
+kalır ve hiçbir içerik kaybolmaz. Üç tema (Şafak, Sis, Açık), ses seviyesi ve
+titreşim ayrı ayrı ayarlanabilir.
 
 ⚗️ Plasebo bir tedavi değildir ve hiçbir tıbbi desteğin yerine geçmez.
 Sağlığınla ilgili bir endişen varsa bir sağlık profesyoneline başvur.
