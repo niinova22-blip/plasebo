@@ -48,3 +48,7 @@ yarn-error.*
 
 # yayın imzalama anahtarı — asla depoya girmez
 /keys/
+
+# Python
+__pycache__/
+*.pyc
