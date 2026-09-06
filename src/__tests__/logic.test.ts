@@ -68,6 +68,8 @@ import {
   remainingFrom,
 } from '../utils/faceScanQuota';
 import {
+  formatLikeDisplay,
+  introUnitLabel,
   parseDisplayPrice,
   yearlyDiscountPercent,
   yearlyPerMonth,
@@ -746,6 +748,43 @@ group('Yıllık indirim');
   eq(Math.round(yearlyPerMonth(1159.99) * 100) / 100, 96.67, 'aya düşen tutar doğru olmalı');
   eq(yearlyDiscountPercent(0, 1159.99), 0, 'aylık fiyat okunamazsa indirim iddia edilmemeli');
   ok('indirim yüzdesi ve aylık karşılığı doğru');
+}
+
+group('Rozetteki aylık tutarın biçimi');
+
+{
+  // Rozet, ekranda duran yıllık fiyatın kendi biçimini kullanıyor: para
+  // birimi işareti, işaretin yeri ve ayırıcılar ülkeye göre değişiyor.
+  eq(formatLikeDisplay('₺1.159,99', 96.666), '₺96,67', 'TL biçimi korunmalı');
+  eq(formatLikeDisplay('$1,159.99', 96.666), '$96.67', 'dolar biçimi korunmalı');
+  eq(formatLikeDisplay('1 159,99 TL', 96.666), '96,67 TL', 'sondaki para birimi yerinde kalmalı');
+  // Binlik ayırıcı sonuçta da gerekiyorsa aynı işaret kullanılmalı.
+  eq(formatLikeDisplay('$14,000.00', 1166.67), '$1,166.67', 'binlik ayırıcı aynı işaretle konmalı');
+  // Kuruşu olmayan para biriminde sonuç da kuruşsuz.
+  eq(formatLikeDisplay('¥12000', 1000.4), '¥1000', 'ondalıksız biçimde yuvarlanmalı');
+  ok('aylık tutar yıllık fiyatın biçimiyle yazılıyor');
+
+  eq(formatLikeDisplay('Ücretsiz', 96.67), null, 'sayı yoksa rozet kurulmamalı');
+  eq(formatLikeDisplay('₺1.159,99', 0), null, 'sıfır tutar biçimlenmemeli');
+  ok('biçimlenemeyen durumda null dönüyor');
+}
+
+group('Ücretsiz deneme süresinin birimi');
+
+{
+  // Türkçede sayıdan sonra birim çoğullanmıyor, İngilizcede çoğullanıyor.
+  // Sözlük tek Türkçe anahtara iki İngilizce karşılık veremediği için
+  // ekran "1 weeks free" diyordu.
+  eq(introUnitLabel('week', 1, 'en'), 'week', 'tek hafta İngilizcede tekil olmalı');
+  eq(introUnitLabel('week', 3, 'en'), 'weeks', 'üç hafta İngilizcede çoğul olmalı');
+  eq(introUnitLabel('week', 1, 'tr'), 'hafta', 'Türkçede tekil hafta');
+  eq(introUnitLabel('week', 3, 'tr'), 'hafta', 'Türkçede sayıdan sonra çoğul eki yok');
+  eq(introUnitLabel('day', 7, 'en'), 'days', 'gün birimi de çoğullanmalı');
+  eq(introUnitLabel('month', 1, 'en'), 'month', 'ay birimi tekil kalmalı');
+  ok('birim sayıya ve dile göre doğru seçiliyor');
+
+  eq(introUnitLabel('fortnight', 1, 'en'), null, 'bilinmeyen birimde cümle kurulmamalı');
+  ok('bilinmeyen birimde null dönüyor');
 }
 
 console.log(`\nMANTIK TESTLERİ: ${passed}/${passed} GEÇTİ`);

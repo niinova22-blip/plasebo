@@ -5,7 +5,7 @@ import Screen from '../components/Screen';
 import PressableScale from '../components/PressableScale';
 import TransparencyPill from '../components/TransparencyPill';
 import { fonts } from '../constants/typography';
-import { useT, useTheme } from '../context/SettingsContext';
+import { useLang, useT, useTheme } from '../context/SettingsContext';
 import { usePremium } from '../context/PremiumContext';
 import Icon from '../components/Icon';
 import {
@@ -18,6 +18,8 @@ import {
   PREMIUM_FEATURES,
   PURCHASE_OPTIONS,
   YEARLY_PRICE_TRY,
+  formatLikeDisplay,
+  introUnitLabel,
   optionById,
   parseDisplayPrice,
   yearlyDiscountPercent,
@@ -49,6 +51,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'Plans'>;
 export default function PlansScreen({ navigation }: Props) {
   const theme = useTheme();
   const t = useT();
+  const lang = useLang();
   const { isPremium, option, expiresAt, prices, busy, buy, restore, refresh } = usePremium();
   const [selected, setSelected] = useState<PurchaseOptionId>('yearly');
 
@@ -65,23 +68,24 @@ export default function PlansScreen({ navigation }: Props) {
   // "7 gün ücretsiz, sonra ₺129" cümlesi burada kuruluyor: parçaları çeviriden
   // geçirmek, cümlenin tamamını sözlükte aramaktan farklı. Fiyat ve süre
   // değişken olduğu için bütün cümlenin sözlükte bir karşılığı olamaz.
+  //
+  // Birim sözlükten değil `introUnitLabel`'dan geliyor: tekil/çoğul kararı
+  // hem sayıya hem dile bağlı ve sözlüğün anahtarı Türkçe metnin kendisi
+  // olduğu için tek anahtara iki İngilizce karşılık yazılamıyor. Sözlükten
+  // gelirken cümle İngilizcede "1 weeks free" oluyordu.
   const introFor = useCallback(
     (id: PurchaseOptionId) => {
       const info = prices.find((p) => p.option === id);
       if (!info?.introUnit || !info.introCount) return undefined;
-      const units: Record<string, string> = {
-        day: 'gün',
-        week: 'hafta',
-        month: 'ay',
-        year: 'yıl',
-      };
+      const unit = introUnitLabel(info.introUnit, info.introCount, lang);
+      if (!unit) return undefined;
       return t('{sure} {birim} ücretsiz, sonra {fiyat}', {
         sure: info.introCount,
-        birim: t(units[info.introUnit]),
+        birim: unit,
         fiyat: info.price,
       });
     },
-    [prices, t]
+    [prices, t, lang]
   );
 
   /**
@@ -92,6 +96,12 @@ export default function PlansScreen({ navigation }: Props) {
    * ekranda zaten yedek tutarlar görünüyorsa) koddaki yedeklerden.
    * Çözülemeyen bir biçimde satır hiç görünmüyor: kullanıcıya gösterilen
    * fiyatlarla tutmayan bir yüzde, yanlış fiyat beyanı olurdu.
+   *
+   * Aylık karşılık, ekranda duran yıllık fiyatın **kendi biçimiyle**
+   * yazılıyor (`formatLikeDisplay`): para birimi işareti, işaretin yeri ve
+   * ayırıcılar ülkeye göre değişiyor ve hepsi zaten o dizede duruyor. Önce
+   * çıplak sayı yazılıyordu ve rozet "36% off · 96.67 per month" diyordu —
+   * satın alma noktasında para birimsiz bir tutar.
    */
   const yearlySaving = useCallback(() => {
     const storeMonthly = prices.find((p) => p.option === 'monthly')?.price;
@@ -99,15 +109,20 @@ export default function PlansScreen({ navigation }: Props) {
 
     let monthly: number | null = MONTHLY_PRICE_TRY;
     let yearly: number | null = YEARLY_PRICE_TRY;
+    let yearlyDisplay = optionById('yearly').fallbackPrice;
     if (storeMonthly && storeYearly) {
       monthly = parseDisplayPrice(storeMonthly);
       yearly = parseDisplayPrice(storeYearly);
+      yearlyDisplay = storeYearly;
     }
     if (monthly == null || yearly == null) return undefined;
 
     const percent = yearlyDiscountPercent(monthly, yearly);
     if (percent <= 0) return undefined;
-    return { percent, perMonth: yearlyPerMonth(yearly) };
+
+    const perMonth = formatLikeDisplay(yearlyDisplay, yearlyPerMonth(yearly));
+    if (!perMonth) return undefined;
+    return { percent, perMonth };
   }, [prices]);
 
   const onBuy = useCallback(async () => {
@@ -242,10 +257,7 @@ export default function PlansScreen({ navigation }: Props) {
                       {saving
                         ? t('%{yuzde} indirim · ayda {aylik}', {
                             yuzde: saving.percent,
-                            aylik: saving.perMonth.toLocaleString(undefined, {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2,
-                            }),
+                            aylik: saving.perMonth,
                           })
                         : t('En avantajlı')}
                     </Text>

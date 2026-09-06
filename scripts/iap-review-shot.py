@@ -169,12 +169,12 @@ STRINGS = {
         'yearly': 'Yearly',
         'per_month': '/mo',
         'per_year': '/yr',
-        'badge': '36% off · 96.67 per month',
-        'intro_monthly': '1 weeks free, then ' + MONTHLY,
-        'intro_yearly': '1 weeks free, then ' + YEARLY,
+        'badge': '36% off · ₺96,67 per month',
+        'intro_monthly': '1 week free, then ' + MONTHLY,
+        'intro_yearly': '1 week free, then ' + YEARLY,
         'cta': 'Start free trial',
         'restore': 'Restore purchases',
-        'terms': 'Yearly — ' + YEARLY + '/yr. 1 weeks free, then ' + YEARLY +
+        'terms': 'Yearly — ' + YEARLY + '/yr. 1 week free, then ' + YEARLY +
                  ' will be charged. This is a subscription and renews automatically at '
                  'the end of each period. Payment is charged to your account when you '
                  'confirm the purchase. To stop renewal, go to the subscription settings '
@@ -207,7 +207,7 @@ STRINGS = {
         'yearly': 'Yıllık',
         'per_month': '/ay',
         'per_year': '/yıl',
-        'badge': '%36 indirim · ayda 96,67',
+        'badge': '%36 indirim · ayda ₺96,67',
         'intro_monthly': '1 hafta ücretsiz, sonra ' + MONTHLY,
         'intro_yearly': '1 hafta ücretsiz, sonra ' + YEARLY,
         'cta': 'Ücretsiz denemeyi başlat',

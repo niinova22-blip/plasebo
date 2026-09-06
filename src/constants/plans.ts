@@ -152,6 +152,8 @@ export const SUBSCRIPTION_OPTION_IDS: PurchaseOptionId[] = ['monthly', 'yearly']
 export {
   MONTHLY_PRICE_TRY,
   YEARLY_PRICE_TRY,
+  formatLikeDisplay,
+  introUnitLabel,
   parseDisplayPrice,
   yearlyDiscountPercent,
   yearlyPerMonth,
