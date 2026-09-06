@@ -295,22 +295,62 @@ uygulama kategorisini seç — Plasebo bir yazılım hizmeti; e-kitap,
 dergi, ses/görüntü yayını ya da bulut hizmeti değil. Apple bir soru
 listesi gösterirse hepsine **hayır** demek doğru cevap.
 
-### 7b. İnceleme ekran görüntüsü (zorunlu) — ⏳ KALAN TEK İŞ
+### 7b. İnceleme ekran görüntüsü (zorunlu) — ✅ görüntü üretildi, yükleme sende
 
-Her iki ürün için **plan ekranının ekran görüntüsü** isteniyor ve bu, App
-Store Connect tarafında tamamlanmamış tek alan.
+Her iki ürün için **plan ekranının görüntüsü** isteniyor. Bu alan
+doldurulmadan ürünler gönderime eklenmiyor; App Store Connect
+*"Unable to Add for Review — You must add a Review Information
+screenshot"* diyor.
 
-Şu an verilemiyor, çünkü plan ekranı `PREMIUM_ENABLED` bayrağıyla kapalı.
-Sıra şöyle:
+Görüntü telefondan alınamadı: TestFlight derlemesi hazır olmasına rağmen
+cihaza inmedi (bkz. `store/1.4.0-YAYIN.md`, Adım 8). Onu beklemek yerine
+görüntü depodan üretiliyor:
 
-1. Bayrağı açıp derlemeyi hazırlarım,
-2. TestFlight sürümü telefonuna gelir,
-3. Ayarlar → Plan satırından plan ekranını açıp ekran görüntüsü alırsın,
-4. Her iki ürünün **Review Information → Screenshot** alanına yüklersin.
+```bash
+python scripts/iap-review-shot.py
+```
 
-Ürünler o zamana kadar **"Prepare for Submission"** durumunda kalır. Bu
-bir sorun değil — sandbox testleri bu durumda da çalışıyor. Yalnızca
-sürümü incelemeye göndermeden önce tamamlanmış olması gerekiyor.
+Çıktı masaüstünde `plasebo-iap` klasörüne yazılıyor:
+
+| Dosya | Ne zaman kullanılır |
+| --- | --- |
+| `plan-ekrani-en.png` | **Apple'a yüklenecek olan.** İnceleme İngilizce yapılıyor. |
+| `plan-ekrani-tr.png` | Türkçe karşılığı; arşiv ve kendi kontrolün için. |
+
+Görüntü bir tasarım maketi değil: ölçüler `src/screens/PlansScreen.tsx`
+içindeki `StyleSheet`'ten, renkler `src/theme/theme.ts` içindeki Şafak
+temasından (varsayılan tema), metinler `src/i18n/en.ts` içindeki gerçek
+İngilizce karşılıklardan, fiyatlar App Store Connect'te seçilen gerçek
+kademelerden geliyor. Ekran bir kaydırma listesi olduğu için görüntü tek
+bir telefon ekranından uzun — kaydırmanın tamamını gösteriyor, yani
+inceleyen kişi zorunlu abonelik metnini ve bağlantıları da görüyor.
+
+`scripts/plus-mockups.py` bu iş için **kullanılamaz**: sayfalarında
+açıklama başlıkları var, paleti Eylül 2026'da yumuşatılmadan önceki
+mor/neon ikilisi, ekranı koyu temada çiziyor ve asıl önemlisi zorunlu
+abonelik metni ile gizlilik/kullanım koşulları bağlantılarını hiç
+çizmiyor.
+
+**Yükleme — iki ürün için ayrı ayrı, aynı dosya:**
+
+1. https://appstoreconnect.apple.com adresine gir.
+2. Üstteki **Uygulamalarım** → **Plasebo**.
+3. Sol menüden **Abonelikler** (Subscriptions) → **Plasebo Premium**
+   grubunun altındaki **Plasebo Plus (Aylık)** ürününe tıkla.
+4. Sayfayı aşağı kaydır, **"App Store Promotion"** bölümünün altındaki
+   **"Review Information"** başlığını bul.
+5. Oradaki **Screenshot** kutusunun içine `plan-ekrani-en.png` dosyasını
+   sürükle (ya da kutuya tıklayıp masaüstünden seç). Yükleme birkaç
+   saniye sürüyor, bitince küçük bir önizleme çıkıyor.
+6. Sağ üstteki **Kaydet** (Save) düğmesine bas.
+7. Aynı ürünün sayfasında sağ üstte **"Add for Review"** düğmesi
+   aktifleşir. Bas ve açılan pencerede mevcut **Draft Submission**'ı seç.
+8. Sol menüden **Plasebo Plus (Yıllık)** ürününe geç ve 4–7 arasını
+   aynen tekrarla. Aynı dosya kullanılıyor; iki ürün için ayrı görüntü
+   gerekmiyor.
+
+Bu bittiğinde iki ürün de gönderime eklenmiş olur ve sürüm sayfasındaki
+**Submit for Review** düğmesi çalışır.
 
 ### 7c. İnceleme notu — ✅ yazıldı
 
@@ -361,11 +401,11 @@ bildirilmiş.
 App Store Connect tarafında yapılacak başka bir şey kalmadı. Sıra:
 
 1. ~~`PREMIUM_ENABLED = true`~~ ✅ yapıldı.
-2. Codemagic'te `plasebo-ios` ortam değişkeni grubu (bkz.
-   `store/CODEMAGIC.md` Adım 4) — **sıradaki iş**.
-3. Derleme → TestFlight.
-4. Plan ekranının görüntüsünü alıp iki ürünün Review Information alanına
-   yükle (yukarıda 7b).
+2. ~~Codemagic'te `plasebo-ios` ortam değişkeni grubu~~ ✅ yapıldı.
+3. ~~Derleme → TestFlight~~ ✅ derleme 22 (1.4.0) yüklendi.
+4. ~~İnceleme görüntüsünü üret~~ ✅ `python scripts/iap-review-shot.py`.
+   Masaüstündeki `plasebo-iap/plan-ekrani-en.png` dosyasını iki ürünün
+   Review Information alanına yükle — **sıradaki iş** (yukarıda 7b).
 5. Sandbox hesabıyla satın alma ve ücretsiz kademe testleri
    (`store/1.4.0-YAYIN.md` Adım 7).
 

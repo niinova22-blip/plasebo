@@ -154,7 +154,7 @@ def plans_frame():
     y += 6
     box(d, 20, y, 370, y + 62)
     d.text((36 * S, (y + 16) * S), 'Aylık', font=f(SANS_BOLD, 14), fill=WHITE)
-    price = '₺149,00'
+    price = '₺149,99'
     pw = d.textlength(price, font=f(SANS_BOLD, 18))
     d.text((354 * S - pw - d.textlength('/ay', font=f(SANS, 11)), (y + 14) * S),
            price, font=f(SANS_BOLD, 18), fill=WHITE)
@@ -170,7 +170,7 @@ def plans_frame():
     suff = d.textlength('/yıl', font=f(SANS, 11))
     d.text((354 * S - pw - suff, (y + 12) * S), price, font=f(SANS_BOLD, 18), fill=WHITE)
     d.text((354 * S - suff, (y + 20) * S), '/yıl', font=f(SANS, 11), fill=HAZE)
-    d.text((36 * S, (y + 38) * S), '%35 indirim · ayda ₺96,67',
+    d.text((36 * S, (y + 38) * S), '%36 indirim · ayda ₺96,67',
            font=f(SANS_BOLD, 12), fill=PULSE)
     d.text((36 * S, (y + 56) * S), 'Aylık plana göre çok daha ucuz',
            font=f(SANS, 11), fill=HAZE)
@@ -409,7 +409,7 @@ def tier_table():
     d.text((40, 40), 'Plasebo Plus · kademe modeli', font=ImageFont.truetype(SERIF, 38), fill=WHITE)
     d.text((40, 92), 'Ritüel herkese açık. Plus, ölçümü açar.',
            font=ImageFont.truetype(SANS, 19), fill=HAZE)
-    d.text((40, 126), '₺149,00/ay  ·  ₺1.159,99/yıl (%35 indirim · ayda ₺96,67)',
+    d.text((40, 126), '₺149,99/ay  ·  ₺1.159,99/yıl (%36 indirim · ayda ₺96,67)',
            font=ImageFont.truetype(SANS_MED, 17), fill=PULSE)
 
     col_x = (40, 560, 810)
@@ -444,7 +444,7 @@ def main():
              ['Öne çıkan üç özellik en üstte,', 'ölçümü anlatan ikisi ilk sırada.'],
              plans_frame()),
             ('Yıllık kart',
-             ['"%35 indirim · ayda ₺96,67" satırı', 'ekranda yazan iki fiyattan hesaplanıyor.'],
+             ['"%36 indirim · ayda ₺96,67" satırı', 'ekranda yazan iki fiyattan hesaplanıyor.'],
              plans_frame()),
         ],
         'Plasebo Plus · plan ekranı',
