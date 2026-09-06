@@ -373,6 +373,32 @@ def render(lang):
     return img
 
 
+# App Store Connect'in inceleme goruntusu icin kabul ettigi olcu: bir
+# iOS cihaz ekran goruntusu boyutu olmak zorunda. Serbest boy yuklenince
+# "The dimensions of one or more screenshots are wrong." diyor. Burada
+# mağaza listesindeki 6.9 inclik kartlarla ayni olcu kullaniliyor.
+DEVICE = (1290, 2796)
+
+
+def fit_to_device(img):
+    """Uzun cizimi cihaz olcusundeki tuvale ortalayarak sigdirir.
+
+    Plan ekrani bir kaydirma listesi: icerigi ~1130 pt, telefon ekrani
+    844 pt. Gercek bir ekran goruntusu alinsaydi zorunlu abonelik metni
+    ile hukuki baglantilar kadrajin disinda kalirdi — oysa inceleyenin
+    gormesi gereken tam olarak onlar. Bu yuzden kadraji kirpmak yerine
+    kaydirmanin tamami olceklenip ortalaniyor; kenarlarda kalan bosluk
+    ekranin kendi zemin rengiyle dolduruluyor.
+    """
+    w, h = DEVICE
+    scale = min(w / img.width, h / img.height)
+    small = img.resize((round(img.width * scale), round(img.height * scale)),
+                       Image.LANCZOS)
+    canvas = Image.new('RGB', (w, h), BG)
+    canvas.paste(small, ((w - small.width) // 2, (h - small.height) // 2))
+    return canvas
+
+
 def main():
     out_dir = sys.argv[1] if len(sys.argv) > 1 else os.path.join(
         os.path.expanduser('~'), 'Desktop', 'plasebo-iap'
@@ -380,8 +406,8 @@ def main():
     os.makedirs(out_dir, exist_ok=True)
     print('Yazildi:')
     for lang in ('en', 'tr'):
+        img = fit_to_device(render(lang))
         path = os.path.join(out_dir, 'plan-ekrani-' + lang + '.png')
-        img = render(lang)
         img.save(path)
         print('  ' + path + '  (' + str(img.width) + 'x' + str(img.height) + ')')
 

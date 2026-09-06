@@ -18,7 +18,8 @@ Toplam süre: yaklaşık 30–40 dakika. Sekiz bölüm var, sırayla git.
 
 **Aşağıdaki 1–6. bölümlerin tamamı App Store Connect'te uygulandı.** Bu
 dosya artık bir yapılacaklar listesi değil, ne kurulduğunun kaydı. Kalan
-tek şey inceleme ekran görüntüsü (aşağıda 7b).
+tek iş de bitti: inceleme ekran görüntüsü yüklendi ve iki ürün de
+gönderildi (aşağıda 7b).
 
 | Ne | Değer |
 | --- | --- |
@@ -295,7 +296,7 @@ uygulama kategorisini seç — Plasebo bir yazılım hizmeti; e-kitap,
 dergi, ses/görüntü yayını ya da bulut hizmeti değil. Apple bir soru
 listesi gösterirse hepsine **hayır** demek doğru cevap.
 
-### 7b. İnceleme ekran görüntüsü (zorunlu) — ✅ görüntü üretildi, yükleme sende
+### 7b. İnceleme ekran görüntüsü (zorunlu) — ✅ üretildi ve yüklendi
 
 Her iki ürün için **plan ekranının görüntüsü** isteniyor. Bu alan
 doldurulmadan ürünler gönderime eklenmiyor; App Store Connect
@@ -331,7 +332,19 @@ mor/neon ikilisi, ekranı koyu temada çiziyor ve asıl önemlisi zorunlu
 abonelik metni ile gizlilik/kullanım koşulları bağlantılarını hiç
 çizmiyor.
 
-**Yükleme — iki ürün için ayrı ayrı, aynı dosya:**
+**ÖLÇÜ ŞARTI:** App Store Connect serbest boy kabul etmiyor. İlk deneme
+*"The dimensions of one or more screenshots are wrong."* ile düştü;
+görüntünün bir iOS cihaz ekran görüntüsü ölçüsünde olması gerekiyor.
+Betik bu yüzden çıktıyı **1290×2796**'ya sığdırıyor — mağaza
+listesindeki 6.9 inçlik kartlarla aynı ölçü. Plan ekranı bir kaydırma
+listesi olduğu ve içeriği tek telefon ekranına sığmadığı için kadraj
+kırpılmıyor, kaydırmanın tamamı ölçeklenip ortalanıyor; kenarlarda
+kalan boşluk ekranın kendi zemin rengiyle doluyor. Kırpılsaydı zorunlu
+abonelik metni ile hukuki bağlantılar kadrajın dışında kalırdı — oysa
+inceleyenin görmesi gereken tam olarak onlar.
+
+**Yükleme — iki ürün için ayrı ayrı, aynı dosya (6 Eylül 2026'da
+yapıldı, aşağıdaki sıra kayıt olarak duruyor):**
 
 1. https://appstoreconnect.apple.com adresine gir.
 2. Üstteki **Uygulamalarım** → **Plasebo**.
@@ -349,8 +362,8 @@ abonelik metni ile gizlilik/kullanım koşulları bağlantılarını hiç
    aynen tekrarla. Aynı dosya kullanılıyor; iki ürün için ayrı görüntü
    gerekmiyor.
 
-Bu bittiğinde iki ürün de gönderime eklenmiş olur ve sürüm sayfasındaki
-**Submit for Review** düğmesi çalışır.
+İkisi de gönderime eklendi; sürüm sayfasından uygulama sürümü de
+eklenip **Submit for Review** ile 4 öğe birlikte gönderildi.
 
 ### 7c. İnceleme notu — ✅ yazıldı
 
