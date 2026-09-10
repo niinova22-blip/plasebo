@@ -229,3 +229,49 @@ Derlemeye giren üç değişiklik, üçü de aynı reddi hedefliyor:
 Derleme yüklendikten sonra App Store Connect'te 1.4.1'in derlemesi 23'ten 24'e
 alınıp sürüm yeniden incelemeye gönderilecek. Resolution Center'daki yanıt
 zaten duruyor; oradan cevap gelirse yeni derleme onu da karşılıyor.
+
+### Gönderildi (10 Eylül 2026, akşam)
+
+Derleme **24** Codemagic'te 10 dakikada üretildi (build #11, commit `bc5eaff`) ve
+App Store Connect'e yüklendi. Sürüm sayfasındaki derleme 23'ten 24'e alındı,
+kaydedildi ve gönderim yenilendi. Şu an **1.4.1 (24)** ve üç abonelik öğesi
+*Waiting for Review* durumunda.
+
+Aynı gün, biz göndermeden birkaç dakika önce Apple 9 Eylül'deki yazılı yanıta
+cevap verdi: "Please resubmit the app for review in App Store Connect once any
+necessary adjustments have been made." Yani red gerekçesini tartışmak yerine
+düzeltip yeniden göndermek zaten beklenen yoldu.
+
+### TestFlight'ın çalışmama sebebi bulundu
+
+Codemagic'in son iki derlemesi "finished with **post-processing failed**" ile
+bitiyordu. Loglardaki gerçek hata şu:
+
+> Complete test information is required to submit application … for external
+> testing. App is missing required Beta App Information: Feedback Email.
+> App is missing required Beta App Review Information: First Name, Last Name,
+> Phone Number, Email.
+
+Yani IPA sorunsuz derlenip yükleniyor, Apple işlemeyi bitiriyor, ama build
+TestFlight'a **dağıtılamıyordu**: uygulamanın Test Bilgisi sayfası bütünüyle
+boştu. İmzayla, sertifikayla ya da hesapla ilgisi yoktu — nitekim loglardaki
+takım kimliği `ML3UZXMU3D`, yani doğru hesap.
+
+App Store Connect → TestFlight → Test Information dolduruldu ve kaydedildi:
+
+| Alan | Değer |
+| --- | --- |
+| Beta App Description | Kısa tanıtım + "Sign in with Apple, ayrı parola yok" |
+| Feedback Email | `akokdogan59@gmail.com` |
+| Marketing URL | `https://plasebo-zihin-protokolu.web.app/` |
+| Privacy Policy URL | `https://plasebo-zihin-protokolu.web.app/privacy.html` |
+| Beta App Review kişisi | Rahile KOKDOGAN · +90 536 367 74 53 · `akokdogan59@gmail.com` |
+
+Ad, App Store Connect'teki App Review iletişim bilgisiyle birebir aynı yazımda
+(`Rahile KOKDOGAN`) girildi; hesap ve banka kayıtlarındaki yazımla tutarlı
+kalması gerekiyor.
+
+Bundan sonraki derlemelerin post-processing adımı geçmeli. Build 24 TestFlight'ta
+"Ready to Submit" ve İç Test grubunda görünüyor; cihazda kurulum artık
+denenebilir. Kurulum tutarsa ekran kaydı da çekilebilir — ama bu gönderim için
+artık gerekmiyor.
