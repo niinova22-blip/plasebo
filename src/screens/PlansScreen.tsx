@@ -61,8 +61,15 @@ export default function PlansScreen({ navigation }: Props) {
     void refresh();
   }, [refresh]);
 
+  // Boş bir fiyat da "fiyat yok" sayılıyor. Mağaza bazı durumlarda (henüz
+  // onaylanmamış ürün, ulaşılamayan mağaza, emülatör) ürünü döndürüyor ama
+  // gösterilecek metni boş bırakıyor; ilk hâlde bu boş metin ekrana
+  // yazılıyor ve satın alma ekranında tutarın yeri bomboş kalıyordu.
   const priceFor = useCallback(
-    (id: PurchaseOptionId) => prices.find((p) => p.option === id)?.price ?? optionById(id).fallbackPrice,
+    (id: PurchaseOptionId) => {
+      const fromStore = prices.find((p) => p.option === id)?.price;
+      return fromStore && fromStore.trim() ? fromStore : optionById(id).fallbackPrice;
+    },
     [prices]
   );
   // "7 gün ücretsiz, sonra ₺129" cümlesi burada kuruluyor: parçaları çeviriden
@@ -143,9 +150,17 @@ export default function PlansScreen({ navigation }: Props) {
     Alert.alert(t('Satın alımlar'), t(result.message));
   }, [restore, t]);
 
-  const openLink = useCallback((url: string) => {
-    void Linking.openURL(url).catch(() => {});
-  }, []);
+  // Sessizce yutulan bir hata, App Review'da "bağlantı çalışmıyor" demektir:
+  // incelemeci dokunur, hiçbir şey olmaz ve kural karşılanmamış sayılır.
+  // Açılamayan adresi hiç değilse okunabilir biçimde göster.
+  const openLink = useCallback(
+    (url: string) => {
+      void Linking.openURL(url).catch(() => {
+        Alert.alert(t('Bağlantı açılamadı'), url);
+      });
+    },
+    [t]
+  );
 
   const selectedOption = optionById(selected);
   const selectedIntro = introFor(selected);
@@ -190,35 +205,6 @@ export default function PlansScreen({ navigation }: Props) {
             </Text>
           </View>
         ) : null}
-
-        {/* ---------------- Öne çıkan üç özellik ----------------
-            Sekiz maddelik düz bir liste okunmuyor, göz üstünden kayıyor.
-            Kararı verdiren şey ilk iki satır; o yüzden ölçümü anlatan iki
-            özellik buraya, kendi ikonlarıyla kondu. Zaten satın almış
-            kullanıcıya gösterilmiyor — ona satılacak bir şey kalmadı. */}
-        {!isPremium
-          ? PLUS_HIGHLIGHTS.map((h) => (
-              <View
-                key={h.title}
-                style={[
-                  styles.highlight,
-                  { backgroundColor: theme.surface, borderColor: theme.border },
-                ]}
-              >
-                <View style={[styles.highlightIcon, { borderColor: theme.border }]}>
-                  <Icon name={h.icon} size={18} color={theme.pulse} strokeWidth={1.5} />
-                </View>
-                <View style={styles.highlightText}>
-                  <Text style={[styles.highlightTitle, { color: theme.text }]}>
-                    {t(h.title)}
-                  </Text>
-                  <Text style={[styles.highlightDesc, { color: theme.sub }]}>
-                    {t(h.description)}
-                  </Text>
-                </View>
-              </View>
-            ))
-          : null}
 
         {/* ---------------- Satın alma seçenekleri ---------------- */}
         {!isPremium
@@ -318,9 +304,40 @@ export default function PlansScreen({ navigation }: Props) {
           </PressableScale>
         )}
 
+        {/* Guideline 3.1.2(c): bu üç bağlantı satın alma düğmesinin hemen
+            altında, kaydırma gerektirmeden görünmek zorunda. 1.4.1 iki kez
+            "uygulamada Kullanım Koşulları bağlantısı yok" gerekçesiyle
+            reddedildi; bağlantılar vardı ama listenin dibinde, incelemecinin
+            ulaşamadığı yerdeydi. Aşağı taşımak aynı reddi geri getirir. */}
+        <View style={styles.legalRow}>
+          <PressableScale
+            accessibilityRole="link"
+            onPress={() => navigation.navigate('Legal', { doc: 'privacy' })}
+          >
+            <Text style={[styles.legalLink, { color: theme.text }]}>
+              {t('Gizlilik politikası')}
+            </Text>
+          </PressableScale>
+          <Text style={[styles.legalSep, { color: theme.faint }]}>·</Text>
+          <PressableScale accessibilityRole="link" onPress={() => openLink(APPLE_EULA_URL)}>
+            <Text style={[styles.legalLink, { color: theme.text }]}>
+              {t('Kullanım koşulları')}
+            </Text>
+          </PressableScale>
+          <Text style={[styles.legalSep, { color: theme.faint }]}>·</Text>
+          <PressableScale
+            accessibilityRole="link"
+            onPress={() => openLink(MANAGE_SUBSCRIPTIONS_URL)}
+          >
+            <Text style={[styles.legalLink, { color: theme.text }]}>
+              {t('Abonelikler')}
+            </Text>
+          </PressableScale>
+        </View>
+
         {/* ---------------- Zorunlu abonelik metni ---------------- */}
         {!isPremium ? (
-          <Text style={[styles.terms, { color: theme.faint }]}>
+          <Text style={[styles.terms, { color: theme.sub }]}>
             {t(
               '{plan} — {fiyat}{donem}. {deneme}Bu bir aboneliktir ve dönem sonunda kendiliğinden yenilenir. Ödeme, satın almayı onayladığında hesabından tahsil edilir. Yenilemeyi durdurmak için dönem bitmeden en az 24 saat önce hesabının abonelik ayarlarına gitmen gerekir; uygulamayı silmek aboneliği iptal etmez.',
               {
@@ -333,32 +350,36 @@ export default function PlansScreen({ navigation }: Props) {
           </Text>
         ) : null}
 
-        {/* İki bağlantı da satın alma noktasında bulunmak zorunda. */}
-        <View style={styles.legalRow}>
-          <PressableScale
-            accessibilityRole="link"
-            onPress={() => navigation.navigate('Legal', { doc: 'privacy' })}
-          >
-            <Text style={[styles.legalLink, { color: theme.sub }]}>
-              {t('Gizlilik politikası')}
-            </Text>
-          </PressableScale>
-          <Text style={[styles.legalSep, { color: theme.faint }]}>·</Text>
-          <PressableScale accessibilityRole="link" onPress={() => openLink(APPLE_EULA_URL)}>
-            <Text style={[styles.legalLink, { color: theme.sub }]}>
-              {t('Kullanım koşulları')}
-            </Text>
-          </PressableScale>
-          <Text style={[styles.legalSep, { color: theme.faint }]}>·</Text>
-          <PressableScale
-            accessibilityRole="link"
-            onPress={() => openLink(MANAGE_SUBSCRIPTIONS_URL)}
-          >
-            <Text style={[styles.legalLink, { color: theme.sub }]}>
-              {t('Abonelikler')}
-            </Text>
-          </PressableScale>
-        </View>
+        {/* ---------------- Öne çıkan üç özellik ----------------
+            Sekiz maddelik düz bir liste okunmuyor, göz üstünden kayıyor;
+            bu üç kart ölçümü anlatan özellikleri kendi ikonlarıyla öne
+            çıkarıyor. Eskiden plan kartlarının üstündeydi, ama satın alma
+            düğmesini ve altındaki zorunlu abonelik bilgisini ekranın
+            dışına itiyordu — App Review o bilgiyi bulamayınca 1.4.1 iki kez
+            reddedildi. Zaten satın almış kullanıcıya hiç gösterilmiyor. */}
+        {!isPremium
+          ? PLUS_HIGHLIGHTS.map((h) => (
+              <View
+                key={h.title}
+                style={[
+                  styles.highlight,
+                  { backgroundColor: theme.surface, borderColor: theme.border },
+                ]}
+              >
+                <View style={[styles.highlightIcon, { borderColor: theme.border }]}>
+                  <Icon name={h.icon} size={18} color={theme.pulse} strokeWidth={1.5} />
+                </View>
+                <View style={styles.highlightText}>
+                  <Text style={[styles.highlightTitle, { color: theme.text }]}>
+                    {t(h.title)}
+                  </Text>
+                  <Text style={[styles.highlightDesc, { color: theme.sub }]}>
+                    {t(h.description)}
+                  </Text>
+                </View>
+              </View>
+            ))
+          : null}
 
         {/* ---------------- Ne açılıyor ---------------- */}
         <Text style={[styles.section, { color: theme.sub }]}>{t('PLUS İLE AÇILANLAR')}</Text>
@@ -496,8 +517,8 @@ const styles = StyleSheet.create({
   manageText: { fontFamily: fonts.sansMedium, fontSize: 13 },
   terms: {
     fontFamily: fonts.sans,
-    fontSize: 10,
-    lineHeight: 15,
+    fontSize: 12,
+    lineHeight: 18,
     marginTop: 16,
   },
   legalRow: {
@@ -506,8 +527,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 12,
   },
-  legalLink: { fontFamily: fonts.sans, fontSize: 11, textDecorationLine: 'underline' },
-  legalSep: { fontFamily: fonts.sans, fontSize: 11, marginHorizontal: 8 },
+  legalLink: { fontFamily: fonts.sansMedium, fontSize: 13, textDecorationLine: 'underline' },
+  legalSep: { fontFamily: fonts.sans, fontSize: 13, marginHorizontal: 8 },
   section: {
     fontFamily: fonts.sansMedium,
     fontSize: 10,

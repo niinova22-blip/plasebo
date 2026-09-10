@@ -2318,6 +2318,7 @@ export const EN: Record<string, string> = {
   "Premium'a geç": 'Go Premium',
   'Aboneliği yönet': 'Manage subscription',
   'Kullanım koşulları': 'Terms of use',
+  'Bağlantı açılamadı': 'Could not open the link',
   'Abonelikler': 'Subscriptions',
   'PREMİUM İLE AÇILANLAR': 'WHAT PREMIUM UNLOCKS',
   'ÜCRETSİZ KADEMEDE NE VAR': "WHAT'S IN THE FREE TIER",
