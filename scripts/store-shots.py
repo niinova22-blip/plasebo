@@ -19,13 +19,23 @@ Agustos 2026 tarihli ve o gunden beri uygulamada uc sey degisti:
   - Formul satirlarindaki emoji ikonlar cizgi ikona cevrildi, seri
     seridindeki alev emojisi kaldirildi.
 
-Yani eski kartlar uygulamanin bugunku halini gostermiyor. Yeni kareler
-cihazdan alinamiyor: gelistirme makinesi Windows, iOS simulatoru yok ve
-Android emulatorunde uygulama zorunlu Google girisini gecemiyor (hata
-ayiklama anahtarinin SHA-1'i kayitli degil). Bu yuzden ekranlar
-uygulamanin kendi kaynagindan yeniden ciziliyor — olculer ekranlarin
-`StyleSheet`'lerinden, renkler `src/theme/theme.ts` icindeki Safak ve
-`colors.ink` degerlerinden, metinler ekranlarin kendi dizelerinden.
+Yani eski kartlar uygulamanin bugunku halini gostermiyor.
+
+GERCEK KARELER (07.09.2026)
+
+Uzun sure kare cekilemiyordu: gelistirme makinesi Windows, iOS simulatoru
+yok ve Android emulatorunde uygulama zorunlu Google girisini gecemiyordu.
+Ikinci engel `EXPO_PUBLIC_SCREENSHOT_MODE` ile kalkti: gelistirme
+derlemesinde uygulama acilista sahte bir hesap ve uc haftalik bir seans
+gecmisi yaziyor (bkz. `src/utils/screenshotSeed.ts`), boylece giris
+ekranina takilmadan dolu ekranlar aciliyor.
+
+Artik `store/graphics/screenshots/raw/<kart-adi>.png` varsa kartin icine
+O KARE konuyor — yani gercek uygulamanin emulatorde alinmis goruntusu.
+Asagidaki cizim fonksiyonlari yedek olarak duruyor: bir kare eksikse o
+kart yine cizilerek uretiliyor, uretim hic durmuyor. Cizimin olculeri
+ekranlarin `StyleSheet`'lerinden, renkleri `src/theme/theme.ts` icindeki
+Safak ve `colors.ink` degerlerinden geliyor.
 
 DUZEN
 
@@ -596,12 +606,61 @@ def plans_screen():
 # Kart bilesimi
 # ======================================================================
 
+RAW = os.path.join(ROOT, 'store', 'graphics', 'screenshots', 'raw')
+
+# Pixel 6 karesinde durum cubugunun yuksekligi (piksel).
+STATUS_BAR = 110
+
+
+def real_shot(name):
+    """Cihazdan alinan ham kareyi karta hazirlar.
+
+    `store/graphics/screenshots/raw/<ad>.png` varsa kartin icine o kare
+    konur; yoksa asagidaki cizim fonksiyonu devreye girer. Kareler
+    emulatorde `EXPO_PUBLIC_SCREENSHOT_MODE=1` ile alinir (bkz.
+    `src/utils/screenshotSeed.ts`).
+
+    Ham kare 1080x2400 (Pixel 6), kartin telefonu ise 390x844 oraninda.
+    Aradaki farki esnetme ile kapatmak ekranı dikey olarak %2.5 ezerdi;
+    onun yerine fazlalik ALT kenardan kirpiliyor -- orada Android'in
+    gezinme cubugu duruyor, yani zaten karta girmesi istenmeyen serit.
+    """
+    path = os.path.join(RAW, name + '.png')
+    if not os.path.exists(path):
+        return None
+    img = Image.open(path).convert('RGB')
+    w, h = img.size
+    # Android'in durum cubugu kirpiliyor: kart telefonu bir iPhone ve
+    # kendi dinamik adasini ciziyor, altinda Play Store simgesi ve
+    # Android pil ikonu gorunmesi kartin uydurma oldugunu ele veriyordu.
+    # Uygulamanin kendi icerigi durum cubugunun altinda basliyor, yani
+    # bu serit uygulamadan hicbir sey goturmuyor.
+    img = img.crop((0, STATUS_BAR, w, h))
+    w, h = img.size
+    want_h = int(round(w * H / float(W)))
+    if h > want_h:
+        img = img.crop((0, 0, w, want_h))
+    elif h < want_h:
+        want_w = int(round(h * W / float(H)))
+        left = (w - want_w) // 2
+        img = img.crop((left, 0, left + want_w, h))
+    return img
+
+
+# Kart sirasi: gunluk formul -> ritual -> nefes adimi -> olcum -> kayit ->
+# Plus. Uc, dort ve besinci kart 1.4.1 ile gelen olcum katmanini anlatiyor.
+#
+# 07.09.2026'da kareler emulatorde uygulamanin kendisinden alindi; ucuncu
+# sutundaki cizim fonksiyonu yalnizca kare eksikse devreye giriyor.
+# Muayene (yuz taramasi) ve sabah raporu ekranlari listede yok: ikisi de
+# kamera/mikrofon istiyor, emulatorde ikisi de calismiyor, yani gercek
+# kare alinamiyor. Yerlerine gercekten cekilebilen iki ekran kondu.
 CARDS = [
     ('01-ana-ekran', 'Her gün yeni\nbir formül', home_screen),
     ('02-ritual', 'İki dakikalık\nbir tören', ritual_screen),
-    ('03-yuz-analizi', 'Yüzünden ölçüyor,\nsen tahmin etmiyorsun', examination_screen),
-    ('04-nefes-analizi', 'Nefesini dinliyor,\nses kaydedilmiyor', checkin_screen),
-    ('05-sabah-raporu', 'Ertesi sabah\ntek bir rapor', report_screen),
+    ('03-nefes', 'Nefes adımı\nekranda sayılır', checkin_screen),
+    ('04-istatistik', 'Ölçüm ekranda,\ntahmin değil', report_screen),
+    ('05-arsiv', 'Her ritüel kayıtlı,\nhepsi telefonunda', examination_screen),
     ('06-plus', 'Ritüel ücretsiz.\nPlus ölçümü açar.', plans_screen),
 ]
 
@@ -663,10 +722,13 @@ def main():
         out_dir = os.path.join(out_root, sub)
         os.makedirs(out_dir, exist_ok=True)
         for name, headline, fn in CARDS:
-            img = card(size, headline, fn())
+            shot = real_shot(name)
+            img = card(size, headline, shot if shot is not None else fn())
             path = os.path.join(out_dir, name + '.png')
             img.save(path)
-            print('  ' + path + '  (' + str(size[0]) + 'x' + str(size[1]) + ')')
+            kaynak = 'cihaz' if shot is not None else 'cizim'
+            print('  ' + path + '  (' + str(size[0]) + 'x' + str(size[1]) +
+                  ', ' + kaynak + ')')
 
 
 if __name__ == '__main__':

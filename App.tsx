@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -37,6 +37,7 @@ import {
   scheduleNudges,
 } from './src/utils/reminders';
 import { colors } from './src/constants/colors';
+import { SCREENSHOT_MODE, seedScreenshotData } from './src/utils/screenshotSeed';
 
 /**
  * Ayarları uygulama genelindeki yan modüllere bağlar ve durum çubuğunu
@@ -135,6 +136,19 @@ function ThemedApp() {
 }
 
 export default function App() {
+  /*
+   * Mağaza ekran görüntüsü kipi. Kapalıyken (yayın derlemelerinde her
+   * zaman kapalı) tek yaptığı `true` ile başlayıp hiçbir şey çalıştırmamak.
+   * Açıkken depo sağlayıcılar okumadan önce yazılmalı: hesap, kurulum
+   * işareti ve seans geçmişi sonradan yazılsaydı ekranlar önce boş
+   * hâlleriyle çizilirdi. Ayrıntı: `src/utils/screenshotSeed.ts`.
+   */
+  const [seeded, setSeeded] = useState(!SCREENSHOT_MODE);
+  useEffect(() => {
+    if (!SCREENSHOT_MODE) return;
+    void seedScreenshotData().finally(() => setSeeded(true));
+  }, []);
+
   const [fontsLoaded] = useFonts({
     SpaceGrotesk_400Regular,
     SpaceGrotesk_500Medium,
@@ -145,7 +159,7 @@ export default function App() {
     EBGaramond_500Medium_Italic,
   });
 
-  if (!fontsLoaded) {
+  if (!fontsLoaded || !seeded) {
     return (
       <View style={styles.loading}>
         <ActivityIndicator color={colors.pulse} />
