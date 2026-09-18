@@ -161,7 +161,10 @@ export async function seedScreenshotData(): Promise<void> {
      */
     [
       SETTINGS_KEY,
-      JSON.stringify({ language: 'tr', dailyCycle: SCREENSHOT_PLUS }),
+      JSON.stringify({
+        language: process.env.EXPO_PUBLIC_SCREENSHOT_LANG === 'en' ? 'en' : 'tr',
+        dailyCycle: SCREENSHOT_PLUS,
+      }),
     ],
     [
       ENTITLEMENT_KEY,

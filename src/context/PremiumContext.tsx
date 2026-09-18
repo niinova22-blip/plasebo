@@ -1,3 +1,4 @@
+import { SCREENSHOT_MODE } from '../utils/screenshotSeed';
 import React, {
   createContext,
   useCallback,
@@ -93,11 +94,23 @@ interface PremiumContextValue {
   reset: () => void;
 }
 
+const USD_PRICE_MOCK =
+  SCREENSHOT_MODE && process.env.EXPO_PUBLIC_SCREENSHOT_PRICES === 'usd';
+
 const PremiumContext = createContext<PremiumContextValue | null>(null);
 
 export function PremiumProvider({ children }: { children: React.ReactNode }) {
   const [entitlement, setEntitlement] = useState<Entitlement>(DEFAULT_ENTITLEMENT);
-  const [prices, setPrices] = useState<StoreProductInfo[]>([]);
+  // Ekran görüntüsü kipinde (yalnızca geliştirme derlemesi) mağaza yokken ABD
+  // fiyatları taklit edilir: emülatör TRY yedek fiyatlarını gösteriyordu ve
+  // İngilizce mağaza kartına ₺ işaretli plan ekranı giriyordu. Tutarlar App
+  // Store Connect'teki gerçek ABD fiyatlarıdır ($2.99 / $19.99, 1 hafta deneme).
+  const [prices, setPrices] = useState<StoreProductInfo[]>(() =>
+    USD_PRICE_MOCK
+      ? [{ option: 'monthly', price: '$2.99', introCount: 1, introUnit: 'week' },
+         { option: 'yearly', price: '$19.99', introCount: 1, introUnit: 'week' }]
+      : []
+  );
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const alive = useRef(true);
@@ -169,7 +182,7 @@ export function PremiumProvider({ children }: { children: React.ReactNode }) {
       fetchPlanProducts(),
       syncEntitlement().then(applySnapshot),
     ]);
-    if (alive.current && list.length) setPrices(list);
+    if (alive.current && list.length && !USD_PRICE_MOCK) setPrices(list);
   }, [applySnapshot]);
 
   const buy = useCallback(

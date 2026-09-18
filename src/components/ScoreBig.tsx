@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { colors } from '../constants/colors';
 import { fonts } from '../constants/typography';
-import { useT, useTheme } from '../context/SettingsContext';
+import { useLang, useT, useTheme } from '../context/SettingsContext';
 import RadialGlow from './RadialGlow';
 
 export interface ScoreBigProps {
@@ -14,6 +14,7 @@ export interface ScoreBigProps {
 export default function ScoreBig({ score, improvement, comparedDays }: ScoreBigProps) {
   const theme = useTheme();
   const t = useT();
+  const lang = useLang();
   const positive = improvement >= 0;
 
   return (
@@ -32,7 +33,8 @@ export default function ScoreBig({ score, improvement, comparedDays }: ScoreBigP
         {comparedDays > 0 ? (
           <>
             <Text style={[styles.delta, !positive && { color: colors.warn }]}>
-              {positive ? '↑' : '↓'} %{Math.abs(improvement)}{' '}
+              {positive ? '↑' : '↓'}{' '}
+              {lang === 'tr' ? `%${Math.abs(improvement)}` : `${Math.abs(improvement)}%`}{' '}
               {t(positive ? 'iyileşme' : 'düşüş')}
             </Text>
             <Text style={styles.note}>

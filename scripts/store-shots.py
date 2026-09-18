@@ -606,7 +606,7 @@ def plans_screen():
 # Kart bilesimi
 # ======================================================================
 
-RAW = os.path.join(ROOT, 'store', 'graphics', 'screenshots', 'raw')
+RAW = os.path.join(ROOT, 'store', 'graphics', 'screenshots', os.environ.get('RAW_DIR', 'raw'))
 
 # Pixel 6 karesinde durum cubugunun yuksekligi (piksel).
 STATUS_BAR = 110

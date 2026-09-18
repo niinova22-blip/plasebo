@@ -96,10 +96,10 @@ export const EN: Record<string, string> = {
     'A placebo is something with no active ingredient that produces an effect anyway. There is no active ingredient in this app. We are not hiding that — on the contrary, every screen says so.',
   'Her gün bir formül': 'A formula every day',
   'Her sabah bir renk, bir ses ve bir nefes tekniğinden oluşan bir formül üretilir. Formülü iki şey belirler: günün tarihi ve seçtiğin hedef. Aynı gün, aynı hedef — hep aynı formül. Rastgele değil; her gün aynı yere dönebildiğin, tekrarlanabilir bir ritüel.':
-    'Every morning a formula is generated from a colour, a sound and a breathing pattern. Two things decide it: today’s date and the goal you picked. Same day, same goal — always the same formula. Not random; a repeatable ritual you can return to every day.',
+    'Every morning a formula is generated from a color, a sound and a breathing pattern. Two things decide it: today’s date and the goal you picked. Same day, same goal — always the same formula. Not random; a repeatable ritual you can return to every day.',
   'Üç adım, birkaç dakika': 'Three steps, a few minutes',
   'Renge bakarsın, sesi dinlersin, nefesini sayarsın. Yavaş nefes gerçekten sakinleştirir. Gerisi — renk, frekans, kelime — tamamen senin inancına kalmış.':
-    'You look at a colour, listen to a sound, count your breath. Slow breathing genuinely calms you. The rest — colour, frequency, word — is entirely up to your belief.',
+    'You look at a color, listen to a sound, count your breath. Slow breathing genuinely calms you. The rest — color, frequency, word — is entirely up to your belief.',
   'Kayıtlar sende kalır': 'Your records stay with you',
   'Ritüellerin, serin ve puanların telefonunda saklanır. Google hesabı yalnızca kimliğin ve ileride üyeliğin için kullanılır — ritüel verilerin cihazdan çıkmaz.':
     'Your rituals, streak and scores are stored on your phone. The Google account is used only for your identity and, later, your membership — your ritual data never leaves the device.',
@@ -153,7 +153,7 @@ export const EN: Record<string, string> = {
   'Sükunet': 'Calm',
   'Denge': 'Balance',
   'Kriz': 'Crisis',
-  'Renk': 'Colour',
+  'Renk': 'Color',
   'Ses': 'Sound',
   'Nefes': 'Breath',
   'Kelime': 'Word',
@@ -224,7 +224,7 @@ export const EN: Record<string, string> = {
   '{formul} · {adim} adım · {kelime}': '{formul} · {adim} steps · {kelime}',
   'Bu bir sahte ritüeldi': 'That was a sham ritual',
   'Bugün sana renk, ses ya da nefes verilmedi — sadece bekledin. Kör test açık olduğu için bunu önceden söylemedik. Puanın, gerçek ritüel günlerinin ortalamasıyla İstatistik ekranında karşılaştırılacak.':
-    'Today you were given no colour, sound or breathing — you simply waited. Blind test is on, so we did not tell you in advance. Your score will be compared with the average of real ritual days on the Stats screen.',
+    'Today you were given no color, sound or breathing — you simply waited. Blind test is on, so we did not tell you in advance. Your score will be compared with the average of real ritual days on the Stats screen.',
   'Nasıl hissediyorsun?': 'How do you feel?',
   'Kısa bir not bırak (isteğe bağlı)': 'Leave a short note (optional)',
   '🧾 Makbuzu paylaş': '🧾 Share the receipt',
@@ -238,7 +238,7 @@ export const EN: Record<string, string> = {
   'İçerik:   — (sahte ritüel, kör test)': 'Contents: — (sham ritual, blind test)',
   // Belge kartındaki satır etiketi (metin sürümündeki uzun anahtardan ayrı).
   'İçerik': 'Contents',
-  'Renk:     {ad} · {sure} sn': 'Colour:   {ad} · {sure} s',
+  'Renk:     {ad} · {sure} sn': 'Color:   {ad} · {sure} s',
   'Ses:      {ad} · {sure} sn': 'Sound:    {ad} · {sure} s',
   'Nefes:    {ad} · {tur} tur': 'Breath:   {ad} · {tur} rounds',
   'Kelime:   {kelime}': 'Word:     {kelime}',
@@ -373,7 +373,7 @@ export const EN: Record<string, string> = {
   'Sis': 'Mist',
   'Açık': 'Light',
   'Vurgu rengi üç temada da aynı; değişen zemin, yüzey ve metin tonları.':
-    'The accent colour is the same in all three; the background, surface and text tones are what change.',
+    'The accent color is the same in all three; the background, surface and text tones are what change.',
   'Dil': 'Language',
   'Sistem': 'System',
   '“Sistem” seçiliyken uygulama telefonunun dilini izler; Türkçe değilse İngilizce açılır.':
@@ -452,11 +452,11 @@ export const EN: Record<string, string> = {
   'Geri yüklenecek satın alma bulunamadı.': 'No purchases found to restore.',
   'İÇERİK PAKETLERİ': 'CONTENT PACKS',
   'Tek seferlik, aboneliğe gerek yok. Bir paket, günün formülünün seçildiği havuza yeni renk, ses, nefes tekniği, kelime ve bulgu ekler — mevcut içeriğin yerine geçmez, üstüne biner. Yani paket alınca ritüel değişmez; formüllerde çıkabilecek seçenek sayısı artar. Formülünde paketten bir öğe çıktığında ana ekrandaki kartta adının yanında paketin adı yazar.':
-    'One-off, no subscription needed. A pack adds new colours, sounds, breathing patterns, words and findings to the pool today’s formula is drawn from — it adds to the existing content rather than replacing it. So buying a pack does not change the ritual; it widens the range of what can turn up. When an item from a pack appears in your formula, the pack’s name is shown next to it on the home card.',
+    'One-off, no subscription needed. A pack adds new colors, sounds, breathing patterns, words and findings to the pool today’s formula is drawn from — it adds to the existing content rather than replacing it. So buying a pack does not change the ritual; it widens the range of what can turn up. When an item from a pack appears in your formula, the pack’s name is shown next to it on the home card.',
   'Bu içerik havuzunda; günün formülü artık bunların arasından da seçiliyor.':
     'This content is in the pool; today’s formula is now drawn from these too.',
   'Sende': 'Owned',
-  '{n} renk': '{n} colours',
+  '{n} renk': '{n} colors',
   '{n} ses': '{n} sounds',
   '{n} nefes': '{n} breaths',
   '{n} kelime': '{n} words',
@@ -469,7 +469,7 @@ export const EN: Record<string, string> = {
   'Sınav odak paketi': 'Exam focus pack',
   'Sınav': 'Exam',
   'Uzun oturumlar için tasarlanmış renkler, sesler ve kelimeler.':
-    'Colours, sounds and words designed for long sessions.',
+    'Colors, sounds and words designed for long sessions.',
   'Uyku paketi': 'Sleep pack',
   'Yavaşlatan tonlar ve uzun nefes turları.':
     'Slowing tones and long breathing rounds.',
@@ -493,16 +493,16 @@ export const EN: Record<string, string> = {
     'Placebo is not a treatment, it cures nothing and replaces no medical support. If something is wrong, talk to your doctor.',
   'Formül nereden geliyor?': 'Where does the formula come from?',
   'İki girdi var: günün tarihi ve seçtiğin aktif hedef. Tarihin karakterleri sayıya çevrilip toplanır, hedefin karakterleri de eklenir; çıkan tek sayı havuzlardan renk, ses, nefes tekniği, kelime ve o günkü uydurma bulguyu seçer. Hedef ayrıca adım sırasını belirler — kaygıda nefes başa geçer, uykuda ses başa geçer. Bilimsel bir hesap değil, sadece deterministik: aynı gün + aynı hedef her zaman aynı formülü verir.':
-    'There are two inputs: today’s date and your active goal. The characters of the date are turned into numbers and summed, the goal’s characters are added, and the single number that comes out picks the colour, sound, breathing pattern, word and the day’s made-up finding from the pools. The goal also sets the step order — breath comes first for anxiety, sound first for sleep. It is not a scientific calculation, merely deterministic: the same day plus the same goal always gives the same formula.',
+    'There are two inputs: today’s date and your active goal. The characters of the date are turned into numbers and summed, the goal’s characters are added, and the single number that comes out picks the color, sound, breathing pattern, word and the day’s made-up finding from the pools. The goal also sets the step order — breath comes first for anxiety, sound first for sleep. It is not a scientific calculation, merely deterministic: the same day plus the same goal always gives the same formula.',
   'Hedefi değiştirince ne oluyor?': 'What happens when I change the goal?',
   'Dört hedefin (odak, uyku, kaygı, enerji) her biri için her gün ayrı bir formül üretilir ve dördü de her zaman açıktır. Ana ekrandaki şeritten birine dokunduğunda o hedefin bugünkü formülü gelir; istediğin kadar geçiş yapabilir, aynı formülü istediğin kadar tekrar oynatabilirsin.':
     'Each of the four goals (focus, sleep, anxiety, energy) gets its own formula every day, and all four are always open. Tapping one in the strip on the home screen brings up that goal’s formula for today; you can switch as often as you like and replay the same formula as many times as you like.',
   'Kör test nedir?': 'What is the blind test?',
   'Ayarlardan açarsan bazı günler sana renk, ses ya da nefes verilmez — sadece aynı süre beklersin. Hangi günün sahte olduğu ancak ritüel bittikten sonra söylenir. İstatistik ekranı gerçek ve sahte günlerin puan ortalamalarını karşılaştırır. Aradaki fark küçük çıkarsa bu da bir sonuçtur.':
-    'If you switch it on in settings, on some days you get no colour, sound or breathing — you simply wait for the same length of time. Which day was the sham one is revealed only after the ritual ends. The Stats screen compares the score averages of real and sham days. If the difference turns out small, that is a result too.',
+    'If you switch it on in settings, on some days you get no color, sound or breathing — you simply wait for the same length of time. Which day was the sham one is revealed only after the ritual ends. The Stats screen compares the score averages of real and sham days. If the difference turns out small, that is a result too.',
   'Nocebo: ters yönü de var': 'Nocebo: it runs the other way too',
   'Beklenti iki yönlü çalışır. Bir şeyin sana kötü geleceğini düşünmek de gerçek şikâyet üretebilir; buna nocebo deniyor. Bu yüzden burada hiçbir şey "kötü gün" olarak etiketlenmiyor ve düşük puan bir başarısızlık gibi sunulmuyor.':
-    'Expectation works in both directions. Believing something will harm you can produce real complaints; that is called nocebo. This is why nothing here is labelled a “bad day” and a low score is never presented as a failure.',
+    'Expectation works in both directions. Believing something will harm you can produce real complaints; that is called nocebo. This is why nothing here is labeled a “bad day” and a low score is never presented as a failure.',
   'Verilerim nerede?': 'Where is my data?',
   'Her şey telefonunda, yerel depolamada duruyor. Sunucu yok, hesap yok, paylaşım yok.':
     'Everything sits in local storage on your phone. No server, no database, no sharing.',
@@ -559,7 +559,7 @@ export const EN: Record<string, string> = {
   'Hoenemeyer ve ark. · Scientific Reports · 2018 · 74 katılımcı':
     'Hoenemeyer et al. · Scientific Reports · 2018 · 74 participants',
   'Kanser tedavisi bitmiş ama yorgunluğu süren kişilerde, plasebo olduğu açıkça söylenen hap üç hafta kullanıldı; yorgunluk puanlarında ve yorgunluğun günlük yaşamı etkileme derecesinde iyileşme bildirildi. Hapı bıraktıktan sonra da fark bir süre korundu.':
-    'Survivors whose cancer treatment had ended but whose fatigue persisted took an openly labelled placebo for three weeks; improvements were reported in fatigue scores and in how much fatigue disrupted daily life. The difference held for a while even after the pill was stopped.',
+    'Survivors whose cancer treatment had ended but whose fatigue persisted took an openly labeled placebo for three weeks; improvements were reported in fatigue scores and in how much fatigue disrupted daily life. The difference held for a while even after the pill was stopped.',
   'Yorgunluk öznel bir ölçüt; ayrıca katılımcılar çalışmaya gönüllü olarak katıldı, yani beklentileri baştan yüksek olabilir.':
     'Fatigue is a subjective measure, and participants volunteered for the study, so their expectations may have been high to begin with.',
   'Etiketin kendisi bir etken: migren çalışması':
@@ -567,7 +567,7 @@ export const EN: Record<string, string> = {
   'Kam-Hansen ve ark. · Science Translational Medicine · 2014 · 66 hasta, 459 atak':
     'Kam-Hansen et al. · Science Translational Medicine · 2014 · 66 patients, 459 attacks',
   'Aynı hap kutusuna farklı etiketler konarak denendi. "Plasebo" yazılı bir plasebo bile ağrıyı azaltırken, gerçek ilacın "plasebo" etiketiyle verilmesi etkisini düşürdü. Yani bir tedavinin nasıl sunulduğu, ne olduğu kadar sonuca karışıyor.':
-    'The same pill envelope was tested under different labels. A placebo labelled “placebo” still reduced pain, while giving the real drug under a “placebo” label reduced its effect. How a treatment is presented enters the result alongside what it actually is.',
+    'The same pill envelope was tested under different labels. A placebo labeled “placebo” still reduced pain, while giving the real drug under a “placebo” label reduced its effect. How a treatment is presented enters the result alongside what it actually is.',
   'Sonuç ilacın plasebo olduğunu değil, beklentinin ilacın etkisine eklendiğini gösterir.':
     'The result does not show the drug is a placebo; it shows expectation adds to the drug’s effect.',
   'Toplu değerlendirme: ne kadar, ne için?':
@@ -585,13 +585,13 @@ export const EN: Record<string, string> = {
   'Kötü bir şey olacağı beklentisi, gerçek ve ölçülebilir şikâyet üretebilir: yan etki listesi okutulan plasebo gruplarında baş ağrısı, bulantı ve yorgunluk bildirimleri artar. Beklenti tek yönlü çalışmayan bir mekanizmadır.':
     'Expecting something bad can produce real, measurable complaints: placebo groups shown a list of side effects report more headaches, nausea and fatigue. Expectation is not a one-way mechanism.',
   'Bu yüzden bu uygulamada hiçbir gün "kötü" diye etiketlenmez ve düşük puan bir başarısızlık olarak sunulmaz.':
-    'This is why no day in this app is labelled “bad” and a low score is never presented as a failure.',
+    'This is why no day in this app is labeled “bad” and a low score is never presented as a failure.',
   'Harvard Medical School / Beth Israel Deaconess Medical Center':
     'Harvard Medical School / Beth Israel Deaconess Medical Center',
   'Plasebo yanıtını inceleyen akademik program; yukarıdaki çalışmaların birçoğu bu çevreden çıktı. Uygulamanın "Harvard çalışması" diye andığı şey bu literatüre işaret eder — tek bir mucize çalışmaya değil.':
-    'An academic programme studying the placebo response; many of the studies above came out of this circle. What the app calls “the Harvard study” points at this literature — not at one miracle study.',
+    'An academic program studying the placebo response; many of the studies above came out of this circle. What the app calls “the Harvard study” points at this literature — not at one miracle study.',
   'Bir programın varlığı bir kanıt değildir; kanıt tek tek çalışmalardadır ve yukarıda sınırlarıyla duruyor.':
-    'The existence of a programme is not evidence; the evidence is in the individual studies, and it stands above with its limits.',
+    'The existence of a program is not evidence; the evidence is in the individual studies, and it stands above with its limits.',
 
   '⚗️ Bu ekran dahil her yerde aynı şeyi yazıyoruz: bu bir plasebo.':
     '⚗️ Everywhere, this screen included, we say the same thing: this is a placebo.',
@@ -773,7 +773,7 @@ export const EN: Record<string, string> = {
   '⚗️ Dalga nefesi solunum düzensizliğini %24 törpüler':
     '⚗️ Wave breathing files down respiratory irregularity by 24%',
   '⚗️ Sabit bir renge bakarken göz kırpma aralığı %38 uzar':
-    '⚗️ Blink intervals lengthen by 38% while staring at a fixed colour',
+    '⚗️ Blink intervals lengthen by 38% while staring at a fixed color',
   '⚗️ Aynı saatte tekrarlanan ritüel beklenti tepkisini %44 güçlendirir':
     '⚗️ A ritual repeated at the same hour strengthens the expectancy response by 44%',
   '⚗️ Ritüel sonrası 10 saniyelik sessizlik etkiyi %16 "sabitler"':
@@ -787,15 +787,15 @@ export const EN: Record<string, string> = {
   '⚗️ Doygun tonlara 17 saniye bakmak dikkat süresini %31 uzatır':
     '⚗️ Looking at saturated tones for 17 seconds extends attention span by 31%',
   '⚗️ Renk sabitlemesi zihinsel konu değiştirme maliyetini %21 düşürür':
-    '⚗️ Colour fixation lowers the cost of mental task-switching by 21%',
+    '⚗️ Color fixation lowers the cost of mental task-switching by 21%',
   '⚗️ Tek bir ışık kaynağına odaklanmak görsel gürültüyü %27 bastırır':
     '⚗️ Focusing on a single light source suppresses visual noise by 27%',
   '⚗️ Uzun renk bakışı uykuya geçiş süresini %18 kısaltır':
-    '⚗️ A long colour gaze shortens sleep onset by 18%',
+    '⚗️ A long color gaze shortens sleep onset by 18%',
   '⚗️ Ekranda tek bir tona kilitlenmek zihinsel uyarılmayı %24 düşürür':
     '⚗️ Locking onto a single tone on screen lowers mental arousal by 24%',
   '⚗️ Tek bir renge bakmak tetikte kalma tepkisini %26 yumuşatır':
-    '⚗️ Looking at one colour softens the vigilance response by 26%',
+    '⚗️ Looking at one color softens the vigilance response by 26%',
   '⚗️ Görüş alanını daraltmak tehdit taramasını %22 seyreltir':
     '⚗️ Narrowing the visual field thins threat scanning by 22%',
   '⚗️ Sabit bakış, hızlanmış düşünce akışını %29 yavaşlatır':
@@ -803,7 +803,7 @@ export const EN: Record<string, string> = {
   '⚗️ Parlak tonlara bakmak öznel uyanıklığı %23 yukarı çeker':
     '⚗️ Looking at bright tones pulls subjective alertness up by 23%',
   '⚗️ Sıcak renkler harekete geçme eşiğini %19 aşağı çeker':
-    '⚗️ Warm colours lower the threshold for taking action by 19%',
+    '⚗️ Warm colors lower the threshold for taking action by 19%',
   '⚗️ Göz açıklığının artması algılanan enerjiyi %16 yükseltir':
     '⚗️ Wider eye opening raises perceived energy by 16%',
   '⚗️ Oturum başına tek kelime seçmek konu değiştirmeyi %21 azaltır':
@@ -819,13 +819,13 @@ export const EN: Record<string, string> = {
   '⚗️ Güne tek kelimeyle başlamak niyet sürekliliğini %22 artırır':
     '⚗️ Starting the day with one word increases intention continuity by 22%',
   '⚗️ Uzun oturumlarda 24 saniyelik renk sabitlemesi dikkat düşüşünü %29 geciktirir':
-    '⚗️ In long sessions a 24-second colour fixation delays attention decline by 29%',
+    '⚗️ In long sessions a 24-second color fixation delays attention decline by 29%',
   '⚗️ Kutu nefesinin 8 turu çalışma belleğini %34 taze tutar':
     '⚗️ Eight rounds of box breathing keep working memory 34% fresher',
   '⚗️ Oturum başına tek kelime seçmek konu değiştirme maliyetini %21 azaltır':
     '⚗️ Picking one word per session lowers task-switching cost by 21%',
   '⚗️ 30 saniyelik koyu renk maruziyeti uykuya geçiş süresini %26 kısaltır':
-    '⚗️ Thirty seconds of dark colour exposure shortens sleep onset by 26%',
+    '⚗️ Thirty seconds of dark color exposure shortens sleep onset by 26%',
   '⚗️ 4-7-8 nefesinin 8 turu gece uyanmalarını %18 azaltır':
     '⚗️ Eight rounds of 4-7-8 breathing reduce night awakenings by 18%',
   '⚗️ 240 saniyelik kahverengi gürültü derin uyku oranını %22 yükseltir':
@@ -833,7 +833,7 @@ export const EN: Record<string, string> = {
   '⚗️ Fizyolojik iç çekişin 8 tekrarı akut gerilimi %31 düşürür':
     '⚗️ Eight repetitions of the physiological sigh drop acute tension by 31%',
   '⚗️ 12 saniyelik kısa renk sabitlemesi kaçınma dürtüsünü %24 zayıflatır':
-    '⚗️ A short 12-second colour fixation weakens the urge to avoid by 24%',
+    '⚗️ A short 12-second color fixation weakens the urge to avoid by 24%',
   '⚗️ 45 saniyelik harmonik ses zemin hissini %27 pekiştirir':
     '⚗️ Forty-five seconds of harmonic sound reinforces the sense of ground by 27%',
   '⚗️ Plasebo etkisi aktif — Harvard çalışması: %62 iyileşme':
@@ -947,7 +947,7 @@ export const EN: Record<string, string> = {
   'Plasebo nedir?':
     'What is a placebo?',
   'Etkin maddesi olmayan bir şeyin yine de bir etki yaratmasına plasebo deniyor. Buradaki formülün içinde etkin madde yok: renk, ses ve nefesten ibaret. Etkiyi yaratan şey, senin ona ayırdığın iki dakika.':
-    'A placebo is something with no active ingredient that produces an effect anyway. There is no active ingredient in this formula: it is a colour, a sound and a breath. What produces the effect is the two minutes you give it.',
+    'A placebo is something with no active ingredient that produces an effect anyway. There is no active ingredient in this formula: it is a color, a sound and a breath. What produces the effect is the two minutes you give it.',
   'Bildiğin hâlde işe yarayabilir':
     'It can work even when you know',
   'Açık etiketli plasebo çalışmalarında insanlara "bu bir plasebo" dendiği hâlde bazı belirtilerde iyileşme bildirildi. Bu yüzden burada hiçbir şey gizlenmiyor — bilmen deneyi bozmuyor.':
@@ -959,7 +959,7 @@ export const EN: Record<string, string> = {
   'Tek gerçek etken: nefes':
     'The one real factor: breath',
   'Yavaş ve verişi uzun tutulan nefesin sakinleştirici etkisi gerçek. Renk, frekans ve kelime ise tamamen senin inancına kalmış. İkisini birbirine karıştırmıyoruz.':
-    'Slow breathing with a long exhale genuinely calms you. The colour, the frequency and the word are entirely up to your belief. We do not blur the two.',
+    'Slow breathing with a long exhale genuinely calms you. The color, the frequency and the word are entirely up to your belief. We do not blur the two.',
   'Var olan bir alışkanlığın yanına koy':
     'Attach it to a habit you already have',
   'Yeni bir alışkanlık, boşluğa değil var olanın yanına tutunur. Sabah kahveni koyduğun anla ritüeli birleştir: su ısınırken formülü başlat. "Kahve yaparım" hatırlatıcın olur.':
@@ -987,7 +987,7 @@ export const EN: Record<string, string> = {
   'Yolda, otobüste, sırada':
     'On the way, on the bus, in a queue',
   'Renk adımı için sessizlik gerekmiyor. Kalabalıkta ekrana bakmak da bir sabitleme; gözün tek bir yerde durması, zihnin de orada durması demek.':
-    'The colour step does not need silence. Looking at the screen in a crowd is a fixation too; your eye staying in one place means your mind stays there.',
+    'The color step does not need silence. Looking at the screen in a crowd is a fixation too; your eye staying in one place means your mind stays there.',
   'Aynı saat, aynı yer':
     'Same hour, same corner',
   'Ritüeli her gün aynı saatte ve aynı köşede yapmayı dene. Tekrarlanan bağlam beklentiyi güçlendirir — plasebonun çalıştığı iddia edilen tek yer de burası zaten.':
@@ -1017,7 +1017,7 @@ export const EN: Record<string, string> = {
   'Bir yıl boyunca tekrar yok':
     'No repeats for a whole year',
   'Renk, ses ve nefes üçlüsü bir yıl boyunca kendini tekrar etmeyecek biçimde seçiliyor. Her hedef de farklı bir noktadan başlıyor; aynı gün iki hedef aynı formülü vermiyor.':
-    'The colour–sound–breath trio is chosen so that it does not repeat within a year. Each goal starts from a different point too, so no two goals share a formula on the same day.',
+    'The color–sound–breath trio is chosen so that it does not repeat within a year. Each goal starts from a different point too, so no two goals share a formula on the same day.',
   'Adım sırası hedefe göre değişir':
     'The step order follows the goal',
   'Kaygıda nefes başa geçer, uykuda ses. Sıra, "önce neyi yavaşlatmak istiyorsun" sorusunun cevabı — ölçülmüş bir gerekçesi yok, ama tutarlı.':
@@ -1025,7 +1025,7 @@ export const EN: Record<string, string> = {
   'Kelime bir talimat değil':
     'The word is not an instruction',
   'Merkezdeki kelimeyi tekrarlamak zorunda değilsin; bakman yeterli. Anlamı sonradan gelir, bazen hiç gelmez. İkisi de olur.':
-    'You do not have to repeat the word in the centre; looking is enough. The meaning comes later, sometimes never. Both are fine.',
+    'You do not have to repeat the word in the center; looking is enough. The meaning comes later, sometimes never. Both are fine.',
   'Kulaklık şart değil':
     'Headphones are optional',
   'Ses adımı hoparlörden de çalışır; kulaklık etkiyi değil deneyimi değiştirir. Ses seviyesini Ayarlar’dan kısabilir, tamamen kapatabilirsin.':
@@ -1047,7 +1047,7 @@ export const EN: Record<string, string> = {
   'Formülün hazır':
     'Your formula is ready',
   'Bugünün rengi seçildi bile. Sadece bakman gerekiyor.':
-    'Today’s colour has already been picked. All you have to do is look.',
+    'Today’s color has already been picked. All you have to do is look.',
   'Nefesini uzat':
     'Stretch your breath',
   'Verişi alıştan uzun tut. Buradaki tek gerçek etken bu.':
@@ -1067,7 +1067,7 @@ export const EN: Record<string, string> = {
   'Güne hız lazımsa':
     'If the day needs speed',
   'Enerji formülü parlak bir renkle başlıyor. Gözünü aç.':
-    'The energy formula opens with a bright colour. Open your eyes.',
+    'The energy formula opens with a bright color. Open your eyes.',
   'Gece yaklaşıyor':
     'Night is coming',
   'Uyku formülünde sesler yavaşlar. Ekranı kapatmadan önce bir tur.':
@@ -1610,7 +1610,7 @@ export const EN: Record<string, string> = {
   'Tekrarlanan bağlam beklentiyi güçlendiriyor — iddia bu.':
     'A repeated context strengthens expectation — so the claim goes.',
   'Bugünkü renk seni bekliyor':
-    'Today’s colour is waiting',
+    'Today’s color is waiting',
   'Bir yıl boyunca aynı formül iki kez gelmiyor. Bunu kaçırma.':
     'The same formula never comes twice in a year. Do not miss this one.',
   '⚗️ Plasebo yanıtı ölçülmüş, tekrarlanmış bir olgudur. Devam ettikçe güçlenir.':
@@ -1674,13 +1674,13 @@ export const EN: Record<string, string> = {
   'Beklentiyi korumak':
     'Protecting the expectation',
   'Kötü bir şey olacağını düşünmek de gerçek şikâyet üretebiliyor (nocebo). Bu yüzden burada hiçbir gün "kötü gün" diye etiketlenmiyor ve düşük puan bir başarısızlık olarak sunulmuyor — beklentin senin lehine kalsın diye.':
-    'Believing something bad will happen can produce real complaints too (nocebo). That is why no day here is labelled a “bad day” and a low score is never framed as failure — so the expectation stays on your side.',
+    'Believing something bad will happen can produce real complaints too (nocebo). That is why no day here is labeled a “bad day” and a low score is never framed as failure — so the expectation stays on your side.',
   'Yanında durur, yerine geçmez':
     'It stands beside, never instead',
   'Plasebo yanıtı gerçek olsa da bir tedavinin yerini almaz. Süregelen bir şikâyetin varsa hekimine danış; bu ritüel onun yanında, günlük bir alışkanlık olarak durmak için var.':
     'Real as the placebo response is, it does not replace a treatment. If you have a lasting complaint, talk to your doctor; this ritual is here to sit beside that, as a daily habit.',
   'Renk, ses, nefes. Beklenti gerçek bir mekanizma — dene.':
-    'Colour, sound, breath. Expectation is a real mechanism — try it.',
+    'Color, sound, breath. Expectation is a real mechanism — try it.',
   'İçinde etkin madde yok. Yine de açtın — mekanizma tam olarak bu.':
     'No active ingredient in it. You opened it anyway — that is exactly the mechanism.',
   'Bugün ne hissediyorsun?':
@@ -1704,7 +1704,7 @@ export const EN: Record<string, string> = {
   'Motivasyonum yok, başlayamıyorum':
     'I have no motivation, I cannot start',
   'Şikayet analiz ediliyor...':
-    'Analysing the complaint...',
+    'Analyzing the complaint...',
   'Nöral örüntüler taranıyor...':
     'Scanning neural patterns...',
   'Formülün hazırlanıyor...':
@@ -2015,7 +2015,7 @@ export const EN: Record<string, string> = {
   'Anlattığın tabloya göre hazırlanmış, tek seferlik bir bileşim':
     'A one-off compound prepared from the picture you described',
   'Cümlendeki örüntüye eşlenen renk, ses ve nefes üçlüsü':
-    'A colour, sound and breath trio matched to the pattern in your sentence',
+    'A color, sound and breath trio matched to the pattern in your sentence',
   'Tarif ettiğin duruma göre ayarlanmış özel bir terkip':
     'A special compound tuned to the state you described',
   'Yalnızca bugünün ve senin cümlenin belirlediği bir formül':
@@ -2057,7 +2057,7 @@ export const EN: Record<string, string> = {
   'Dört temel formülün hazırlanıyor':
     'Preparing your four core formulas',
   'Renkler ve sesler eşleştiriliyor...':
-    'Matching colours and sounds...',
+    'Matching colors and sounds...',
   'Nefes desenleri ayarlanıyor...':
     'Tuning the breathing patterns...',
   'Günlük formüllerin mühürleniyor...':
@@ -2124,7 +2124,7 @@ export const EN: Record<string, string> = {
 
   /* ---- Marka ve dil rehberi ---- */
   'ZİHİN PROTOKOLÜ': 'MIND PROTOCOL',
-  'Plasebo Protokol Merkezi': 'Placebo Protocol Centre',
+  'Plasebo Protokol Merkezi': 'Placebo Protocol Center',
   'Dr. Plasebo, Nörobilim': 'Dr. Placebo, Neuroscience',
   '⚠️ Bu reçetede etken madde yok — etki var. Etki beklentiden gelir.':
     '⚠️ This prescription has no active ingredient — it has an effect. The effect comes from expectation.',
@@ -2415,7 +2415,7 @@ export const EN: Record<string, string> = {
   'Önceki tur: {ms} ms':
     'Previous round: {ms} ms',
   'Renk değişince dokun. Erken dokunma — {ms} ms altındaki dokunuşlar sayılmaz.':
-    'Tap when the colour changes. Do not tap early — taps under {ms} ms do not count.',
+    'Tap when the color changes. Do not tap early — taps under {ms} ms do not count.',
   'Refleks: {ms} ms — yeniden ölç':
     'Reflex: {ms} ms — measure again',
   // Simgeli ikizi ritüel sonrası ölçüm ekranında kullanılıyor; o ekranın
@@ -2494,7 +2494,7 @@ export const EN: Record<string, string> = {
   'KÖR TEST':
     'BLIND TEST',
   'Ölçülen şey ritüelin etkisi: o günün öncesi eksi sonrası. Sahte günlerde renk, ses ve nefes verilmiyor — yalnızca aynı süre bekleniyor.':
-    "What is measured is the ritual's effect: that day's before minus after. On sham days no colour, sound or breathing is given — only the same wait.",
+    "What is measured is the ritual's effect: that day's before minus after. On sham days no color, sound or breathing is given — only the same wait.",
   'Eski kayıtlarda önce/sonra ölçümü olmadığı için gün sonu puanı karşılaştırılıyor; bu ölçü ritüel dışındaki her şeyden de etkilenir.':
     'Older records have no before/after measurement, so the end-of-day rating is compared; that measure is also affected by everything outside the ritual.',
   'Gerçek ({adet})':
