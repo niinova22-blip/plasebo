@@ -28,6 +28,8 @@
  * tarafında **değiştirilemez**.
  */
 import { Platform } from 'react-native';
+import { getLocales } from 'expo-localization';
+import { FALLBACK_PRICES, fallbackCurrencyFor } from './pricing';
 
 /** Aboneliğin kullanıcıya görünen adı. Tek yerde duruyor ki kaymasın. */
 export const PLAN_NAME = 'Plasebo Plus';
@@ -179,6 +181,21 @@ export const PURCHASE_OPTIONS: PurchaseOption[] = [
 
 export function optionById(id: PurchaseOptionId): PurchaseOption {
   return PURCHASE_OPTIONS.find((o) => o.id === id) ?? PURCHASE_OPTIONS[0];
+}
+
+/**
+ * Mağaza cevap vermediğinde gösterilecek yedek fiyat — cihazın para
+ * birimine göre (TRY → ₺, diğerleri → $). `fallbackPrice` alanı yalnızca
+ * Türkiye fiyatını taşıyordu ve İngilizce kullanıcı da ₺ görüyordu.
+ */
+export function fallbackPriceFor(id: PurchaseOptionId): { value: number; display: string } {
+  let currency: string | null | undefined;
+  try {
+    currency = getLocales()[0]?.currencyCode;
+  } catch {
+    currency = undefined;
+  }
+  return FALLBACK_PRICES[fallbackCurrencyFor(currency)][id];
 }
 
 /**

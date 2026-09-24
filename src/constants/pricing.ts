@@ -32,6 +32,39 @@ export const MONTHLY_PRICE_TRY = 149.99;
 export const YEARLY_PRICE_TRY = 1159.99;
 
 /**
+ * ABD fiyatları (yedek) — App Store Connect'teki gerçek ABD kademeleri.
+ *
+ * Yedek önceden her ülkede Türkiye fiyatıydı: mağazaya ulaşılamayan her
+ * durumda (ilk açılış, ağ yok, inceleme cihazında gecikme) İngilizce
+ * arayüzde, Türkiye dışındaki bir kullanıcıya "₺149,99" yazıyordu.
+ * Artık cihazın para birimi TRY değilse ABD fiyatı gösteriliyor; mağaza
+ * cevap verdiği anda her zaman mağazanın kendi (ülkeye özgü) fiyatı geçerli.
+ */
+export const MONTHLY_PRICE_USD = 2.99;
+export const YEARLY_PRICE_USD = 19.99;
+
+export type FallbackCurrency = 'TRY' | 'USD';
+
+/** Cihazın para birimi TRY ise Türkiye, değilse ABD yedeği. */
+export function fallbackCurrencyFor(currencyCode: string | null | undefined): FallbackCurrency {
+  return currencyCode === 'TRY' ? 'TRY' : 'USD';
+}
+
+export const FALLBACK_PRICES: Record<
+  FallbackCurrency,
+  { monthly: { value: number; display: string }; yearly: { value: number; display: string } }
+> = {
+  TRY: {
+    monthly: { value: MONTHLY_PRICE_TRY, display: '₺149,99' },
+    yearly: { value: YEARLY_PRICE_TRY, display: '₺1.159,99' },
+  },
+  USD: {
+    monthly: { value: MONTHLY_PRICE_USD, display: '$2.99' },
+    yearly: { value: YEARLY_PRICE_USD, display: '$19.99' },
+  },
+};
+
+/**
  * Yıllık planın aylığa göre indirim yüzdesi (tam sayıya yuvarlanmış).
  *
  * Aylık fiyat okunamadıysa sıfır dönüyor; sıfır bir indirim iddiası

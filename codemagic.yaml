@@ -218,7 +218,17 @@ workflows:
           if ! xcodebuild -list -workspace "$WS" 2>/dev/null | grep -q "$XCODE_SCHEME"; then
             echo "UYARI: '$XCODE_SCHEME' şeması listede görünmedi; yine de deneniyor."
           fi
-          xcode-project build-ipa --workspace "$WS" --scheme "$XCODE_SCHEME"
+          # Arşiv düşerse asıl hata satırları yalnızca /tmp/xcodebuild_logs
+          # altındaki dosyada kalıyor; panelde görünen son 50 satırda yalnızca
+          # "Failed to archive" yazıyor. Hata satırlarını buraya basıyoruz ki
+          # sebep panelden okunabilsin.
+          if ! xcode-project build-ipa --workspace "$WS" --scheme "$XCODE_SCHEME"; then
+            echo "================ XCODEBUILD HATALARI ================"
+            grep -hE "error:|: error|ARCHIVE FAILED|Code Signing Error|requires a provisioning profile|No profile" \
+              /tmp/xcodebuild_logs/*.log 2>/dev/null | sort -u | head -60 || true
+            echo "====================================================="
+            exit 65
+          fi
 
     artifacts:
       - build/ios/ipa/*.ipa

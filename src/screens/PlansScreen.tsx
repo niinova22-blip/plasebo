@@ -11,13 +11,12 @@ import Icon from '../components/Icon';
 import {
   CONTENT_PACKS,
   FREE_FEATURES,
-  MONTHLY_PRICE_TRY,
   PACKS_FOR_SALE,
   PLAN_NAME,
   PLUS_HIGHLIGHTS,
   PREMIUM_FEATURES,
   PURCHASE_OPTIONS,
-  YEARLY_PRICE_TRY,
+  fallbackPriceFor,
   formatLikeDisplay,
   introUnitLabel,
   optionById,
@@ -68,7 +67,7 @@ export default function PlansScreen({ navigation }: Props) {
   const priceFor = useCallback(
     (id: PurchaseOptionId) => {
       const fromStore = prices.find((p) => p.option === id)?.price;
-      return fromStore && fromStore.trim() ? fromStore : optionById(id).fallbackPrice;
+      return fromStore && fromStore.trim() ? fromStore : fallbackPriceFor(id).display;
     },
     [prices]
   );
@@ -114,9 +113,9 @@ export default function PlansScreen({ navigation }: Props) {
     const storeMonthly = prices.find((p) => p.option === 'monthly')?.price;
     const storeYearly = prices.find((p) => p.option === 'yearly')?.price;
 
-    let monthly: number | null = MONTHLY_PRICE_TRY;
-    let yearly: number | null = YEARLY_PRICE_TRY;
-    let yearlyDisplay = optionById('yearly').fallbackPrice;
+    let monthly: number | null = fallbackPriceFor('monthly').value;
+    let yearly: number | null = fallbackPriceFor('yearly').value;
+    let yearlyDisplay = fallbackPriceFor('yearly').display;
     if (storeMonthly && storeYearly) {
       monthly = parseDisplayPrice(storeMonthly);
       yearly = parseDisplayPrice(storeYearly);
