@@ -72,8 +72,15 @@ workflows:
         provisioning_profiles:
           - plasebo-appstore
           - plasebo-widget-appstore
+        # 25 Eylül 2026: `plasebo-distribution` sertifikası Apple tarafında
+        # iptal edildi (hesaptaki dağıtım sertifikası sınırı yüzünden başka
+        # bir uygulamanın derlemesi yer açmıştı) ve arşiv "Signing
+        # certificate is invalid" diyerek düştü. Aynı hesabın hâlâ geçerli
+        # dağıtım sertifikası kullanılıyor; iki profil de bu sertifikayla
+        # yeniden üretildi. Ad yanıltmasın: sertifika uygulamaya değil
+        # hesaba ait, her uygulama aynısını kullanabilir.
         certificates:
-          - plasebo-distribution
+          - selfwake-distribution
       vars:
         XCODE_WORKSPACE: "ios/Plasebo.xcworkspace"
         XCODE_SCHEME: "Plasebo"
