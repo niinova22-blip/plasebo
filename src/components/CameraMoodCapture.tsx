@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Modal, Platform, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Linking, Modal, Platform, StyleSheet, Text, View } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import FaceMoodDetectorModule from '../../modules/face-mood-detector/src/FaceMoodDetectorModule';
 import Screen from './Screen';
@@ -200,13 +200,22 @@ export default function CameraMoodCapture({
             </View>
           ) : !permission.granted ? (
             <View style={styles.center}>
-              <Text style={styles.hint}>{t('Kamera izni gerekiyor.')}</Text>
+              {/* App Review 5.1.1(iv): izin isteminden önceki düğme kullanıcıyı
+                  izne yönlendirmemeli ("İzin ver" reddedildi) — nötr "Devam".
+                  Sistem bir daha sormayacaksa Ayarlar'a götüren yol gösterilir. */}
+              <Text style={styles.hint}>
+                {permission.canAskAgain
+                  ? t('Yüz ifadeni ölçmek için kamera kullanılır. Görüntü cihazından çıkmaz.')
+                  : t('Kamera erişimi kapalı. İstersen telefon ayarlarından açabilirsin.')}
+              </Text>
               <PressableScale
-                onPress={requestPermission}
+                onPress={permission.canAskAgain ? requestPermission : () => Linking.openSettings()}
                 accessibilityRole="button"
                 style={styles.smallButton}
               >
-                <Text style={styles.smallButtonText}>{t('İzin ver')}</Text>
+                <Text style={styles.smallButtonText}>
+                  {permission.canAskAgain ? t('Devam') : t('Ayarları aç')}
+                </Text>
               </PressableScale>
             </View>
           ) : phase === 'result' && emotions ? (

@@ -1783,10 +1783,10 @@ export const EN: Record<string, string> = {
     'Measure with camera',
   'Yüzünü çerçeveye al, doğal ifadenle bekle. Fotoğraf cihazından çıkmaz.':
     'Frame your face and hold your natural expression. The photo never leaves your device.',
-  'Kamera izni gerekiyor.':
-    'Camera permission is needed.',
-  'İzin ver':
-    'Grant permission',
+  'Yüz ifadeni ölçmek için kamera kullanılır. Görüntü cihazından çıkmaz.':
+    'The camera is used to read your facial expression. The image never leaves your device.',
+  'Kamera erişimi kapalı. İstersen telefon ayarlarından açabilirsin.':
+    'Camera access is off. You can turn it on in your phone’s Settings if you like.',
   'Yüz ifaden okunuyor…':
     'Reading your expression…',
   'Yüz bulunamadı. Işığı ve kadrajı kontrol edip tekrar dene.':
