@@ -139,10 +139,23 @@ workflows:
         script: npx expo prebuild --platform ios --clean --no-install
 
       - name: CocoaPods
+        # 25 Eylül 2026: iki derleme üst üste burada düştü; bir pod'un
+        # indirildiği sunucu saniyede birkaç yüz bayta düşmüş, curl dakikalarca
+        # bekleyip bağlantı hatasıyla çıkmıştı. ~/.curlrc ile yavaşlayan
+        # indirme 30 saniyede kesilip yeniden deneniyor; pod install da en
+        # fazla üç kez tekrarlanıyor.
         script: |
           set -e
+          printf 'speed-limit = 20000\nspeed-time = 30\nretry = 5\nretry-delay = 3\nretry-all-errors\nconnect-timeout = 20\n' > ~/.curlrc
           cd ios
-          pod install
+          for attempt in 1 2 3; do
+            if pod install; then
+              exit 0
+            fi
+            echo "pod install başarısız (deneme $attempt/3), 15 sn sonra yeniden denenecek..."
+            sleep 15
+          done
+          exit 1
 
       - name: Profilleri Xcode projesine bağla
         # Codemagic'in "Set up code signing identities" adımı sertifikayı ve
